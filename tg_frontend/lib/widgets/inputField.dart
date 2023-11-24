@@ -1,0 +1,56 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+class InputField extends StatelessWidget {
+  const InputField(
+      {Key? key,
+      required this.controller,
+      required this.textInput,
+      required this.textInputType,
+      required this.icon,
+      required this.obscure})
+      : super(key: key);
+
+  final TextEditingController controller;
+  final String textInput;
+  final TextInputType textInputType;
+  final bool obscure;
+  final Icon icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      inputFormatters: [LengthLimitingTextInputFormatter(50)],
+      controller: controller,
+      keyboardType: textInputType,
+      obscureText: obscure,
+
+      //autofocus: true,
+      decoration: InputDecoration(
+      
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 10.0, horizontal: 8.0),
+        hintText: textInput,
+        hintStyle: const TextStyle(color: Colors.grey),
+        filled: true,
+        suffixIcon: icon,
+        fillColor: Colors.grey.shade200,
+        border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20.0),
+            borderSide: const BorderSide(
+              width: 0,
+              style: BorderStyle.none,
+            )),
+      ),
+      validator: (text) {
+        if (text == null || text.isEmpty) {
+          return 'El campo no puede estar vacio';
+        }
+
+        if (text.length < 2 || text.length > 49) {
+          return 'Por favor ingrese un dato valido';
+        }
+      },
+    );
+  }
+}
