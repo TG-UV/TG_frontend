@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 
 class LargeButton extends StatelessWidget {
   const LargeButton({
-    Key? key,
+    super.key,
     // required this.controller,
     required this.text,
     required this.large,
     required this.onPressed,
     //required this.child
-  }) : super(key: key);
+  });
 
   // final TextEditingController controller;
 

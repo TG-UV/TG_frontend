@@ -7,7 +7,7 @@ import 'package:get/get.dart';
 
 class Splash extends StatelessWidget {
   // final Splash({Key? key}) : super(key: key);
-  Splash({Key? key}) : super(key: key);
+  Splash({super.key});
   final TextEditingController emailController = TextEditingController();
 
   @override

@@ -3,13 +3,12 @@ import 'package:flutter/services.dart';
 
 class InputField extends StatelessWidget {
   const InputField(
-      {Key? key,
+      {super.key,
       required this.controller,
       required this.textInput,
       required this.textInputType,
       required this.icon,
-      required this.obscure})
-      : super(key: key);
+      required this.obscure});
 
   final TextEditingController controller;
   final String textInput;
@@ -27,7 +26,6 @@ class InputField extends StatelessWidget {
 
       //autofocus: true,
       decoration: InputDecoration(
-      
         contentPadding:
             const EdgeInsets.symmetric(vertical: 10.0, horizontal: 8.0),
         hintText: textInput,
@@ -42,6 +40,7 @@ class InputField extends StatelessWidget {
               style: BorderStyle.none,
             )),
       ),
+      /*
       validator: (text) {
         if (text == null || text.isEmpty) {
           return 'El campo no puede estar vacio';
@@ -50,7 +49,8 @@ class InputField extends StatelessWidget {
         if (text.length < 2 || text.length > 49) {
           return 'Por favor ingrese un dato valido';
         }
-      },
+        
+      },*/
     );
   }
 }

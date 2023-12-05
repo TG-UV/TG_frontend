@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tg_frontend/screens/loginAndRegister/splash.dart';
+import 'package:tg_frontend/screens/home.dart';
+//import 'package:tg_frontend/screens/loginAndRegister/splash.dart';
 //import 'package:tg_frontend/screens/welcome.dart';
 
 void main() {
@@ -8,7 +9,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  MyApp({Key? key}) : super(key: key);
+  MyApp({super.key});
 
   // This widget is the root of your application.
   @override
@@ -17,7 +18,8 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Rayo',
       theme: myTheme,
-      home: Splash(),
+      //home: Splash(),
+      home: const Home(),
     );
   }
 

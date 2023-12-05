@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 
 class SquareButton extends StatelessWidget {
   const SquareButton(
-      {Key? key,
+      {super.key,
       // required this.controller,
       required this.text,
       required this.onPressed,
       required this.icon
       //required this.child
-      })
-      : super(key: key);
+      });
 
   // final TextEditingController controller;
 
