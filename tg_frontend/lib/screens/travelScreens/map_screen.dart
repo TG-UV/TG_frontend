@@ -24,7 +24,7 @@ class _MapScreenState extends State<MapScreen> {
   @override
   void initState() {
     super.initState();
-    getLocation();
+    //getLocation();
   }
 
   Future<void> getLocation() async {
@@ -45,7 +45,7 @@ class _MapScreenState extends State<MapScreen> {
         child: Stack(children: [
       FlutterMap(
         options: const MapOptions(
-            initialCenter: LatLng(37.7749, -122.4194),
+            initialCenter: LatLng(3.43722, -76.5225),
             minZoom: 5,
             maxZoom: 25,
             initialZoom: 18),
@@ -59,12 +59,14 @@ class _MapScreenState extends State<MapScreen> {
                   'mapbox/streets-v11', // Puedes cambiar el estilo según tus necesidades
             },
           ),
+          /*
           MarkerLayer(markers: [
             Marker(
                 point: LatLng(
                     currentLocation.latitude!, currentLocation.latitude!),
                 child: const Icon(Icons.location_on_rounded))
           ])
+          */
         ],
       ),
 
