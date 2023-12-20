@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tg_frontend/screens/travelScreens/available_travels.dart';
 import 'package:tg_frontend/screens/travelScreens/new_travel.dart';
 import 'package:tg_frontend/widgets/largeButton.dart';
 import 'package:get/get.dart';
@@ -102,7 +103,7 @@ class _MapScreenState extends State<MapScreen> {
         child: LargeButton(
           text: 'Salgo de la U',
           onPressed: () {
-            // Acción del botón
+            Get.to(() => const AvailableTravels());
           },
           large: true,
         ),

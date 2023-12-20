@@ -1,22 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:tg_frontend/widgets/notification_card.dart';
 import 'package:tg_frontend/models/travel_model.dart';
-import 'package:tg_frontend/widgets/travel_card.dart';
 
-class ListedTravels extends StatefulWidget {
-  const ListedTravels({
+class ListedNotifications extends StatefulWidget {
+  const ListedNotifications({
     super.key,
-    required this.pastTravel,
   });
 
   // final TextEditingController controller;
 
-  final bool pastTravel;
-
   @override
-  State<ListedTravels> createState() => _ListedTravelsState();
+  State<ListedNotifications> createState() => _ListedNotificationsState();
 }
 
-class _ListedTravelsState extends State<ListedTravels> {
+class _ListedNotificationsState extends State<ListedNotifications> {
   List<Travel> travelsList = [
     Travel(
         id: '1',
@@ -44,21 +41,16 @@ class _ListedTravelsState extends State<ListedTravels> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 15.0),
+            padding: const EdgeInsets.symmetric(horizontal: 25.0),
             alignment: Alignment.topCenter,
             child: Column(
                 //mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const SizedBox(height: 100),
-                  widget.pastTravel
-                      ? Text(
-                          "Historial de viajes",
-                          style: Theme.of(context).textTheme.titleLarge,
-                        )
-                      : Text(
-                          "Tus próximos viajes",
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
+                  Text(
+                    "Notificaciones",
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
                   const SizedBox(height: 30),
                   //const TravelCard(),
 
@@ -66,7 +58,7 @@ class _ListedTravelsState extends State<ListedTravels> {
                       child: ListView.builder(
                           itemCount: travelsList.length,
                           itemBuilder: (context, index) {
-                            return TravelCard(travel: travelsList[index]);
+                            return NotificationCard(travel: travelsList[index]);
                           }))
                 ])));
   }

@@ -19,7 +19,7 @@ class _NewTravelState extends State<NewTravel> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 30.0),
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
             alignment: Alignment.center,
             child: Stack(children: [
               Column(children: [
@@ -41,7 +41,7 @@ class _NewTravelState extends State<NewTravel> {
                   obscure: false,
                   icon: const Icon(Icons.edit),
                 ),
-                const SizedBox(height: 15),
+                const SizedBox(height: 10),
                 Align(
                     alignment: Alignment.topLeft,
                     child: Text(
@@ -56,7 +56,7 @@ class _NewTravelState extends State<NewTravel> {
                   obscure: false,
                   icon: const Icon(Icons.edit),
                 ),
-                const SizedBox(height: 65),
+                const SizedBox(height: 50),
                 Align(
                     alignment: Alignment.topLeft,
                     child: Text(
@@ -68,15 +68,16 @@ class _NewTravelState extends State<NewTravel> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       //BotonPersonalizado('Botón 1'),
+                      SquareButton(text: '10 min', onPressed: () {}),
+                      SquareButton(text: '30 min', onPressed: () {}),
+                      SquareButton(text: '1 hora', onPressed: () {}),
                       SquareButton(
-                          text: '10 Min', onPressed: () {}, icon: false),
-                      SquareButton(
-                          text: '30 Min', onPressed: () {}, icon: false),
-                      SquareButton(
-                          text: '1 hora', onPressed: () {}, icon: false),
-                      SquareButton(text: '', onPressed: () {}, icon: true),
+                        myIcon: Icons.edit,
+                        text: '',
+                        onPressed: () {},
+                      ),
                     ]),
-                const SizedBox(height: 30),
+                const SizedBox(height: 20),
                 Align(
                     alignment: Alignment.topLeft,
                     child: Text(
@@ -88,10 +89,11 @@ class _NewTravelState extends State<NewTravel> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       //BotonPersonalizado('Botón 1'),
-                      SquareButton(text: '1', onPressed: () {}, icon: false),
-                      SquareButton(text: '2', onPressed: () {}, icon: false),
-                      SquareButton(text: '3', onPressed: () {}, icon: false),
-                      SquareButton(text: '', onPressed: () {}, icon: true),
+                      SquareButton(text: '1', onPressed: () {}),
+                      SquareButton(text: '2', onPressed: () {}),
+                      SquareButton(text: '3', onPressed: () {}),
+                      SquareButton(
+                          text: '', onPressed: () {}, myIcon: Icons.edit),
                     ]),
                 const SizedBox(height: 50),
                 Align(
@@ -108,8 +110,8 @@ class _NewTravelState extends State<NewTravel> {
                   obscure: false,
                   icon: const Icon(Icons.edit),
                 ),
-                const SizedBox(height: 65),
-                LargeButton(text: 'Crear viaje', large: false, onPressed: () {})
+                const SizedBox(height: 10),
+                LargeButton(text: 'crear', large: false, onPressed: () {})
               ]),
               Positioned(
                   top: 30.0,

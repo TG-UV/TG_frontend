@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:tg_frontend/models/travel_model.dart';
 
-class TravelCard extends StatelessWidget {
-  const TravelCard({
+class DetailsCard extends StatelessWidget {
+  const DetailsCard({
     super.key,
     required this.travel,
   });
@@ -15,7 +15,7 @@ class TravelCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Card(
-        color: const Color(0xFFDD3D32),
+        color: Colors.grey,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
@@ -24,7 +24,7 @@ class TravelCard extends StatelessWidget {
               children: <Widget>[
                 TextButton(
                   child: Text(
-                    "Miercoles",
+                    '3.500',
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   onPressed: () {/* ... */},
@@ -32,7 +32,7 @@ class TravelCard extends StatelessWidget {
                 const SizedBox(width: 10),
                 TextButton(
                   child: Text(
-                    "8:30 am",
+                    "Carro",
                     style: Theme.of(context)
                         .textTheme
                         .titleLarge!
@@ -48,6 +48,14 @@ class TravelCard extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 child: Column(
                   children: [
+                    Text(
+                      "Juan Sebastian Estupiñan ",
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    Text(
+                      "3 cupos",
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
                     Text(
                       "Partida: Carrera 58 # 10-53 ",
                       style: Theme.of(context).textTheme.titleSmall,

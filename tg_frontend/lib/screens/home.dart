@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tg_frontend/screens/travelScreens/listed_notifications.dart';
 import 'package:tg_frontend/screens/travelScreens/listed_travels.dart';
 import 'package:tg_frontend/screens/travelScreens/map_screen.dart';
 
@@ -10,11 +11,9 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  
   int _selectedIndex = 0;
 
   final List<Widget> _pages = [
-   
     // Home (Index = 0)
     const MapScreen(),
 
@@ -27,8 +26,9 @@ class _HomeState extends State<Home> {
       pastTravel: true,
     ),
     // Notifications
-
+    const ListedNotifications()
   ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
