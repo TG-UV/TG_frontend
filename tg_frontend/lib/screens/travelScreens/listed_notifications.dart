@@ -14,7 +14,8 @@ class ListedNotifications extends StatefulWidget {
 }
 
 class _ListedNotificationsState extends State<ListedNotifications> {
-  List<Travel> travelsList = [
+  List<Travel> travelsList = [];
+  /*
     Travel(
         id: '1',
         arrivalPoint: 'Carrera 59 #11-94',
@@ -36,6 +37,7 @@ class _ListedNotificationsState extends State<ListedNotifications> {
         hour: '3:00 pm',
         date: '3-Dic-2023')
   ];
+  */
 
   @override
   Widget build(BuildContext context) {

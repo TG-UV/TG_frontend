@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:tg_frontend/models/travel_model.dart';
 import 'package:tg_frontend/widgets/travel_card.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class ListedTravels extends StatefulWidget {
   const ListedTravels({
@@ -17,7 +19,8 @@ class ListedTravels extends StatefulWidget {
 }
 
 class _ListedTravelsState extends State<ListedTravels> {
-  List<Travel> travelsList = [
+  List<Travel> travelsList = [];
+  /*
     Travel(
         id: '1',
         arrivalPoint: 'Carrera 59 #11-94',
@@ -39,6 +42,27 @@ class _ListedTravelsState extends State<ListedTravels> {
         hour: '3:00 pm',
         date: '3-Dic-2023')
   ];
+  */
+
+  @override
+  void initState() {
+    super.initState();
+    _cargarViajes();
+  }
+
+  Future<void> _cargarViajes() async {
+    final response = await http
+        .get(Uri.parse('https://tg-backend-cojj.onrender.com/api/Trip/'));
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      setState(() {
+        travelsList = data.map((json) => Travel.fromJson(json)).toList();
+      });
+    } else {
+      throw Exception('Error al cargar los viajes');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -13,7 +13,9 @@ class AvailableTravels extends StatefulWidget {
 }
 
 class _ListedTravelsState extends State<AvailableTravels> {
-  List<Travel> travelsList = [
+  List<Travel> travelsList = [];
+
+  /*
     Travel(
         id: '1',
         arrivalPoint: 'Carrera 59 #11-94',
@@ -46,6 +48,7 @@ class _ListedTravelsState extends State<AvailableTravels> {
       seats: 1,
       hour: '1:00 pm',
       date: '3-Dic-2023');
+      */
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +76,7 @@ class _ListedTravelsState extends State<AvailableTravels> {
                         style: Theme.of(context).textTheme.titleSmall,
                         textAlign: TextAlign.left,
                       )),
-                  TravelCard(travel: perfectTravel),
+                  //TravelCard(travel: perfectTravel),
                   const SizedBox(height: 30),
                   Align(
                       alignment: Alignment.topLeft,

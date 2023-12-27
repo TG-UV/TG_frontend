@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tg_frontend/models/travel_model.dart';
+import 'package:tg_frontend/widgets/largeButton.dart';
 
 class DetailsCard extends StatelessWidget {
   const DetailsCard({
@@ -22,28 +23,25 @@ class DetailsCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
-                TextButton(
-                  child: Text(
-                    '3.500',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  onPressed: () {/* ... */},
+                Text(
+                  travel.price,
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
+
                 const SizedBox(width: 10),
-                TextButton(
-                  child: Text(
-                    "Carro",
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleLarge!
-                        .copyWith(fontSize: 25.0),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  onPressed: () {/* ... */},
+                Text(
+                  "Carro",
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleLarge!
+                      .copyWith(fontSize: 25.0),
+                  overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(width: 8),
+
+                //const SizedBox(width: 8),
               ],
             ),
+            const SizedBox(width: 10),
             Align(
                 alignment: Alignment.centerLeft,
                 child: Column(
@@ -53,16 +51,37 @@ class DetailsCard extends StatelessWidget {
                       style: Theme.of(context).textTheme.titleSmall,
                     ),
                     Text(
-                      "3 cupos",
+                      '${travel.seats} + cupos ',
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      'Partida: + ${travel.startingPoint}',
                       style: Theme.of(context).textTheme.titleSmall,
                     ),
                     Text(
-                      "Partida: Carrera 58 # 10-53 ",
+                      'Destino: + ${travel.arrivalPoint}',
                       style: Theme.of(context).textTheme.titleSmall,
                     ),
-                    Text(
-                      " Destino: Universidad del Valle",
-                      style: Theme.of(context).textTheme.titleSmall,
+                    const SizedBox(width: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        TextButton(
+                          child: Text(
+                            '3.500',
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                          onPressed: () {/* ... */},
+                        ),
+                        const SizedBox(width: 10),
+                        LargeButton(
+                          large: false,
+                          text: "solicitar reserva",
+                          onPressed: () {/* ... */},
+                        ),
+                        //const SizedBox(width: 8),
+                      ],
                     ),
                   ],
                 ))

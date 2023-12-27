@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tg_frontend/models/travel_model.dart';
+import 'package:tg_frontend/widgets/details_card.dart';
 
 class TravelCard extends StatelessWidget {
   const TravelCard({
@@ -24,22 +25,26 @@ class TravelCard extends StatelessWidget {
               children: <Widget>[
                 TextButton(
                   child: Text(
-                    "Miercoles",
+                    travel.dateFormatted,
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
-                  onPressed: () {/* ... */},
+                  onPressed: () {
+                    DetailsCard(travel: travel);
+                  },
                 ),
                 const SizedBox(width: 10),
                 TextButton(
                   child: Text(
-                    "8:30 am",
+                    travel.hourFormatted,
                     style: Theme.of(context)
                         .textTheme
                         .titleLarge!
                         .copyWith(fontSize: 25.0),
                     overflow: TextOverflow.ellipsis,
                   ),
-                  onPressed: () {/* ... */},
+                  onPressed: () {
+                    DetailsCard(travel: travel);
+                  },
                 ),
                 const SizedBox(width: 8),
               ],
@@ -49,11 +54,11 @@ class TravelCard extends StatelessWidget {
                 child: Column(
                   children: [
                     Text(
-                      "Partida: Carrera 58 # 10-53 ",
+                      'Desde: ${travel.startingPoint}',
                       style: Theme.of(context).textTheme.titleSmall,
                     ),
                     Text(
-                      " Destino: Universidad del Valle",
+                      'Hacia: ${travel.arrivalPoint}',
                       style: Theme.of(context).textTheme.titleSmall,
                     ),
                   ],
