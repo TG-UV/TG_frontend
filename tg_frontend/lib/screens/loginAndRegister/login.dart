@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tg_frontend/widgets/inputField.dart';
-import 'package:tg_frontend/widgets/largeButton.dart';
+import 'package:tg_frontend/widgets/input_field.dart';
+import 'package:tg_frontend/widgets/large_button.dart';
 
 
 class Login extends StatefulWidget {

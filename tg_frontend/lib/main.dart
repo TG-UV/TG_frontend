@@ -24,9 +24,9 @@ class MyApp extends StatelessWidget {
   }
 
   final ThemeData myTheme = ThemeData.light().copyWith(
-    primaryColor: const Color.fromARGB(255, 187, 194, 215), // Color primario
+    primaryColor: Colors.grey.shade200, // Color primario
     colorScheme: const ColorScheme.light().copyWith(
-      primary: const Color.fromARGB(255, 167, 173, 192), // Color primario
+      primary: Colors.grey.shade200, // Color primario
       secondary: const Color(0x4E504333), // Color secundario
       error: const Color(0xFFDD3D32), // Color terciario (error)
     ),

@@ -1,32 +1,57 @@
 import 'package:flutter/material.dart';
-import 'package:tg_frontend/widgets/large_button.dart';
 import 'package:tg_frontend/widgets/square_button.dart';
 import 'package:tg_frontend/widgets/input_field.dart';
+import 'package:tg_frontend/models/travel_model.dart';
+import 'package:tg_frontend/widgets/travel_card.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class NewTravel extends StatefulWidget {
-  const NewTravel({super.key});
+class SearchTravels extends StatefulWidget {
+  const SearchTravels({super.key});
 
   @override
-  State<NewTravel> createState() => _NewTravelState();
+  State<SearchTravels> createState() => _SearchTravelsState();
 }
 
-class _NewTravelState extends State<NewTravel> {
+class _SearchTravelsState extends State<SearchTravels> {
   final TextEditingController startingPointController = TextEditingController();
   final TextEditingController arrivalPointController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
+
+  List<Travel> travelsList = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _cargarViajes();
+  }
+
+  Future<void> _cargarViajes() async {
+    final response = await http
+        .get(Uri.parse('https://tg-backend-cojj.onrender.com/api/Trip/'));
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      setState(() {
+        travelsList = data.map((json) => Travel.fromJson(json)).toList();
+      });
+    } else {
+      throw Exception('Error al cargar los viajes');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            padding: const EdgeInsets.symmetric(horizontal: 25.0),
             alignment: Alignment.center,
             child: Stack(children: [
               Column(children: [
-                const SizedBox(height: 100),
-                Text("Crea un nuevo viaje",
-                    style: Theme.of(context).textTheme.titleLarge),
                 const SizedBox(height: 60),
+                Text("Busca un viaje",
+                    style: Theme.of(context).textTheme.titleLarge),
+                const SizedBox(height: 50),
                 Align(
                     alignment: Alignment.topLeft,
                     child: Text(
@@ -56,7 +81,7 @@ class _NewTravelState extends State<NewTravel> {
                   obscure: false,
                   icon: const Icon(Icons.edit),
                 ),
-                const SizedBox(height: 50),
+                const SizedBox(height: 40),
                 Align(
                     alignment: Alignment.topLeft,
                     child: Text(
@@ -81,37 +106,26 @@ class _NewTravelState extends State<NewTravel> {
                 Align(
                     alignment: Alignment.topLeft,
                     child: Text(
-                      "Cupos",
+                      "Tu mejor opción",
                       style: Theme.of(context).textTheme.titleSmall,
                       textAlign: TextAlign.left,
                     )),
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      //BotonPersonalizado('Botón 1'),
-                      SquareButton(text: '1', onPressed: () {}),
-                      SquareButton(text: '2', onPressed: () {}),
-                      SquareButton(text: '3', onPressed: () {}),
-                      SquareButton(
-                          text: '', onPressed: () {}, myIcon: Icons.edit),
-                    ]),
-                const SizedBox(height: 50),
+                //TravelCard(travel: perfectTravel),
+                TravelCard(travel: travelsList[0]),
+                const SizedBox(height: 30),
                 Align(
                     alignment: Alignment.topLeft,
                     child: Text(
-                      "Precio",
+                      "Revisa otras opciones",
                       style: Theme.of(context).textTheme.titleSmall,
                       textAlign: TextAlign.left,
                     )),
-                InputField(
-                  controller: priceController,
-                  textInput: '3.000',
-                  textInputType: TextInputType.text,
-                  obscure: false,
-                  icon: const Icon(Icons.edit),
-                ),
-                const SizedBox(height: 10),
-                LargeButton(text: 'crear', large: false, onPressed: () {})
+                Expanded(
+                    child: ListView.builder(
+                        itemCount: travelsList.length,
+                        itemBuilder: (context, index) {
+                          return TravelCard(travel: travelsList[index]);
+                        }))
               ]),
               Positioned(
                   top: 30.0,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tg_frontend/models/travel_model.dart';
-import 'package:tg_frontend/widgets/details_card.dart';
+import 'package:tg_frontend/screens/travelScreens/travel_details.dart';
+import 'package:get/get.dart';
 
 class TravelCard extends StatelessWidget {
   const TravelCard({
@@ -29,7 +30,7 @@ class TravelCard extends StatelessWidget {
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   onPressed: () {
-                    DetailsCard(travel: travel);
+                    Get.to(() => TravelDetails(selectedTravel: travel));
                   },
                 ),
                 const SizedBox(width: 10),
@@ -43,7 +44,7 @@ class TravelCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   onPressed: () {
-                    DetailsCard(travel: travel);
+                    Get.to(() => TravelDetails(selectedTravel: travel));
                   },
                 ),
                 const SizedBox(width: 8),
@@ -52,9 +53,10 @@ class TravelCard extends StatelessWidget {
             Align(
                 alignment: Alignment.centerLeft,
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text(
-                      'Desde: ${travel.startingPoint}',
+                      '    Desde: ${travel.startingPoint}',
                       style: Theme.of(context).textTheme.titleSmall,
                     ),
                     Text(

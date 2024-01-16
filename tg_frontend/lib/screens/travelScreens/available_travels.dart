@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:tg_frontend/models/travel_model.dart';
-import 'package:tg_frontend/widgets/largeButton.dart';
+import 'package:tg_frontend/screens/travelScreens/search_travels.dart';
+import 'package:tg_frontend/widgets/large_button.dart';
 import 'package:tg_frontend/widgets/travel_card.dart';
+import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class AvailableTravels extends StatefulWidget {
   const AvailableTravels({
@@ -51,6 +55,26 @@ class _ListedTravelsState extends State<AvailableTravels> {
       */
 
   @override
+  void initState() {
+    super.initState();
+    _cargarViajes();
+  }
+
+  Future<void> _cargarViajes() async {
+    final response = await http
+        .get(Uri.parse('https://tg-backend-cojj.onrender.com/api/Trip/'));
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      setState(() {
+        travelsList = data.map((json) => Travel.fromJson(json)).toList();
+      });
+    } else {
+      throw Exception('Error al cargar los viajes');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: Container(
@@ -65,7 +89,13 @@ class _ListedTravelsState extends State<AvailableTravels> {
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   const SizedBox(height: 20),
-                  LargeButton(text: 'Buscar', large: false, onPressed: () {}),
+                  LargeButton(
+                    text: 'Buscar',
+                    large: false,
+                    onPressed: () {
+                      Get.to(() => const SearchTravels());
+                    },
+                  ),
                   const SizedBox(height: 30),
                   Text("!Viajes Próximos a salir!",
                       style: Theme.of(context).textTheme.titleMedium),
@@ -77,6 +107,7 @@ class _ListedTravelsState extends State<AvailableTravels> {
                         textAlign: TextAlign.left,
                       )),
                   //TravelCard(travel: perfectTravel),
+                  TravelCard(travel: travelsList[0]),
                   const SizedBox(height: 30),
                   Align(
                       alignment: Alignment.topLeft,

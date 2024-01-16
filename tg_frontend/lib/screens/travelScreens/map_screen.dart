@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tg_frontend/screens/travelScreens/available_travels.dart';
 import 'package:tg_frontend/screens/travelScreens/new_travel.dart';
-import 'package:tg_frontend/widgets/largeButton.dart';
+import 'package:tg_frontend/widgets/large_button.dart';
 import 'package:get/get.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:tg_frontend/widgets/largeButton.dart';
+import 'package:tg_frontend/widgets/large_button.dart';
 import 'package:get/get.dart';
 import 'package:tg_frontend/screens/loginAndRegister/login.dart';
-import 'package:tg_frontend/screens/loginAndRegister/signUp.dart';
+import 'package:tg_frontend/screens/loginAndRegister/sign_up.dart';
 
 class Welcome extends StatelessWidget {
   const Welcome({super.key});

@@ -19,28 +19,32 @@ class SquareButton extends StatelessWidget {
   //final Widget child;
   @override
   Widget build(BuildContext context) {
-    Column myRow =
-        Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-      FittedBox(
-          fit: BoxFit.fill,
-          child: Text(
-            text,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-                color: Colors.black,
-                fontFamily: 'Jost,'),
-            //overflow: TextOverflow.clip,
-            //softWrap: true,
-          ))
+    Row myRow = Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+      Flexible(
+          child: FittedBox(
+              fit: BoxFit.cover,
+              child: Text(
+                text,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                    color: Colors.black,
+                    fontFamily: 'Jost,'),
+                //overflow: TextOverflow.clip,
+                //softWrap: true,
+              )))
     ]);
 
     Widget childOption() {
       if (myIcon == null) {
         return myRow;
       } else {
-        return Icon(myIcon, size: 0.5);
+        return Icon(
+          myIcon,
+          size: 25,
+          color: Colors.black,
+        );
       }
     }
 

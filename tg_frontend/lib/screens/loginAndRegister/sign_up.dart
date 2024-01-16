@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:tg_frontend/screens/loginAndRegister/userRegister.dart';
-import 'package:tg_frontend/widgets/largeButton.dart';
+import 'package:tg_frontend/screens/loginAndRegister/user_register.dart';
+import 'package:tg_frontend/widgets/large_button.dart';
 import 'package:get/get.dart';
 
 class SignUp extends StatelessWidget {

@@ -29,12 +29,12 @@ class Travel {
       startingPoint: json['starting_point']?.toString() ?? '',
       driver: json['driver'] as int? ?? 0,
       price: json['fare']?.toString() ?? '',
-      seats: json['available_seats'] as int? ?? 0,
-      hour: json['hour'] != null
-          ? DateTime.parse(json['start_time'] as String)
+      seats: json['seats'] as int? ?? 0,
+      hour: json['start_time'] != null
+          ? DateTime.parse('${json['start_date']} ${json['start_time']}')
           : DateTime.now(),
-      date: json['date'] != null
-          ? DateTime.parse(json['start_date'] as String)
+      date: json['start_date'] != null
+          ? DateTime.parse('${json['start_date']} ${json['start_time']}')
           : DateTime.now(),
       currentTrip: json['current_trip'] as bool? ?? false,
     );
