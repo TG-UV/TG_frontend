@@ -2,17 +2,45 @@ import 'package:flutter/material.dart';
 
 class SquareButton extends StatelessWidget {
   const SquareButton(
-      {super.key,
-      // required this.controller,
-      required this.text,
-      required this.onPressed,
-      this.myIcon});
-
-  // final TextEditingController controller;
+      {super.key, required this.text, required this.onPressed, this.myIcon});
 
   final VoidCallback? onPressed;
   final String text;
   final IconData? myIcon;
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ButtonStyle(
+        minimumSize: MaterialStateProperty.all(const Size(50, 50)),
+        backgroundColor: MaterialStateProperty.all<Color>(
+            Theme.of(context).colorScheme.primary),
+        side: MaterialStateProperty.all<BorderSide>(const BorderSide(
+          color: Colors.black, // Color del borde
+          width: 2.0, // Ancho del borde
+        )),
+        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0), // Bordes redondeados
+          ),
+        ),
+      ),
+      child: myIcon != null
+          ? const Icon(Icons.edit)
+          : Text(
+              text,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  color: Colors.black,
+                  fontFamily: 'Jost,'),
+            ),
+    );
+  }
+
+  /*
 
   @override
   Widget build(BuildContext context) {
@@ -72,5 +100,5 @@ class SquareButton extends StatelessWidget {
                     color: Colors.black,
                   )
                 : buildTextWidget()));
-  }
+  }*/
 }

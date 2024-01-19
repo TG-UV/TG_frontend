@@ -3,6 +3,8 @@ import 'package:tg_frontend/screens/travelScreens/listed_notifications.dart';
 import 'package:tg_frontend/screens/travelScreens/listed_travels.dart';
 import 'package:tg_frontend/screens/travelScreens/map_screen.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
+import 'package:dio/dio.dart';
+import 'package:tg_frontend/services/auth_services.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -30,6 +32,30 @@ class _HomeState extends State<Home> {
     const ListedNotifications()
   ];
 
+  void fetchData() async {
+    String? token = await AuthStorage().getToken();
+
+    if (token != null) {
+      try {
+        Dio dio = Dio();
+        dio.options.headers['Authorization'] = 'Token $token';
+        Response response = await dio
+            .get('https://tg-backend-cojj.onrender.com/auth/users/me/');
+        print('Respuesta del servidor: ${response.data}');
+      } catch (error) {
+        print('Error al realizar la solicitud: $error');
+      }
+    } else {
+      print('No se encontró ningún token.');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,7 +63,11 @@ class _HomeState extends State<Home> {
       //currentIndex: _selectedIndex,
       bottomNavigationBar: ConvexAppBar(
         items: const [
-          TabItem(icon: Icon(Icons.house_outlined, color: Colors.black,)),
+          TabItem(
+              icon: Icon(
+            Icons.house_outlined,
+            color: Colors.black,
+          )),
           TabItem(
               icon: Icon(
             Icons.motorcycle_outlined,

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tg_frontend/screens/home.dart';
 import 'package:tg_frontend/widgets/input_field.dart';
 import 'package:tg_frontend/widgets/large_button.dart';
-
+import 'package:dio/dio.dart';
+import 'package:tg_frontend/services/auth_services.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -13,8 +15,39 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   final TextEditingController mailLoginController = TextEditingController();
-  final TextEditingController passwordLoginController =
-      TextEditingController();
+  final TextEditingController passwordLoginController = TextEditingController();
+
+  Dio dio = Dio();
+
+  Future<void> loginUser(String username, String password) async {
+    try {
+      var response = await dio.post(
+        'https://tg-backend-cojj.onrender.com/auth/token/login/',
+        data: {"password": password, "email": username},
+      );
+      if (response.statusCode == 200) {
+        print('autenticacion exitosa: ${response.data}');
+        // Extrae el token de la respuesta (ajústalo según la estructura de tu respuesta)
+        Map<String, dynamic> responseData = Map.from(response.data);
+        String token = responseData['auth_token'];
+
+        // Guarda el token en el almacenamiento seguro
+        await AuthStorage().saveToken(token);
+        //Get.offAllNamed('/home');
+        Get.to(const Home());
+
+        // Maneja el redireccionamiento o la navegación a la siguiente pantalla
+        // Puedes hacerlo según tus necesidades
+      } else {
+        // Maneja la respuesta del backend cuando no es exitosa
+        print('Error en la autenticación: ${response.statusCode}');
+      }
+    } catch (error) {
+      // Maneja los errores de autenticación aquí.
+      print('Error al autenticar: $error');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,14 +80,14 @@ class _LoginState extends State<Login> {
                 ),
                 const SizedBox(height: 200),
                 LargeButton(
-                    text: 'Crear cuenta',
+                    text: 'Iniciar sesion',
                     large: true,
                     onPressed: () {
+                      loginUser(mailLoginController.text,
+                          passwordLoginController.text);
                       Get.to(() => {});
                     }),
               ]),
-              // child: const GlobalButton(text: 'Iniciar sesión'),
-
               Positioned(
                   top: 30.0,
                   left: 5.0,
