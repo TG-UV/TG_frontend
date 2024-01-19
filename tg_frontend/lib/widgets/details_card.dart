@@ -8,8 +8,6 @@ class DetailsCard extends StatefulWidget {
     required this.travel,
   });
 
-  // final TextEditingController controller;
-
   final Travel travel;
 
   @override

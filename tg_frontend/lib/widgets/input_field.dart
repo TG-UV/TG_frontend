@@ -27,9 +27,9 @@ class InputField extends StatelessWidget {
       //autofocus: true,
       decoration: InputDecoration(
         contentPadding:
-            const EdgeInsets.symmetric(vertical: 10.0, horizontal: 8.0),
+            const EdgeInsets.symmetric(vertical: 9.0, horizontal: 7.0),
         hintText: textInput,
-        hintStyle: const TextStyle(color: Colors.grey),
+        hintStyle: const TextStyle(color: Color.fromARGB(255, 71, 71, 71), fontSize: 12),
         filled: true,
         suffixIcon: icon,
         fillColor: Colors.grey.shade200,

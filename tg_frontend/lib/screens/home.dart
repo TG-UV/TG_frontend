@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tg_frontend/screens/travelScreens/listed_notifications.dart';
 import 'package:tg_frontend/screens/travelScreens/listed_travels.dart';
 import 'package:tg_frontend/screens/travelScreens/map_screen.dart';
+import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -33,10 +34,34 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _pages[_selectedIndex],
+      //currentIndex: _selectedIndex,
+      bottomNavigationBar: ConvexAppBar(
+        items: const [
+          TabItem(icon: Icon(Icons.house_outlined, color: Colors.black,)),
+          TabItem(
+              icon: Icon(
+            Icons.motorcycle_outlined,
+            color: Colors.black,
+          )),
+          TabItem(icon: Icon(Icons.watch_later_outlined, color: Colors.black)),
+          TabItem(
+              icon: Icon(Icons.notifications_active_outlined,
+                  color: Colors.black)),
+        ],
+        onTap: (int index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+        style: TabStyle.react,
+        backgroundColor: const Color.fromARGB(255, 239, 239, 239),
+        //activeColor: Colors.blue, // Color del ítem seleccionado
+        //curveItemInnerPadding: -15, // Ajusta este valor para cambiar el tamaño del cuadro alrededor del ítem seleccionado
+      ),
+      /*
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
-        // selectedIconTheme: const IconThemeData(
-        //   color: Color.fromARGB(232, 151, 149, 129), size: 30),
+        
         onTap: (index) {
           setState(() {
             _selectedIndex = index;
@@ -64,7 +89,7 @@ class _HomeState extends State<Home> {
             label: 'Notificaciones',
           ),
         ],
-      ),
+      ),*/
     );
   }
 }

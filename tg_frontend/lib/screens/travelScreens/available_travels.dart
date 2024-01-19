@@ -78,16 +78,28 @@ class _ListedTravelsState extends State<AvailableTravels> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 15.0),
+            //color: const Color(0xFFDD3D32),
+            padding: const EdgeInsets.symmetric(horizontal: 18.0),
             alignment: Alignment.topCenter,
             child: Column(
                 //mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 100),
-                  Text(
-                    "Busca un viaje",
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
+                  const SizedBox(height: 80),
+                  Row(children: [
+                    IconButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        icon: const Icon(Icons.arrow_back)),
+                    const SizedBox(width: 10),
+                    Text(
+                      "Busca un viaje",
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleLarge!
+                          .copyWith(fontSize: 26),
+                    )
+                  ]),
                   const SizedBox(height: 20),
                   LargeButton(
                     text: 'Buscar',
@@ -97,7 +109,7 @@ class _ListedTravelsState extends State<AvailableTravels> {
                     },
                   ),
                   const SizedBox(height: 30),
-                  Text("!Viajes Próximos a salir!",
+                  Text("!Viajes próximos a salir!",
                       style: Theme.of(context).textTheme.titleMedium),
                   Align(
                       alignment: Alignment.topLeft,

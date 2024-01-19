@@ -17,7 +17,7 @@ class TravelCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Card(
-        color: const Color(0xFFDD3D32),
+        color: const Color.fromARGB(255, 252, 252, 252),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[

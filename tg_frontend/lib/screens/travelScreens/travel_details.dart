@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tg_frontend/models/travel_model.dart';
 import 'package:tg_frontend/widgets/details_card.dart';
+import 'package:tg_frontend/widgets/driver_details_card.dart';
 
 class TravelDetails extends StatefulWidget {
   const TravelDetails({
@@ -19,6 +20,8 @@ class _TravelDetailsState extends State<TravelDetails> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: Container(
+          color: const Color(0xFFDD3D32),
+         
             padding: const EdgeInsets.symmetric(horizontal: 15.0),
             alignment: Alignment.topCenter,
             child: Column(
@@ -30,7 +33,8 @@ class _TravelDetailsState extends State<TravelDetails> {
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   const SizedBox(height: 20),
-                  DetailsCard(travel: widget.selectedTravel)
+                  //DetailsCard(travel: widget.selectedTravel)
+                  DriverDetailsCard(travel: widget.selectedTravel)
                 ])));
   }
 }

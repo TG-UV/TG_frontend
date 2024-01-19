@@ -68,21 +68,38 @@ class _ListedTravelsState extends State<ListedTravels> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: Container(
+            color: const Color(0xFFDD3D32),
             padding: const EdgeInsets.symmetric(horizontal: 15.0),
             alignment: Alignment.topCenter,
             child: Column(
                 //mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 100),
-                  widget.pastTravel
-                      ? Text(
-                          "Historial de viajes",
-                          style: Theme.of(context).textTheme.titleLarge,
-                        )
-                      : Text(
-                          "Tus próximos viajes",
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
+                  const SizedBox(height: 80),
+                  Row(
+                      children: [
+                        IconButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            icon: const Icon(Icons.arrow_back)),
+                        const SizedBox(width: 10),
+                        widget.pastTravel
+                            ? Text(
+                                "Historial de viajes",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleLarge!
+                                    .copyWith(fontSize: 26),
+                              )
+                            : Text(
+                                "Tus próximos viajes",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleLarge!
+                                    .copyWith(fontSize: 26),
+                              ),
+                      ]),
+
                   const SizedBox(height: 30),
                   //const TravelCard(),
 

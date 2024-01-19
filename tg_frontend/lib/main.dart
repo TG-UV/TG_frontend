@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
       titleLarge: TextStyle(
         fontFamily: 'Jost',
         color: Color(0xFF333333),
-        fontSize: 32.0,
+        fontSize: 28.0,
         fontWeight: FontWeight.w800,
       ),
       titleMedium: TextStyle(
@@ -47,7 +47,7 @@ class MyApp extends StatelessWidget {
           // Equivalente a bodyText2
           color: Color(0xFF333333),
           fontFamily: 'Jost',
-          fontSize: 18.0,
+          fontSize: 16.0,
           fontWeight: FontWeight.bold),
     ),
   );
