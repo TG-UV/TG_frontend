@@ -3,8 +3,12 @@ import 'package:get/get.dart';
 //import 'package:tg_frontend/screens/home.dart';
 import 'package:tg_frontend/screens/loginAndRegister/splash.dart';
 //import 'package:tg_frontend/screens/welcome.dart';
+import 'package:tg_frontend/device/environment.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final environment = Environment();
+  await environment.startEnvironment();
   runApp(MyApp());
 }
 
@@ -18,7 +22,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Rayo',
       theme: myTheme,
-      home: Splash(),
+      home: const Splash(),
       //home: const Home(),
     );
   }

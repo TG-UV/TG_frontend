@@ -17,4 +17,20 @@ class AuthStorage {
   Future<void> deleteToken() async {
     await storage.delete(key: 'token');
   }
+
+  Future<void> saveNickname(String nickname) async {
+    await storage.write(key: 'nickname', value: nickname);
+  }
+
+  Future<String?> getNickName() async {
+    return await storage.read(key: 'nickname');
+  }
+
+  Future<void> savePassword(String password) async {
+    await storage.write(key: 'password', value: password);
+  }
+
+  Future<String?> getPassword() async {
+    return await storage.read(key: 'password');
+  }
 }

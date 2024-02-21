@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:tg_frontend/screens/theme.dart';
 
 class InputField extends StatelessWidget {
   const InputField(
@@ -23,7 +24,7 @@ class InputField extends StatelessWidget {
         controller: controller,
         keyboardType: textInputType,
         obscureText: obscure,
-
+        style: TextStyle(color: ColorManager.primaryColor),
         //autofocus: true,
         decoration: InputDecoration(
             contentPadding:
@@ -31,10 +32,10 @@ class InputField extends StatelessWidget {
             hintText: textInput,
             hintStyle: const TextStyle(
                 color: Color.fromARGB(255, 71, 71, 71), fontSize: 12),
-            filled: true,
+            //filled: true,
             suffixIcon: icon,
             //fillColor: Colors.grey.shade200,
-            fillColor: const Color.fromARGB(255, 43, 43, 43),
+            fillColor: ColorManager.thirdColor,
             border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(20.0),
                 borderSide: const BorderSide(

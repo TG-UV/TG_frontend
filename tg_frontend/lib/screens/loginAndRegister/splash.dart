@@ -1,20 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:tg_frontend/screens/loginAndRegister/welcome.dart';
+//import 'package:tg_frontend/models/passenger_model.dart';
+import 'package:tg_frontend/screens/home.dart';
+import 'package:tg_frontend/screens/loginAndRegister/login.dart';
 import 'dart:async';
 import 'package:get/get.dart';
+import 'package:tg_frontend/services/auth_services.dart';
 
 //import 'package:unidrive_driver/ui/utils/global.colors.dart';
 
-class Splash extends StatelessWidget {
+class Splash extends StatefulWidget {
   // final Splash({Key? key}) : super(key: key);
-  Splash({super.key});
+  const Splash({super.key});
+  @override
+  State<Splash> createState() => _LoginState();
+}
+
+class _LoginState extends State<Splash> {
   final TextEditingController emailController = TextEditingController();
+  final authStorage = AuthStorage();
+
+  @override
+  void initState() {
+    super.initState();
+    verifyLoggedIn();
+  }
 
   @override
   Widget build(BuildContext context) {
-    Timer(const Duration(seconds: 3), () {
-      Get.to(() => const Welcome());
-    });
+    // Timer(const Duration(seconds: 3), () {
+    //   Get.to(() => const Welcome());
+    // });
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.error,
       body: Center(
@@ -49,5 +64,22 @@ class Splash extends StatelessWidget {
         ), */
       ),
     );
+  }
+
+  Future<bool> verifyAuth() async {
+    bool isLoggedIn = false;
+    final nickname = await authStorage.getNickName();
+    final password = await authStorage.getPassword();
+    print('llega a verifyAuth');
+    if (nickname != null && password != null) {
+      isLoggedIn = true;
+    }
+    return isLoggedIn;
+  }
+
+  Future<void> verifyLoggedIn() async {
+    print('llega a verifyLoggedIn');
+    Future<bool> isAuth = verifyAuth();
+    await isAuth ? Get.to(() => const Home()) : Get.to(() => const Login());
   }
 }

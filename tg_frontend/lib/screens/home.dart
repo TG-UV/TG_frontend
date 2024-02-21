@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:tg_frontend/datasource/user_data.dart';
+import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/screens/travelScreens/listed_notifications.dart';
 import 'package:tg_frontend/screens/travelScreens/listed_travels.dart';
 import 'package:tg_frontend/screens/travelScreens/map_screen.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:dio/dio.dart';
 import 'package:tg_frontend/services/auth_services.dart';
+import 'package:tg_frontend/datasource/local_database.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -15,6 +19,12 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   int _selectedIndex = 0;
+
+  DatabaseProvider databaseProvider = DatabaseProvider.db;
+  late UserDatasourceImpl userDatasourceImpl;
+  late Database database;
+  Dio dio = Dio();
+  late User? user;
 
   final List<Widget> _pages = [
     // Home (Index = 0)
@@ -32,28 +42,41 @@ class _HomeState extends State<Home> {
     const ListedNotifications()
   ];
 
-  void fetchData() async {
-    String? token = await AuthStorage().getToken();
+  // void fetchData() async {
+  //   String? token = await AuthStorage().getToken();
 
-    if (token != null) {
-      try {
-        Dio dio = Dio();
-        dio.options.headers['Authorization'] = 'Token $token';
-        Response response = await dio
-            .get('https://tg-backend-cojj.onrender.com/auth/users/me/');
-        print('Respuesta del servidor: ${response.data}');
-      } catch (error) {
-        print('Error al realizar la solicitud: $error');
-      }
-    } else {
-      print('No se encontró ningún token.');
-    }
-  }
+  //   if (token != null) {
+  //     try {
+  //       Dio dio = Dio();
+  //       dio.options.headers['Authorization'] = 'Token $token';
+  //       Response response = await dio
+  //           .get('https://tg-backend-cojj.onrender.com/auth/users/me/');
+
+  //       User user = User.fromJson(response.data);
+  //       userDatasourceImpl.insertUserLocal(user: user);
+
+  //       print('Respuesta del servidor: ${response.data}');
+  //     } catch (error) {
+  //       print('Error al realizar la solicitud: $error');
+  //     }
+  //   } else {
+  //     print('No se encontró ningún token.');
+  //   }
+  // }
 
   @override
   void initState() {
     super.initState();
-    fetchData();
+    getUser();
+  }
+
+  void getUser() async {
+    database = await databaseProvider.database;
+
+    userDatasourceImpl = UserDatasourceImpl(dio, database);
+    print('databaseee--------' + database.isOpen.toString());
+    user = await userDatasourceImpl.getFieldUserLocal();
+    print('userrrrrr  ${user!.firstName}');
   }
 
   @override
