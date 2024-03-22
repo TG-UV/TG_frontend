@@ -1,7 +1,7 @@
 import 'package:intl/intl.dart';
 
 class Travel {
-  final String id;
+  final int id;
   final String arrivalPoint;
   final String startingPoint;
   final int driver;
@@ -24,7 +24,7 @@ class Travel {
 
   factory Travel.fromJson(Map<String, dynamic> json) {
     return Travel(
-      id: json['id_trip']?.toString() ?? '',
+      id: json['id_trip'] as int? ?? 0,
       arrivalPoint: json['arrival_point']?.toString() ?? '',
       startingPoint: json['starting_point']?.toString() ?? '',
       driver: json['driver'] as int? ?? 0,
@@ -46,5 +46,19 @@ class Travel {
 
   String get hourFormatted {
     return DateFormat('HH:mm').format(hour);
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id_trip': id,
+      'arrival_point': arrivalPoint,
+      'starting_point': startingPoint,
+      'driver': driver,
+      'fare': price,
+      'seats': seats,
+      'start_time': DateFormat("yyyy-MM-ddTHH:mm "),
+      'start_date': DateFormat("yyyy-MM-dd").format(date).toString(),
+      'current_trip': currentTrip,
+    };
   }
 }

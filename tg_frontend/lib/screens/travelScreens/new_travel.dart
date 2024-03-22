@@ -1,124 +1,235 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:get/get.dart';
+import 'package:tg_frontend/screens/home.dart';
 import 'package:tg_frontend/widgets/large_button.dart';
 import 'package:tg_frontend/widgets/square_button.dart';
 import 'package:tg_frontend/widgets/input_field.dart';
+import 'package:tg_frontend/models/travel_model.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:tg_frontend/datasource/endPoints/end_point.dart';
+import 'package:tg_frontend/datasource/local_database_provider.dart';
+import 'package:dio/dio.dart';
+import 'package:tg_frontend/datasource/travel_data.dart';
+import 'package:tg_frontend/models/user_model.dart';
 
 class NewTravel extends StatefulWidget {
-  const NewTravel({super.key});
+  final User user;
+  const NewTravel({super.key, required this.user});
 
   @override
   State<NewTravel> createState() => _NewTravelState();
 }
 
 class _NewTravelState extends State<NewTravel> {
+  Dio dio = Dio();
+  DatabaseProvider databaseProvider = DatabaseProvider.db;
+  late TravelDatasourceMethods travelDatasourceMethods;
+  late Database database;
+  EndPoints endPoint = EndPoints();
+
+  final _formKey = GlobalKey<FormState>();
+
   final TextEditingController startingPointController = TextEditingController();
   final TextEditingController arrivalPointController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
+  final TextEditingController timeController = TextEditingController();
+  final TextEditingController dateControlelr = TextEditingController();
+  final TextEditingController seatsController = TextEditingController();
+
+  void submitForm(BuildContext context) async {
+    if (_formKey.currentState!.validate()) {
+      List<Travel> travelList = [];
+      Travel travel = Travel(
+          id: 101,
+          arrivalPoint: arrivalPointController.text,
+          startingPoint: startingPointController.text,
+          driver: int.parse(widget.user.idUser),
+          price: priceController.text,
+          seats: int.parse(seatsController.text),
+          date: DateFormat('yyyy-MM-dd').parse(dateControlelr.text),
+          hour: DateFormat('HH:mm').parse(dateControlelr.text),
+          currentTrip: false);
+      travelList.add(travel);
+
+      travelDatasourceMethods.insertTravelsLocal(travels: travelList);
+      Get.to(() => const Home());
+    } else {
+      AlertDialog(
+          title: const Text("Error"),
+          content: const SingleChildScrollView(
+              child: ListBody(
+            children: <Widget>[
+              Text("Faltan campos por llenar."),
+            ],
+          )),
+          actions: [
+            ElevatedButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text("Aceptar"))
+          ]);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-      alignment: Alignment.center,
-      child: Column(children: [
-        const SizedBox(height: 80),
-        Row(children: [
-          IconButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              icon: const Icon(Icons.arrow_back)),
-          const SizedBox(width: 5),
-          Text(
-            "Crea un nuevo viaje",
-            style:
-                Theme.of(context).textTheme.titleLarge!.copyWith(fontSize: 26),
-          )
-        ]),
-        const SizedBox(height: 60),
-        Align(
-            alignment: Alignment.topLeft,
-            child: Text(
-              "Desde",
-              style: Theme.of(context).textTheme.titleSmall,
-              textAlign: TextAlign.left,
-            )),
-        InputField(
-          controller: startingPointController,
-          textInput: 'Universidad del Valle',
-          textInputType: TextInputType.text,
-          obscure: false,
-          icon: const Icon(Icons.edit),
-        ),
-        const SizedBox(height: 7),
-        Align(
-            alignment: Alignment.topLeft,
-            child: Text(
-              "Hacia",
-              style: Theme.of(context).textTheme.titleSmall,
-              textAlign: TextAlign.left,
-            )),
-        InputField(
-          controller: arrivalPointController,
-          textInput: 'Home',
-          textInputType: TextInputType.text,
-          obscure: false,
-          icon: const Icon(Icons.edit),
-        ),
-        const SizedBox(height: 50),
-        Align(
-            alignment: Alignment.topLeft,
-            child: Text(
-              "Cuando",
-              style: Theme.of(context).textTheme.titleSmall,
-              textAlign: TextAlign.left,
-            )),
-        Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-          //BotonPersonalizado('Botón 1'),
-          SquareButton(text: '10', onPressed: () {}),
-          SquareButton(text: '30 min', onPressed: () {}),
-          SquareButton(text: '1 hora', onPressed: () {}),
-          SquareButton(
-            myIcon: Icons.edit,
-            text: '',
-            onPressed: () {},
-          ),
-        ]),
-        const SizedBox(height: 15),
-        Align(
-            alignment: Alignment.topLeft,
-            child: Text(
-              "Cupos",
-              style: Theme.of(context).textTheme.titleSmall,
-              textAlign: TextAlign.left,
-            )),
-        Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-          //BotonPersonalizado('Botón 1'),
-          SquareButton(text: '1', onPressed: () {}),
-          SquareButton(text: '2', onPressed: () {}),
-          SquareButton(text: '3', onPressed: () {}),
-          SquareButton(text: '', onPressed: () {}, myIcon: Icons.edit),
-        ]),
-        const SizedBox(height: 40),
-        Align(
-            alignment: Alignment.topLeft,
-            child: Text(
-              "Precio",
-              style: Theme.of(context).textTheme.titleSmall,
-              textAlign: TextAlign.left,
-            )),
-        InputField(
-          controller: priceController,
-          textInput: '3.000',
-          textInputType: TextInputType.text,
-          obscure: false,
-          icon: const Icon(Icons.edit),
-        ),
-        const SizedBox(height: 10),
-        LargeButton(text: 'crear', large: false, onPressed: () {})
-      ]),
-      /*
+        resizeToAvoidBottomInset: false,
+        body: Form(
+            key: _formKey, 
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              alignment: Alignment.center,
+              child: Column(children: [
+                const SizedBox(height: 80),
+                Row(children: [
+                  IconButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: const Icon(Icons.arrow_back)),
+                  const SizedBox(width: 5),
+                  Text(
+                    "Crea un nuevo viaje",
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleLarge!
+                        .copyWith(fontSize: 26),
+                  )
+                ]),
+                const SizedBox(height: 60),
+                Align(
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      "Desde",
+                      style: Theme.of(context).textTheme.titleSmall,
+                      textAlign: TextAlign.left,
+                    )),
+                InputField(
+                  controller: startingPointController,
+                  textInput: 'Universidad del Valle',
+                  textInputType: TextInputType.text,
+                  obscure: false,
+                  icon: const Icon(Icons.edit),
+                ),
+                const SizedBox(height: 7),
+                Align(
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      "Hacia",
+                      style: Theme.of(context).textTheme.titleSmall,
+                      textAlign: TextAlign.left,
+                    )),
+                InputField(
+                  controller: arrivalPointController,
+                  textInput: 'Home',
+                  textInputType: TextInputType.text,
+                  obscure: false,
+                  icon: const Icon(Icons.edit),
+                ),
+                const SizedBox(height: 50),
+                Align(
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      "Cuando",
+                      style: Theme.of(context).textTheme.titleSmall,
+                      textAlign: TextAlign.left,
+                    )),
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      //BotonPersonalizado('Botón 1'),
+                      SquareButton(
+                          text: '10',
+                          onPressed: () {
+                            DateTime now = DateTime.now();
+                            DateTime newTime =
+                                now.add(const Duration(minutes: 10));
+                            String formattedTime =
+                                "${newTime.hour}:${newTime.minute}";
+                            timeController.text = formattedTime;
+                          }),
+                      SquareButton(
+                          text: '30 min',
+                          onPressed: () {
+                            DateTime now = DateTime.now();
+                            DateTime newTime =
+                                now.add(const Duration(minutes: 30));
+                            String formattedTime =
+                                "${newTime.hour}:${newTime.minute}";
+                            timeController.text = formattedTime;
+                            timeController.text = "$newTime";
+                          }),
+                      SquareButton(
+                          text: '1 hora',
+                          onPressed: () {
+                            DateTime now = DateTime.now();
+                            DateTime newTime =
+                                now.add(const Duration(minutes: 60));
+                            String formattedTime =
+                                "${newTime.hour}:${newTime.minute}";
+                            timeController.text = formattedTime;
+                          }),
+                      SquareButton(
+                        myIcon: Icons.edit,
+                        text: '',
+                        onPressed: () {},
+                      ),
+                    ]),
+                const SizedBox(height: 15),
+                Align(
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      "Cupos",
+                      style: Theme.of(context).textTheme.titleSmall,
+                      textAlign: TextAlign.left,
+                    )),
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      //BotonPersonalizado('Botón 1'),
+                      SquareButton(
+                          text: '1',
+                          onPressed: () {
+                            timeController.text = '1';
+                          }),
+                      SquareButton(
+                          text: '2',
+                          onPressed: () {
+                            timeController.text = '2';
+                          }),
+                      SquareButton(
+                          text: '3',
+                          onPressed: () {
+                            timeController.text = '3';
+                          }),
+                      SquareButton(
+                          text: '', onPressed: () {}, myIcon: Icons.edit),
+                    ]),
+                const SizedBox(height: 40),
+                Align(
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      "Precio",
+                      style: Theme.of(context).textTheme.titleSmall,
+                      textAlign: TextAlign.left,
+                    )),
+                InputField(
+                  controller: priceController,
+                  textInput: '3.000',
+                  textInputType: TextInputType.text,
+                  obscure: false,
+                  icon: const Icon(Icons.edit),
+                ),
+                const SizedBox(height: 10),
+                LargeButton(
+                    text: 'crear',
+                    large: false,
+                    onPressed: () {
+                      submitForm(context);
+                    })
+              ]),
+              /*
               Positioned(
                   top: 30.0,
                   left: 5.0,
@@ -127,6 +238,6 @@ class _NewTravelState extends State<NewTravel> {
                         Navigator.pop(context);
                       },
                       icon: const Icon(Icons.arrow_back)))*/
-    ));
+            )));
   }
 }

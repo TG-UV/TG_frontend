@@ -1,7 +1,7 @@
 //import "package:sqflite/sqlite_api.dart";
 //import 'package:tg_frontend/device/local_datasource.dart';
 import 'package:dio/dio.dart';
-import 'package:tg_frontend/datasource/local_database.dart';
+import 'package:tg_frontend/datasource/local_database_provider.dart';
 import "package:get_it/get_it.dart";
 import 'package:tg_frontend/datasource/user_data.dart';
 import 'package:tg_frontend/screens/loginAndRegister/login.dart';
@@ -9,7 +9,7 @@ import 'package:sqflite/sqflite.dart';
 
 class Environment {
   static GetIt sl = GetIt.instance;
-  late UserDatasourceImpl userDatasourseImpl;
+  late UserDatasourceMethods userDatasourseImpl;
 
   //late var dba = null;
   //final Database db = await Db.openDb();
@@ -21,7 +21,7 @@ class Environment {
   Future<void> startEnvironment() async {
     Database database = await _initDatabase();
     Dio dio = Dio();
-    userDatasourseImpl = UserDatasourceImpl(dio, database);
+    userDatasourseImpl = UserDatasourceMethods(dio, database);
     //Environment.sl.registerLazySingleton(
   }
 

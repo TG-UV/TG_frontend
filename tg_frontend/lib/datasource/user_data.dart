@@ -1,26 +1,30 @@
+import 'package:get_it/get_it.dart';
 import 'package:tg_frontend/device/local_tables.dart';
 import 'package:tg_frontend/models/user_model.dart';
 import 'package:dio/dio.dart';
 import 'package:tg_frontend/services/auth_services.dart';
-import 'package:tg_frontend/datasource/local_database.dart';
+import 'package:tg_frontend/datasource/local_database_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
 abstract class UserDatasource {
   Future<void> insertUserLocal({required User user});
   Future<void> getUserRemote({required String endPoint});
-  Future<User?> getFieldUserLocal();
+  Future<String?> getUserAuth(
+      {required String endPoint,
+      required String username,
+      required String password});
+  Future<User> getUserLocal();
   // Future<User> requestLoginUserRemote(
   //     {required String nick, required String password});
 }
 
-class UserDatasourceImpl implements UserDatasource {
+class UserDatasourceMethods implements UserDatasource {
   final Dio dio;
   final Database database;
-  //AuthStorage? authStorage;
 
   //final database = await databaseProvider.database;
 
-  UserDatasourceImpl(this.dio, this.database);
+  UserDatasourceMethods(this.dio, this.database);
 
   @override
   Future<void> insertUserLocal({required User user}) async {
@@ -45,27 +49,28 @@ class UserDatasourceImpl implements UserDatasource {
   }
 
   @override
-  Future<User?> getFieldUserLocal() async {
+  Future<User> getUserLocal() async {
+    var response;
+    // List<Map<String, dynamic>> userMaps;
+    // User user;
     try {
-      //final database = await databaseProvider.database;
-      List<Map<String, dynamic>> userMaps = await database.query(
+      response = await database.query(
         LocalDB.tbUser,
         where: '${LocalDB.idUser} = ?',
         whereArgs: [4],
       ).timeout(const Duration(seconds: 300));
 
-      if (userMaps.isNotEmpty) {
-        // Si se encontró un usuario con el ID especificado, construye y devuelve un objeto User
-        return User.fromJson(userMaps.first);
-      } else {
-        // Si no se encontró ningún usuario con el ID especificado, devuelve null
-        return null;
-      }
+      // if (userMaps.isNotEmpty) {
+      //  // insertUserLocal(user:  User.fromJson(userMaps.first));
+      //   return User.fromJson(userMaps.first);
+      // } else {
+      //   return null;
+      // }
     } catch (e) {
-      // Manejar cualquier error que ocurra durante la consulta
       print(e.toString());
-      return null;
     }
+    User user = User.fromJson(response.first);
+    return user;
   }
 
   @override
@@ -79,13 +84,34 @@ class UserDatasourceImpl implements UserDatasource {
         Response response = await dio.get(endPoint);
         user = User.fromJson(response.data);
         insertUserLocal(user: user);
-        //user = response.data["user"] as String;
-        print('Respuesta del servidor: ${response.data}');
       } catch (error) {
         print('Error al realizar la solicitud: $error');
       }
     } else {
       print('No se encontró ningún token.');
     }
+  }
+
+  @override
+  Future<String?> getUserAuth(
+      {required String endPoint,
+      required String username,
+      required String password}) async {
+    String? token;
+    try {
+      var response = await dio.post(
+        endPoint,
+        data: {"password": password, "email": username},
+      );
+
+      if (response.statusCode == 200) {
+        Map<String, dynamic> responseData = Map.from(response.data);
+        token = responseData['auth_token'];
+      }
+    } catch (error) {
+      // Maneja los errores de autenticación aquí.
+      print('Error al autenticar: $error');
+    }
+    return token;
   }
 }

@@ -7,8 +7,9 @@ import 'package:tg_frontend/screens/travelScreens/listed_travels.dart';
 import 'package:tg_frontend/screens/travelScreens/map_screen.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:dio/dio.dart';
+import 'package:tg_frontend/datasource/local_database_provider.dart';
 import 'package:tg_frontend/services/auth_services.dart';
-import 'package:tg_frontend/datasource/local_database.dart';
+
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -21,62 +22,46 @@ class _HomeState extends State<Home> {
   int _selectedIndex = 0;
 
   DatabaseProvider databaseProvider = DatabaseProvider.db;
-  late UserDatasourceImpl userDatasourceImpl;
+  late UserDatasourceMethods userDatasourceImpl;
   late Database database;
   Dio dio = Dio();
-  late User? user;
 
-  final List<Widget> _pages = [
-    // Home (Index = 0)
-    const MapScreen(),
-
-    // Scheduled Travles (Future)
-    const ListedTravels(
-      pastTravel: false,
-    ),
-    // History Travels (Past)
-    const ListedTravels(
-      pastTravel: true,
-    ),
-    // Notifications
-    const ListedNotifications()
-  ];
-
-  // void fetchData() async {
-  //   String? token = await AuthStorage().getToken();
-
-  //   if (token != null) {
-  //     try {
-  //       Dio dio = Dio();
-  //       dio.options.headers['Authorization'] = 'Token $token';
-  //       Response response = await dio
-  //           .get('https://tg-backend-cojj.onrender.com/auth/users/me/');
-
-  //       User user = User.fromJson(response.data);
-  //       userDatasourceImpl.insertUserLocal(user: user);
-
-  //       print('Respuesta del servidor: ${response.data}');
-  //     } catch (error) {
-  //       print('Error al realizar la solicitud: $error');
-  //     }
-  //   } else {
-  //     print('No se encontró ningún token.');
-  //   }
-  // }
+  late List<Widget> _pages;
 
   @override
   void initState() {
     super.initState();
-    getUser();
+    _initializePages();
   }
 
-  void getUser() async {
-    database = await databaseProvider.database;
+  Future<void> _initializePages() async {
+    User user = await _getUser();
+    setState(() {
+      _pages = [
+        // Home (Index = 0)
+        MapScreen(
+          user: user,
+        ),
 
-    userDatasourceImpl = UserDatasourceImpl(dio, database);
-    print('databaseee--------' + database.isOpen.toString());
-    user = await userDatasourceImpl.getFieldUserLocal();
-    print('userrrrrr  ${user!.firstName}');
+        // Scheduled Travles (Future)
+         ListedTravels(
+          pastTravel: false,  user: user,
+        ),
+        // History Travels (Past)
+         ListedTravels(
+          pastTravel: true,  user: user,
+        ),
+        // Notifications
+        const ListedNotifications()
+      ];
+    });
+  }
+
+  Future<User> _getUser() async {
+    database = await databaseProvider.database;
+    userDatasourceImpl = UserDatasourceMethods(dio, database);
+    User user = await userDatasourceImpl.getUserLocal();
+    return user;
   }
 
   @override

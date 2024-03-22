@@ -1,24 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:tg_frontend/datasource/endPoints/end_point.dart';
 import 'package:tg_frontend/models/travel_model.dart';
 import 'package:tg_frontend/widgets/travel_card.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:tg_frontend/models/user_model.dart';
+import 'package:dio/dio.dart';
+import 'package:tg_frontend/datasource/local_database_provider.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:tg_frontend/datasource/travel_data.dart';
 
 class ListedTravels extends StatefulWidget {
-  const ListedTravels({
-    super.key,
-    required this.pastTravel,
-  });
+  const ListedTravels(
+      {super.key, required this.pastTravel, required this.user});
 
   // final TextEditingController controller;
 
   final bool pastTravel;
+  final User user;
 
   @override
   State<ListedTravels> createState() => _ListedTravelsState();
 }
 
 class _ListedTravelsState extends State<ListedTravels> {
+  DatabaseProvider databaseProvider = DatabaseProvider.db;
+  late TravelDatasourceMethods travelDatasourceImpl;
+  late Database database;
+  Dio dio = Dio();
+  EndPoints endPoints = EndPoints();
   List<Travel> travelsList = [];
   /*
     Travel(
@@ -47,22 +57,31 @@ class _ListedTravelsState extends State<ListedTravels> {
   @override
   void initState() {
     super.initState();
+    _initData();
     _cargarViajes();
   }
 
-  Future<void> _cargarViajes() async {
-    final response = await http
-        .get(Uri.parse('https://tg-backend-cojj.onrender.com/api/Trip/'));
-
-    if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
-      setState(() {
-        travelsList = data.map((json) => Travel.fromJson(json)).toList();
-      });
-    } else {
-      throw Exception('Error al cargar los viajes');
-    }
+  Future<void> _initData() async {
+    database = await databaseProvider.database;
+    travelDatasourceImpl = TravelDatasourceMethods(dio, database, endPoints);
   }
+
+  Future<void> _cargarViajes() async {
+    
+  }
+  // Future<void> _cargarViajes() async {
+  //   final response = await http
+  //       .get(Uri.parse('https://tg-backend-cojj.onrender.com/api/Trip/'));
+
+  //   if (response.statusCode == 200) {
+  //     final List<dynamic> data = json.decode(response.body);
+  //     setState(() {
+  //       travelsList = data.map((json) => Travel.fromJson(json)).toList();
+  //     });
+  //   } else {
+  //     throw Exception('Error al cargar los viajes');
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -75,30 +94,29 @@ class _ListedTravelsState extends State<ListedTravels> {
                 //mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const SizedBox(height: 80),
-                  Row(
-                      children: [
-                        IconButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            icon: const Icon(Icons.arrow_back)),
-                        const SizedBox(width: 10),
-                        widget.pastTravel
-                            ? Text(
-                                "Historial de viajes",
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleLarge!
-                                    .copyWith(fontSize: 26),
-                              )
-                            : Text(
-                                "Tus próximos viajes",
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleLarge!
-                                    .copyWith(fontSize: 26),
-                              ),
-                      ]),
+                  Row(children: [
+                    IconButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        icon: const Icon(Icons.arrow_back)),
+                    const SizedBox(width: 10),
+                    widget.pastTravel
+                        ? Text(
+                            "Historial de viajes",
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleLarge!
+                                .copyWith(fontSize: 26),
+                          )
+                        : Text(
+                            "Tus próximos viajes",
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleLarge!
+                                .copyWith(fontSize: 26),
+                          ),
+                  ]),
 
                   const SizedBox(height: 30),
                   //const TravelCard(),

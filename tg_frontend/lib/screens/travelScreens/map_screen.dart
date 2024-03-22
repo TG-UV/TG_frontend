@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tg_frontend/device/environment.dart';
 import 'package:tg_frontend/screens/travelScreens/available_travels.dart';
 import 'package:tg_frontend/screens/travelScreens/new_travel.dart';
 import 'package:tg_frontend/widgets/large_button.dart';
@@ -7,13 +8,16 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart' as loc;
 import 'package:logger/logger.dart';
+import 'package:tg_frontend/models/user_model.dart';
 
 final logger = Logger();
+
 const mapboxAccessToken =
     'pk.eyJ1Ijoic2FybWFyaWUiLCJhIjoiY2xwYm15eTRrMGZyYjJtcGJ1bnJ0Y3hpciJ9.v5mHXrC66zG4x-dgZDdLSA';
 
 class MapScreen extends StatefulWidget {
-  const MapScreen({super.key});
+  final User user;
+  const MapScreen({super.key, required this.user});
 
   @override
   State<MapScreen> createState() => _MapScreenState();
@@ -25,6 +29,7 @@ class _MapScreenState extends State<MapScreen> {
   @override
   void initState() {
     super.initState();
+
     //getLocation();
   }
 
@@ -84,6 +89,15 @@ class _MapScreenState extends State<MapScreen> {
             ),
           ),
           */
+
+      Positioned(
+          top: 100.0,
+          left: 50,
+          right: 50,
+          child: Text(
+            '¡Hola ${widget.user.firstName}!',
+            style: Theme.of(context).textTheme.titleLarge,
+          )),
       Positioned(
         top: 600.0,
         left: 50,
@@ -91,7 +105,7 @@ class _MapScreenState extends State<MapScreen> {
         child: LargeButton(
           text: 'Voy para la U',
           onPressed: () {
-            Get.to(() => const NewTravel());
+            Get.to(() => NewTravel(user: widget.user));
           },
           large: true,
         ),
