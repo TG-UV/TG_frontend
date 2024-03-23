@@ -21,7 +21,7 @@ class Environment {
   Future<void> startEnvironment() async {
     Database database = await _initDatabase();
     Dio dio = Dio();
-    userDatasourseImpl = UserDatasourceMethods(dio, database);
+    userDatasourseImpl = UserDatasourceMethods();
     //Environment.sl.registerLazySingleton(
   }
 

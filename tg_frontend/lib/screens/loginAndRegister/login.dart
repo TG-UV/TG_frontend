@@ -22,12 +22,17 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final TextEditingController mailLoginController = TextEditingController();
   final TextEditingController passwordLoginController = TextEditingController();
-  Dio dio = Dio();
-  DatabaseProvider databaseProvider = DatabaseProvider.db;
-  late UserDatasourceMethods userDatasourceImpl;
-  late Database database;
+  final UserDatasourceMethods userDatasourceImpl = UserDatasourceMethods();
   EndPoints endPoint = EndPoints();
+
+  
+  
   late Future<String> user;
+
+  @override
+void initState() {
+  super.initState();
+}
 
   Future<void> loginUser(String username, String password) async {
     final token = await userDatasourceImpl.getUserAuth(
@@ -48,6 +53,7 @@ class _LoginState extends State<Login> {
   void showErrorMessage(errorMessage){
     //Mensaje de error
   }
+
 
   @override
   Widget build(BuildContext context) {

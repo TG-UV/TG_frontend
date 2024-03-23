@@ -5,6 +5,9 @@ import 'package:dio/dio.dart';
 import 'package:tg_frontend/services/auth_services.dart';
 import 'package:tg_frontend/datasource/local_database_provider.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:tg_frontend/datasource/local_database_provider.dart';
+import 'package:sqflite/sqflite.dart';
+
 
 abstract class UserDatasource {
   Future<void> insertUserLocal({required User user});
@@ -19,12 +22,21 @@ abstract class UserDatasource {
 }
 
 class UserDatasourceMethods implements UserDatasource {
-  final Dio dio;
-  final Database database;
+  final Dio dio = Dio();
+  DatabaseProvider databaseProvider = DatabaseProvider.db;
+  
+  late Database database;
 
   //final database = await databaseProvider.database;
 
-  UserDatasourceMethods(this.dio, this.database);
+  UserDatasourceMethods() {
+    initDatabase();
+  }
+
+  Future<void> initDatabase() async {
+    database = await databaseProvider.database;
+  }
+
 
   @override
   Future<void> insertUserLocal({required User user}) async {
