@@ -12,10 +12,12 @@ import 'package:tg_frontend/datasource/local_database_provider.dart';
 import 'package:dio/dio.dart';
 import 'package:tg_frontend/datasource/travel_data.dart';
 import 'package:tg_frontend/models/user_model.dart';
+import 'package:tg_frontend/device/environment.dart';
+
 
 class NewTravel extends StatefulWidget {
-  final User user;
-  const NewTravel({super.key, required this.user});
+
+  const NewTravel({super.key});
 
   @override
   State<NewTravel> createState() => _NewTravelState();
@@ -27,6 +29,7 @@ class _NewTravelState extends State<NewTravel> {
   late TravelDatasourceMethods travelDatasourceMethods;
   late Database database;
   EndPoints endPoint = EndPoints();
+    User user = Environment.sl.get<User>();
 
   final _formKey = GlobalKey<FormState>();
 
@@ -44,7 +47,7 @@ class _NewTravelState extends State<NewTravel> {
           id: 101,
           arrivalPoint: arrivalPointController.text,
           startingPoint: startingPointController.text,
-          driver: int.parse(widget.user.idUser),
+          driver: int.parse(user.idUser),
           price: priceController.text,
           seats: int.parse(seatsController.text),
           date: DateFormat('yyyy-MM-dd').parse(dateControlelr.text),

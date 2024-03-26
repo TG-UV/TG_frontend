@@ -26,39 +26,53 @@ class _HomeState extends State<Home> {
   late Database database;
   Dio dio = Dio();
 
-  late List<Widget> _pages;
+   final List<Widget> _pages = [
+    // Home (Index = 0)
+    const MapScreen(),
+
+    // Scheduled Travles (Future)
+    const ListedTravels(
+      pastTravel: false,
+    ),
+    // History Travels (Past)
+    const ListedTravels(
+      pastTravel: true,
+    ),
+    // Notifications
+    const ListedNotifications()
+  ];
 
   @override
   void initState() {
     super.initState();
-    _initializePages();
-    setState(() {
+    // _initializePages();
+    // setState(() {
       
-    });
+    // });
   }
 
-  Future<void> _initializePages() async {
-    User user = await _getUser();
-    setState(() {
-      _pages = [
-        // Home (Index = 0)
-        MapScreen(
-          user: user,
-        ),
+  // Future<void> _initializePages() async {
+  //   User user = await _getUser();
+  //   setState(() {
+  //     _pages = [
+  //       // Home (Index = 0)
+  //       MapScreen(
+  //         user: user,
+  //       ),
 
-        // Scheduled Travles (Future)
-         ListedTravels(
-          pastTravel: false,  user: user,
-        ),
-        // History Travels (Past)
-         ListedTravels(
-          pastTravel: true,  user: user,
-        ),
-        // Notifications
-        const ListedNotifications()
-      ];
-    });
-  }
+  //       // Scheduled Travles (Future)
+  //        ListedTravels(
+  //         pastTravel: false,  user: user,
+  //       ),
+  //       // History Travels (Past)
+  //        ListedTravels(
+  //         pastTravel: true,  user: user,
+  //       ),
+  //       // Notifications
+  //       const ListedNotifications()
+  //     ];
+  //   });
+  // }
 
   Future<User> _getUser() async {
     database = await databaseProvider.database;

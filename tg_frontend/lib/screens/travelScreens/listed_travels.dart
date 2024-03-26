@@ -9,15 +9,17 @@ import 'package:dio/dio.dart';
 import 'package:tg_frontend/datasource/local_database_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:tg_frontend/datasource/travel_data.dart';
+import 'package:tg_frontend/device/environment.dart';
+
 
 class ListedTravels extends StatefulWidget {
   const ListedTravels(
-      {super.key, required this.pastTravel, required this.user});
+      {super.key, required this.pastTravel});
 
   // final TextEditingController controller;
 
   final bool pastTravel;
-  final User user;
+
 
   @override
   State<ListedTravels> createState() => _ListedTravelsState();
@@ -25,7 +27,7 @@ class ListedTravels extends StatefulWidget {
 
 class _ListedTravelsState extends State<ListedTravels> {
   DatabaseProvider databaseProvider = DatabaseProvider.db;
-  late TravelDatasourceMethods travelDatasourceImpl;
+  TravelDatasourceMethods travelDatasourceImpl  = TravelDatasourceMethods();
   late Database database;
   Dio dio = Dio();
   EndPoints endPoints = EndPoints();
@@ -57,16 +59,18 @@ class _ListedTravelsState extends State<ListedTravels> {
   @override
   void initState() {
     super.initState();
-    _initData();
+    //_initData();
     _cargarViajes();
   }
 
-  Future<void> _initData() async {
-    database = await databaseProvider.database;
-    travelDatasourceImpl = TravelDatasourceMethods(dio, database, endPoints);
-  }
+  
 
   Future<void> _cargarViajes() async {
+
+    Travel? response = await travelDatasourceImpl.getTravelLocal(travelId: 1);
+    if (response != null) {
+      travelsList.add(response);
+    }
     
   }
   // Future<void> _cargarViajes() async {
@@ -120,8 +124,11 @@ class _ListedTravelsState extends State<ListedTravels> {
 
                   const SizedBox(height: 30),
                   //const TravelCard(),
-
-                  Expanded(
+                  travelsList.isEmpty ?
+                  const Center(
+                    child: Text('No tiene viajes...'),
+                  )
+                  : Expanded(
                       child: ListView.builder(
                           itemCount: travelsList.length,
                           itemBuilder: (context, index) {

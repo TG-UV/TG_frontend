@@ -6,6 +6,8 @@ import "package:get_it/get_it.dart";
 import 'package:tg_frontend/datasource/user_data.dart';
 import 'package:tg_frontend/screens/loginAndRegister/login.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:tg_frontend/models/user_model.dart';
+
 
 class Environment {
   static GetIt sl = GetIt.instance;
@@ -22,6 +24,7 @@ class Environment {
     Database database = await _initDatabase();
     Dio dio = Dio();
     userDatasourseImpl = UserDatasourceMethods();
+     sl.registerSingleton<UserDatasourceMethods>(userDatasourseImpl);
     //Environment.sl.registerLazySingleton(
   }
 

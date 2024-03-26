@@ -3,6 +3,7 @@ import 'package:tg_frontend/models/travel_model.dart';
 import 'package:dio/dio.dart';
 import 'package:tg_frontend/services/auth_services.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:tg_frontend/datasource/local_database_provider.dart';
 import 'package:tg_frontend/datasource/endPoints/end_point.dart';
 
 abstract class TravelDatasource {
@@ -22,11 +23,19 @@ abstract class TravelDatasource {
 }
 
 class TravelDatasourceMethods implements TravelDatasource {
-  final Dio dio;
-  final Database database;
-  final EndPoints _endPoints;
+  Dio dio = Dio();
+  DatabaseProvider databaseProvider = DatabaseProvider.db;
+  late Database database;
+  final _endPoints = EndPoints();
 
-  TravelDatasourceMethods(this.dio, this.database, this._endPoints);
+  TravelDatasourceMethods(){
+    initDatabase();
+  }
+
+  Future<void> initDatabase() async {
+    database = await databaseProvider.database;
+  }
+
 
   @override
   Future<void> insertTravelsLocal({required List<Travel> travels}) async {

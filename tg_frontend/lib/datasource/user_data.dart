@@ -5,7 +5,6 @@ import 'package:dio/dio.dart';
 import 'package:tg_frontend/services/auth_services.dart';
 import 'package:tg_frontend/datasource/local_database_provider.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:tg_frontend/datasource/local_database_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
 
@@ -22,7 +21,7 @@ abstract class UserDatasource {
 }
 
 class UserDatasourceMethods implements UserDatasource {
-  final Dio dio = Dio();
+  Dio dio = Dio();
   DatabaseProvider databaseProvider = DatabaseProvider.db;
   
   late Database database;

@@ -22,8 +22,11 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final TextEditingController mailLoginController = TextEditingController();
   final TextEditingController passwordLoginController = TextEditingController();
-  final UserDatasourceMethods userDatasourceImpl = UserDatasourceMethods();
+  UserDatasourceMethods userDatasourceImpl  =  Environment.sl.get<UserDatasourceMethods>();
   EndPoints endPoint = EndPoints();
+  // DatabaseProvider databaseProvider = DatabaseProvider.db;
+  // late Database database;
+  // Dio dio = Dio();
 
   
   
@@ -33,6 +36,11 @@ class _LoginState extends State<Login> {
 void initState() {
   super.initState();
 }
+Future<User> _getUser() async {
+    
+    User user = await userDatasourceImpl.getUserLocal();
+    return user;
+  }
 
   Future<void> loginUser(String username, String password) async {
     final token = await userDatasourceImpl.getUserAuth(
@@ -41,19 +49,29 @@ void initState() {
         ? saveAuthInformation(token, username, password)
         : showErrorMessage('El usuario no existe, intente de nuevo');
 
-    Get.to(() => const Home());
   }
 
   void saveAuthInformation(token, username, password) async {
     await AuthStorage().saveToken(token);
     await AuthStorage().saveNickname(username);
     await AuthStorage().savePassword(password);
+    userDatasourceImpl.getUserRemote(endPoint: endPoint.baseUrl+endPoint.getUserLogged);
+    User user = await userDatasourceImpl.getUserLocal();
+    Environment.sl.registerSingleton<User>(user);
+    Get.to(() => const Home());
   }
 
-  void showErrorMessage(errorMessage){
-    //Mensaje de error
+  Widget showErrorMessage(errorMessage){
+     return AlertDialog(
+          title: const Text("Error"),
+          content: Text(errorMessage),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("Cerrar"), )]);
   }
-
 
   @override
   Widget build(BuildContext context) {

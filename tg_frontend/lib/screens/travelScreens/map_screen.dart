@@ -9,6 +9,8 @@ import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart' as loc;
 import 'package:logger/logger.dart';
 import 'package:tg_frontend/models/user_model.dart';
+import "package:get_it/get_it.dart";
+
 
 final logger = Logger();
 
@@ -16,8 +18,8 @@ const mapboxAccessToken =
     'pk.eyJ1Ijoic2FybWFyaWUiLCJhIjoiY2xwYm15eTRrMGZyYjJtcGJ1bnJ0Y3hpciJ9.v5mHXrC66zG4x-dgZDdLSA';
 
 class MapScreen extends StatefulWidget {
-  final User user;
-  const MapScreen({super.key, required this.user});
+  
+  const MapScreen({super.key,});
 
   @override
   State<MapScreen> createState() => _MapScreenState();
@@ -25,10 +27,13 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   late loc.LocationData currentLocation;
+  late User user;
 
   @override
   void initState() {
     super.initState();
+    user = Environment.sl.get<User>();
+    
 
     //getLocation();
   }
@@ -95,7 +100,7 @@ class _MapScreenState extends State<MapScreen> {
           left: 50,
           right: 50,
           child: Text(
-            '¡Hola ${widget.user.firstName}!',
+            '¡Hola ${user.firstName}!',
             style: Theme.of(context).textTheme.titleLarge,
           )),
       Positioned(
@@ -105,7 +110,7 @@ class _MapScreenState extends State<MapScreen> {
         child: LargeButton(
           text: 'Voy para la U',
           onPressed: () {
-            Get.to(() => NewTravel(user: widget.user));
+            Get.to(() => const NewTravel());
           },
           large: true,
         ),
