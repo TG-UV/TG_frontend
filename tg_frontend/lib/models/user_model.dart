@@ -1,3 +1,6 @@
+import 'dart:ffi';
+import 'dart:html';
+
 import 'package:intl/intl.dart';
 
 class User {
@@ -7,9 +10,10 @@ class User {
   final String lastName;
   final DateTime? birthDate;
   final String residenceCity;
-  final String type;
+  //final String type;
   final String idUser;
   final String email;
+  final Bool isActive;
 
   User({
     required this.identityDocument,
@@ -18,9 +22,10 @@ class User {
     required this.lastName,
     required this.birthDate,
     required this.residenceCity,
-    required this.type,
+    //required this.type,
     required this.idUser,
     required this.email,
+    required this.isActive,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -28,14 +33,15 @@ class User {
       idUser: json['id_user']?.toString() ?? '',
       email: json['email']?.toString() ?? '',
       phoneNumber: json['phone_number']?.toString() ?? '',
-      birthDate: json['birth_date'] != null
-          ? DateTime.parse('${json['birth_date']}')
+      birthDate: json['date_of_birth'] != null
+          ? DateTime.parse('${json['date_of_birth']}')
           : null,
       firstName: json['first_name']?.toString() ?? '',
       lastName: json['last_name']?.toString() ?? '',
       identityDocument: json['identity_document']?.toString() ?? '',
       residenceCity: json['residence_city']?.toString() ?? '',
-      type: json['type']?.toString() ?? '',
+      isActive: json['is_active'] ?? true,
+      //type: json['type']?.toString() ?? '',
       // registrationDate: json['registration_date'] != null
       //     ? DateTime.parse('${json['registration_date']}')
       //     : null,
@@ -52,7 +58,8 @@ class User {
       "identity_document": identityDocument,
       "birth_date": (birthDate as DateTime).toIso8601String(),
       "residence_city": residenceCity,
-      "type": type,
+      "is_active": isActive,
+      //"type": type,
     };
   }
 

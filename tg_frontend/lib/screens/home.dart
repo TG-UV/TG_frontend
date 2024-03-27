@@ -25,10 +25,11 @@ class _HomeState extends State<Home> {
   late UserDatasourceMethods userDatasourceImpl;
   late Database database;
   Dio dio = Dio();
+  //User user = Environment.sl.get<User>();
 
    final List<Widget> _pages = [
     // Home (Index = 0)
-    const MapScreen(),
+     MapScreen(),
 
     // Scheduled Travles (Future)
     const ListedTravels(

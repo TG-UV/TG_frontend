@@ -4,6 +4,10 @@ import 'package:get/get.dart';
 import 'package:tg_frontend/screens/loginAndRegister/splash.dart';
 //import 'package:tg_frontend/screens/welcome.dart';
 import 'package:tg_frontend/device/environment.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:tg_frontend/services/auth_services.dart';
+
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,6 +18,7 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   MyApp({super.key});
+  
 
   // This widget is the root of your application.
   @override

@@ -9,10 +9,12 @@ import 'package:sqflite/sqflite.dart';
 import 'package:tg_frontend/models/user_model.dart';
 
 
+
+
 class Environment {
   static GetIt sl = GetIt.instance;
   late UserDatasourceMethods userDatasourseImpl;
-
+  late User user;
   //late var dba = null;
   //final Database db = await Db.openDb();
   // static bool running = false;
@@ -25,6 +27,7 @@ class Environment {
     Dio dio = Dio();
     userDatasourseImpl = UserDatasourceMethods();
      sl.registerSingleton<UserDatasourceMethods>(userDatasourseImpl);
+    //sl.registerFactory<User>(() => User());
     //Environment.sl.registerLazySingleton(
   }
 

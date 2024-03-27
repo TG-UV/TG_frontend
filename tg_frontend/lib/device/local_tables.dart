@@ -6,7 +6,7 @@ class LocalDB {
   static const String lastName = "last_name";
   static const String birthDate = "date_of_birth";
   static const String residenceCity = "residence_city";
-  static const String type = "type";
+  static const String isActive= "is_active";
   static const String idUser = "id_user";
   static const String email = "email";
   //static const String registrationDate = "registro";
@@ -34,7 +34,7 @@ class LocalDB {
           $lastName VARCHAR(200),
           $birthDate VARCHAR(200),
           $residenceCity INTEGER,
-          $type INTEGER,
+          $isActive BOOLEAN,
           $idUser INTEGER,
           $email VARCHAR(200)
           );

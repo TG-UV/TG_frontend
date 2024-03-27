@@ -49,7 +49,7 @@ class UserDatasourceMethods implements UserDatasource {
         LocalDB.birthDate: user.birthDate,
         LocalDB.phoneNumber: user.phoneNumber,
         LocalDB.residenceCity: user.residenceCity,
-        LocalDB.type: user.type,
+        LocalDB.isActive: user.isActive,
         LocalDB.identityDocument: user.identityDocument,
 
         //LocalDB.registrationDate: user.registrationDate,

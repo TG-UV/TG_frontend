@@ -67,6 +67,7 @@ class _LoginState extends State<Splash> {
   }
 
   Future<bool> verifyAuth() async {
+    authStorage.removeValues();
     bool isLoggedIn = false;
     final nickname = await authStorage.getNickName();
     final password = await authStorage.getPassword();
