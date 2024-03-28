@@ -22,55 +22,59 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final TextEditingController mailLoginController = TextEditingController();
   final TextEditingController passwordLoginController = TextEditingController();
-  UserDatasourceMethods userDatasourceImpl  =  Environment.sl.get<UserDatasourceMethods>();
+  UserDatasourceMethods userDatasourceImpl =
+      Environment.sl.get<UserDatasourceMethods>();
   EndPoints endPoint = EndPoints();
   // DatabaseProvider databaseProvider = DatabaseProvider.db;
   // late Database database;
   // Dio dio = Dio();
 
-  
-  
   late Future<String> user;
 
   @override
-void initState() {
-  super.initState();
-}
-Future<User> _getUser() async {
-    
+  void initState() {
+    super.initState();
+  }
+
+  Future<User> _getUser() async {
     User user = await userDatasourceImpl.getUserLocal();
     return user;
   }
 
   Future<void> loginUser(String username, String password) async {
     final token = await userDatasourceImpl.getUserAuth(
-        endPoint: endPoint.baseUrl+endPoint.getUserAuth, username: username, password: password);
+        endPoint: endPoint.baseUrl + endPoint.getUserAuth,
+        username: username,
+        password: password);
     token != null
         ? saveAuthInformation(token, username, password)
         : showErrorMessage('El usuario no existe, intente de nuevo');
-
   }
 
   void saveAuthInformation(token, username, password) async {
     await AuthStorage().saveToken(token);
     await AuthStorage().saveNickname(username);
     await AuthStorage().savePassword(password);
-    userDatasourceImpl.getUserRemote(endPoint: endPoint.baseUrl+endPoint.getUserLogged);
+    userDatasourceImpl.getUserRemote(
+    endPoint: endPoint.baseUrl + endPoint.getUserLogged);
     User user = await userDatasourceImpl.getUserLocal();
+    print('userrr: +$user');
     Environment.sl.registerSingleton<User>(user);
     Get.to(() => const Home());
   }
 
-  Widget showErrorMessage(errorMessage){
-     return AlertDialog(
-          title: const Text("Error"),
-          content: Text(errorMessage),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text("Cerrar"), )]);
+  Widget showErrorMessage(errorMessage) {
+    return AlertDialog(
+        title: const Text("Error"),
+        content: Text(errorMessage),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text("Cerrar"),
+          )
+        ]);
   }
 
   @override

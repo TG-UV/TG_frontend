@@ -12,16 +12,13 @@ import 'package:tg_frontend/models/user_model.dart';
 import "package:get_it/get_it.dart";
 import 'package:tg_frontend/datasource/user_data.dart';
 
-
-
 final logger = Logger();
 
 const mapboxAccessToken =
     'pk.eyJ1Ijoic2FybWFyaWUiLCJhIjoiY2xwYm15eTRrMGZyYjJtcGJ1bnJ0Y3hpciJ9.v5mHXrC66zG4x-dgZDdLSA';
 
 class MapScreen extends StatefulWidget {
-  
-   MapScreen({Key? key}) : super(key: key);
+  MapScreen({Key? key}) : super(key: key);
 
   @override
   State<MapScreen> createState() => _MapScreenState();
@@ -29,13 +26,13 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   late loc.LocationData currentLocation;
-  late User user;
-  UserDatasourceMethods userDatasourceImpl  =  Environment.sl.get<UserDatasourceMethods>();
-
+  User user = Environment.sl.get<User>();
+  UserDatasourceMethods userDatasourceImpl =
+      Environment.sl.get<UserDatasourceMethods>();
 
   @override
   void initState() {
-    _getUser();
+    //_getUser();
     //user = Environment.sl.get<User>();
     super.initState();
 
@@ -43,7 +40,6 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   void _getUser() async {
-    
     User currentUser = await userDatasourceImpl.getUserLocal();
     user = currentUser;
   }

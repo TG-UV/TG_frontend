@@ -7,7 +7,6 @@ import 'package:tg_frontend/datasource/local_database_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite/sqflite.dart';
 
-
 abstract class UserDatasource {
   Future<void> insertUserLocal({required User user});
   Future<void> getUserRemote({required String endPoint});
@@ -23,7 +22,7 @@ abstract class UserDatasource {
 class UserDatasourceMethods implements UserDatasource {
   Dio dio = Dio();
   DatabaseProvider databaseProvider = DatabaseProvider.db;
-  
+
   late Database database;
 
   //final database = await databaseProvider.database;
@@ -35,7 +34,6 @@ class UserDatasourceMethods implements UserDatasource {
   Future<void> initDatabase() async {
     database = await databaseProvider.database;
   }
-
 
   @override
   Future<void> insertUserLocal({required User user}) async {
@@ -55,7 +53,7 @@ class UserDatasourceMethods implements UserDatasource {
         //LocalDB.registrationDate: user.registrationDate,
       }).timeout(const Duration(seconds: 300));
     } catch (e) {
-      print('Error al insertar user locar' + e.toString());
+      print('Error al insertar user locar ' + e.toString());
     }
   }
 
@@ -68,7 +66,7 @@ class UserDatasourceMethods implements UserDatasource {
       response = await database.query(
         LocalDB.tbUser,
         where: '${LocalDB.idUser} = ?',
-        whereArgs: [4],
+        whereArgs: [14],
       ).timeout(const Duration(seconds: 300));
 
       // if (userMaps.isNotEmpty) {
@@ -94,6 +92,7 @@ class UserDatasourceMethods implements UserDatasource {
         dio.options.headers['Authorization'] = 'Token $token';
         Response response = await dio.get(endPoint);
         user = User.fromJson(response.data);
+        print(user);
         insertUserLocal(user: user);
       } catch (error) {
         print('Error al realizar la solicitud: $error');

@@ -6,7 +6,7 @@ class LocalDB {
   static const String lastName = "last_name";
   static const String birthDate = "date_of_birth";
   static const String residenceCity = "residence_city";
-  static const String isActive= "is_active";
+  static const String isActive = "is_active";
   static const String idUser = "id_user";
   static const String email = "email";
   //static const String registrationDate = "registro";
@@ -25,7 +25,6 @@ class LocalDB {
   static const String idPassenger = "id_passenger";
   static const String passengerEmail = "email";
 
-
   static const String tableInsertUser = """
       CREATE TABLE IF NOT EXISTS $tbUser(
           $identityDocument VARCHAR(200),
@@ -34,7 +33,7 @@ class LocalDB {
           $lastName VARCHAR(200),
           $birthDate VARCHAR(200),
           $residenceCity INTEGER,
-          $isActive BOOLEAN,
+          $isActive INTEGER,
           $idUser INTEGER,
           $email VARCHAR(200)
           );
