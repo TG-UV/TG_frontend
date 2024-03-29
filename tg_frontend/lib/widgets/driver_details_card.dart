@@ -113,7 +113,7 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                         style: Theme.of(context).textTheme.titleSmall,
                       ),
                       Text(
-                        'Fecha: ${widget.travel.dateFormatted},  ${widget.travel.hourFormatted}',
+                        'Fecha: ${widget.travel.date},  ${widget.travel.hour}',
                         style: Theme.of(context).textTheme.titleSmall,
                       ),
                       Text(

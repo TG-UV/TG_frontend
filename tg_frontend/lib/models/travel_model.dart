@@ -5,11 +5,11 @@ class Travel {
   final String arrivalPoint;
   final String startingPoint;
   final int driver;
-  final String price;
+  final int price;
   final int seats;
-  final DateTime hour;
-  final DateTime date;
-  final bool currentTrip;
+  final String hour;
+  final String date;
+  final int currentTrip;
 
   Travel(
       {required this.id,
@@ -28,27 +28,31 @@ class Travel {
       arrivalPoint: json['arrival_point']?.toString() ?? '',
       startingPoint: json['starting_point']?.toString() ?? '',
       driver: json['driver'] as int? ?? 0,
-      price: json['fare']?.toString() ?? '',
+      price: json['fare'] as int? ?? 0,
       seats: json['seats'] as int? ?? 0,
-      hour: json['start_time'] != null
-          ? DateTime.parse('${json['start_date']} ${json['start_time']}')
-          : DateTime.now(),
-      date: json['start_date'] != null
-          ? DateTime.parse('${json['start_date']} ${json['start_time']}')
-          : DateTime.now(),
-      currentTrip: json['current_trip'] as bool? ?? false,
+      hour: json['start_time']?.toString() ?? '',
+      date: json['start_date']?.toString() ?? '',
+      // hour: json['start_time'] != null
+      //     ? DateTime.parse('${json['start_date']} ${json['start_time']}')
+      //     : DateTime.now(),
+      // date: json['start_date'] != null
+      //     ? DateTime.parse('${json['start_date']} ${json['start_time']}')
+      //     : DateTime.now(),
+      currentTrip: json['current_trip'] == true ? 1 : 0,
     );
   }
 
-  String get dateFormatted {
-    return DateFormat('EEEE').format(date);
-  }
+  // String get dateFormatted {
+  //   return DateFormat('EEEE').format(date);
+  // }
 
-  String get hourFormatted {
-    return DateFormat('HH:mm').format(hour);
-  }
+  // String get hourFormatted {
+  //   return DateFormat('HH:mm').format(hour);
+  // }
 
   Map<String, dynamic> toJson() {
+    // DateTime dateFormatted = DateTime.parse(date);
+    // DateTime hourFormatted = DateTime.parse(hour);
     return {
       'id_trip': id,
       'arrival_point': arrivalPoint,
@@ -56,9 +60,11 @@ class Travel {
       'driver': driver,
       'fare': price,
       'seats': seats,
-      'start_time': DateFormat("yyyy-MM-ddTHH:mm "),
-      'start_date': DateFormat("yyyy-MM-dd").format(date).toString(),
-      'current_trip': currentTrip,
+      'start_time': hour,
+      'start_date': date,
+      // 'start_time': DateFormat("yyyy-MM-ddTHH:mm "),
+      // 'start_date': DateFormat("yyyy-MM-dd").format(date).toString(),
+      'current_trip': currentTrip == 1 ? true : false,
     };
   }
 }

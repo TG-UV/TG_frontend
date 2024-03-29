@@ -14,9 +14,7 @@ import 'package:tg_frontend/datasource/travel_data.dart';
 import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/device/environment.dart';
 
-
 class NewTravel extends StatefulWidget {
-
   const NewTravel({super.key});
 
   @override
@@ -24,12 +22,10 @@ class NewTravel extends StatefulWidget {
 }
 
 class _NewTravelState extends State<NewTravel> {
-  Dio dio = Dio();
-  DatabaseProvider databaseProvider = DatabaseProvider.db;
-  late TravelDatasourceMethods travelDatasourceMethods;
-  late Database database;
+  User user = Environment.sl.get<User>();
+  TravelDatasourceMethods travelDatasourceMethods =
+      Environment.sl.get<TravelDatasourceMethods>();
   EndPoints endPoint = EndPoints();
-    User user = Environment.sl.get<User>();
 
   final _formKey = GlobalKey<FormState>();
 
@@ -41,21 +37,27 @@ class _NewTravelState extends State<NewTravel> {
   final TextEditingController seatsController = TextEditingController();
 
   void submitForm(BuildContext context) async {
+    DateTime now = DateTime.now();
+
+    String formattedTime = DateFormat('yyyy-MM-dd').format(now);
+    dateControlelr.text = formattedTime;
     if (_formKey.currentState!.validate()) {
-      List<Travel> travelList = [];
+      //List<Travel> travelList = [];
       Travel travel = Travel(
-          id: 101,
+          id: 100,
           arrivalPoint: arrivalPointController.text,
           startingPoint: startingPointController.text,
           driver: int.parse(user.idUser),
-          price: priceController.text,
+          price: int.parse(priceController.text),
           seats: int.parse(seatsController.text),
-          date: DateFormat('yyyy-MM-dd').parse(dateControlelr.text),
-          hour: DateFormat('HH:mm').parse(dateControlelr.text),
-          currentTrip: false);
-      travelList.add(travel);
+          date: dateControlelr.text,
+          hour: timeController.text,
+          // date: DateFormat('yyyy-MM-dd').parse(dateControlelr.text),
+          // hour: DateFormat('HH:mm').parse(dateControlelr.text),
+          currentTrip: 0);
+      //travelList.add(travel);
 
-      travelDatasourceMethods.insertTravelsLocal(travels: travelList);
+      travelDatasourceMethods.insertTravelRemote(travel: travel);
       Get.to(() => const Home());
     } else {
       AlertDialog(
@@ -79,7 +81,7 @@ class _NewTravelState extends State<NewTravel> {
     return Scaffold(
         resizeToAvoidBottomInset: false,
         body: Form(
-            key: _formKey, 
+            key: _formKey,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               alignment: Alignment.center,
@@ -149,7 +151,7 @@ class _NewTravelState extends State<NewTravel> {
                             DateTime newTime =
                                 now.add(const Duration(minutes: 10));
                             String formattedTime =
-                                "${newTime.hour}:${newTime.minute}";
+                                DateFormat('HH:mm:ss').format(newTime);
                             timeController.text = formattedTime;
                           }),
                       SquareButton(
@@ -159,9 +161,9 @@ class _NewTravelState extends State<NewTravel> {
                             DateTime newTime =
                                 now.add(const Duration(minutes: 30));
                             String formattedTime =
-                                "${newTime.hour}:${newTime.minute}";
+                                DateFormat('HH:mm:ss').format(newTime);
                             timeController.text = formattedTime;
-                            timeController.text = "$newTime";
+                            //dateControlelr.text = "$newTime";
                           }),
                       SquareButton(
                           text: '1 hora',
@@ -170,7 +172,7 @@ class _NewTravelState extends State<NewTravel> {
                             DateTime newTime =
                                 now.add(const Duration(minutes: 60));
                             String formattedTime =
-                                "${newTime.hour}:${newTime.minute}";
+                                DateFormat('HH:mm:ss').format(newTime);
                             timeController.text = formattedTime;
                           }),
                       SquareButton(
@@ -194,17 +196,17 @@ class _NewTravelState extends State<NewTravel> {
                       SquareButton(
                           text: '1',
                           onPressed: () {
-                            timeController.text = '1';
+                            seatsController.text = '1';
                           }),
                       SquareButton(
                           text: '2',
                           onPressed: () {
-                            timeController.text = '2';
+                            seatsController.text = '2';
                           }),
                       SquareButton(
                           text: '3',
                           onPressed: () {
-                            timeController.text = '3';
+                            seatsController.text = '3';
                           }),
                       SquareButton(
                           text: '', onPressed: () {}, myIcon: Icons.edit),

@@ -48,7 +48,7 @@ class LocalDB {
         $date DATE,
         $driver INTEGER,
         $seats INTEGER,
-        $price VARCHAR(200),
+        $price INTEGER,
         $currentTrip VARCHAR(200)
         );
       """;

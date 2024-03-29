@@ -8,7 +8,6 @@ import 'package:tg_frontend/screens/travelScreens/map_screen.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:dio/dio.dart';
 import 'package:tg_frontend/datasource/local_database_provider.dart';
-import 'package:tg_frontend/services/auth_services.dart';
 
 
 class Home extends StatefulWidget {

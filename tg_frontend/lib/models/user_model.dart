@@ -1,7 +1,3 @@
-import 'dart:ffi';
-
-import 'package:intl/intl.dart';
-
 class User {
   final String identityDocument;
   final String phoneNumber;
@@ -37,7 +33,7 @@ class User {
       lastName: json['last_name']?.toString() ?? '',
       identityDocument: json['identity_document']?.toString() ?? '',
       residenceCity: json['residence_city']?.toString() ?? '',
-      isActive: json['is_active'] == 1 ? 1 : 0,
+      isActive: json['is_active'] == true ? 1 : 0,
       //type: json['type']?.toString() ?? '',
       // registrationDate: json['registration_date'] != null
       //     ? DateTime.parse('${json['registration_date']}')

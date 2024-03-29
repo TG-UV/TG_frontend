@@ -8,10 +8,9 @@ import 'package:tg_frontend/datasource/endPoints/end_point.dart';
 
 abstract class TravelDatasource {
   Future<void> insertTravelsLocal({required List<Travel> travels});
-  Future<void> insertTravelsRemote(
-      {required List<Travel> travels, required String endPoint});
+  Future<void> insertTravelRemote({required Travel travel});
   Future<void> getTravelLocal({required int travelId, String filter});
-  Future<void> getTravelsRemote({required String endPoint});
+  Future<void> getTravelsRemote({required int travelId});
   Future<int?> updateTravelLocal(
       {required int travelId,
       required List<String> fields,
@@ -28,14 +27,13 @@ class TravelDatasourceMethods implements TravelDatasource {
   late Database database;
   final _endPoints = EndPoints();
 
-  TravelDatasourceMethods(){
+  TravelDatasourceMethods() {
     initDatabase();
   }
 
   Future<void> initDatabase() async {
     database = await databaseProvider.database;
   }
-
 
   @override
   Future<void> insertTravelsLocal({required List<Travel> travels}) async {
@@ -63,17 +61,17 @@ class TravelDatasourceMethods implements TravelDatasource {
   }
 
   @override
-  Future<int> insertTravelsRemote(
-      {required List<Travel> travels, required String endPoint}) async {
+  Future<int> insertTravelRemote({required Travel travel}) async {
     Response? response;
     int send = 0;
     try {
       String? token = await AuthStorage().getToken();
-      while (send < travels.length) {
-        dio.options.headers['Authorization'] = 'Token $token';
-        response = await dio.post(_endPoints.baseUrl+endPoint, data: travels[send]);
-        // String data = Travel.toJson(travels[send] as Travel);
-      }
+      Map<String, dynamic> jsonTravel = travel.toJson();
+      dio.options.headers['Authorization'] = 'Token $token';
+      response = await dio.post(_endPoints.baseUrl + _endPoints.getTravel,
+          data: jsonTravel);
+      // String data = Travel.toJson(travels[send] as Travel);
+
       //  print(response.data);
 
       // await updateTravelLocal(
@@ -109,24 +107,35 @@ class TravelDatasourceMethods implements TravelDatasource {
   }
 
   @override
-  Future<void> getTravelsRemote({required String endPoint}) async {
+  Future<List<Travel>> getTravelsRemote({required int travelId}) async {
     String? token = await AuthStorage().getToken();
     Travel travel;
     List<Travel> travelList = [];
+    Response<dynamic> response;
 
     if (token != null) {
       try {
+        Map<String, dynamic> parameters = {"id_trip": travelId};
         dio.options.headers['Authorization'] = 'Token $token';
-        Response response = await dio.get(_endPoints.baseUrl+endPoint);
-        travel = Travel.fromJson(response.data);
-        travelList.add(travel);
-        insertTravelsLocal(travels: travelList);
+        response = await dio.get(
+          _endPoints.baseUrl + _endPoints.getTravel,
+          queryParameters: parameters,
+        );
+        for (var data in response.data) {
+          Travel travel = Travel.fromJson(data);
+          travelList.add(travel);
+        }
+        // travel = Travel.fromJson(response.data);
+        // travelList.add(travel);
+        //insertTravelsLocal(travels: travelList);
       } catch (error) {
         print('Error al realizar la solicitud viaje remoto: $error');
       }
     } else {
       print('No se encontró ningún token.');
     }
+
+    return travelList;
   }
 
   @override

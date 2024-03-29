@@ -26,7 +26,7 @@ class TravelCard extends StatelessWidget {
               children: <Widget>[
                 TextButton(
                   child: Text(
-                    travel.dateFormatted,
+                    travel.date,
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   onPressed: () {
@@ -36,7 +36,7 @@ class TravelCard extends StatelessWidget {
                 const SizedBox(width: 10),
                 TextButton(
                   child: Text(
-                    travel.hourFormatted,
+                    travel.hour,
                     style: Theme.of(context)
                         .textTheme
                         .titleLarge!

@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:tg_frontend/datasource/endPoints/end_point.dart';
-import 'package:tg_frontend/datasource/local_database_provider.dart';
 import 'package:tg_frontend/device/environment.dart';
 import 'package:tg_frontend/screens/home.dart';
 import 'package:tg_frontend/widgets/input_field.dart';
 import 'package:tg_frontend/widgets/large_button.dart';
-import 'package:dio/dio.dart';
 import 'package:tg_frontend/services/auth_services.dart';
 import 'package:tg_frontend/datasource/user_data.dart';
 import 'package:tg_frontend/models/user_model.dart';
@@ -25,9 +22,6 @@ class _LoginState extends State<Login> {
   UserDatasourceMethods userDatasourceImpl =
       Environment.sl.get<UserDatasourceMethods>();
   EndPoints endPoint = EndPoints();
-  // DatabaseProvider databaseProvider = DatabaseProvider.db;
-  // late Database database;
-  // Dio dio = Dio();
 
   late Future<String> user;
 
@@ -36,10 +30,6 @@ class _LoginState extends State<Login> {
     super.initState();
   }
 
-  Future<User> _getUser() async {
-    User user = await userDatasourceImpl.getUserLocal();
-    return user;
-  }
 
   Future<void> loginUser(String username, String password) async {
     final token = await userDatasourceImpl.getUserAuth(
@@ -58,7 +48,6 @@ class _LoginState extends State<Login> {
     userDatasourceImpl.getUserRemote(
     endPoint: endPoint.baseUrl + endPoint.getUserLogged);
     User user = await userDatasourceImpl.getUserLocal();
-    print('userrr: +$user');
     Environment.sl.registerSingleton<User>(user);
     Get.to(() => const Home());
   }
@@ -115,8 +104,6 @@ class _LoginState extends State<Login> {
                     onPressed: () {
                       loginUser(mailLoginController.text,
                           passwordLoginController.text);
-                      print(mailLoginController.text.toString());
-                      //Get.to(() =>  Home());
                     }),
               ]),
               Positioned(

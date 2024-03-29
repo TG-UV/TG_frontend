@@ -15,29 +15,6 @@ class ListedNotifications extends StatefulWidget {
 
 class _ListedNotificationsState extends State<ListedNotifications> {
   List<Travel> travelsList = [];
-  /*
-    Travel(
-        id: '1',
-        arrivalPoint: 'Carrera 59 #11-94',
-        startingPoint: 'Univalle',
-        driver: 'Javier Perez',
-        passengers: ['Sara Eraso, Andrea Perez'],
-        price: '3000',
-        seats: 3,
-        hour: '11:00 am',
-        date: '1-Dic-2023'),
-    Travel(
-        id: '2',
-        arrivalPoint: 'Univalle',
-        startingPoint: 'Conjunto Cantabria ',
-        driver: 'Carlos Perez',
-        passengers: ['Sara Eraso'],
-        price: '4000',
-        seats: 1,
-        hour: '3:00 pm',
-        date: '3-Dic-2023')
-  ];
-  */
 
   @override
   Widget build(BuildContext context) {

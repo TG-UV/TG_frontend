@@ -9,7 +9,6 @@ import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart' as loc;
 import 'package:logger/logger.dart';
 import 'package:tg_frontend/models/user_model.dart';
-import "package:get_it/get_it.dart";
 import 'package:tg_frontend/datasource/user_data.dart';
 
 final logger = Logger();
@@ -32,16 +31,9 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   void initState() {
-    //_getUser();
-    //user = Environment.sl.get<User>();
+
     super.initState();
 
-    //getLocation();
-  }
-
-  void _getUser() async {
-    User currentUser = await userDatasourceImpl.getUserLocal();
-    user = currentUser;
   }
 
   Future<void> getLocation() async {

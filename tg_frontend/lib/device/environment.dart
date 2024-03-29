@@ -3,32 +3,24 @@
 import 'package:dio/dio.dart';
 import 'package:tg_frontend/datasource/local_database_provider.dart';
 import "package:get_it/get_it.dart";
+import 'package:tg_frontend/datasource/travel_data.dart';
 import 'package:tg_frontend/datasource/user_data.dart';
-import 'package:tg_frontend/screens/loginAndRegister/login.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:tg_frontend/models/user_model.dart';
-
-
-
 
 class Environment {
   static GetIt sl = GetIt.instance;
   late UserDatasourceMethods userDatasourseImpl;
+  late TravelDatasourceMethods travelDatasourceImpl;
   late User user;
-  //late var dba = null;
-  //final Database db = await Db.openDb();
-  // static bool running = false;
-  // static late var sendPort;
-  // static late var response_port;
-  // RootIsolateToken rootIsolateToken = RootIsolateToken.instance!;
 
   Future<void> startEnvironment() async {
     Database database = await _initDatabase();
     Dio dio = Dio();
     userDatasourseImpl = UserDatasourceMethods();
-     sl.registerSingleton<UserDatasourceMethods>(userDatasourseImpl);
-    //sl.registerFactory<User>(() => User());
-    //Environment.sl.registerLazySingleton(
+    travelDatasourceImpl = TravelDatasourceMethods();
+    sl.registerSingleton<UserDatasourceMethods>(userDatasourseImpl);
+    sl.registerSingleton<TravelDatasourceMethods>(travelDatasourceImpl);
   }
 
   Future<Database> _initDatabase() async {
@@ -37,17 +29,4 @@ class Environment {
     Database db = await databaseProvider.database;
     return db;
   }
-
-  // sl.registerLazySingleton<DatabaseProvider>(() => DatabaseProvider.db);
-  // final databaseProvider = sl<DatabaseProvider>();
-  // await databaseProvider.initDB();
 }
-  //  void startEnvironment() async {
-  //    final Database db = await Db.openDb();
-  //  }
-
-  // openDb() async {
-  //   //dba ??= dba = await Db.openDb  ();
-  //   sl.registerLazySingleton<DatabaseProvider>(() => dba);
-  // }
-
