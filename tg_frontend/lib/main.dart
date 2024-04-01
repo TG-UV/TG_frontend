@@ -7,8 +7,6 @@ import 'package:tg_frontend/device/environment.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:tg_frontend/services/auth_services.dart';
 
-
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final environment = Environment();
@@ -18,7 +16,6 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   MyApp({super.key});
-  
 
   // This widget is the root of your application.
   @override
@@ -33,9 +30,9 @@ class MyApp extends StatelessWidget {
   }
 
   final ThemeData myTheme = ThemeData.light().copyWith(
-    primaryColor: Colors.grey.shade200, // Color primario
+    primaryColor: Color.fromARGB(255, 238, 238, 238), // Color primario
     colorScheme: const ColorScheme.light().copyWith(
-      primary: Colors.grey.shade200, // Color primario
+      primary: Color.fromARGB(255, 238, 238, 238), // Color primario
       secondary: const Color(0x4E504333), // Color secundario
       error: const Color(0xFFDD3D32), // Color terciario (error)
     ),

@@ -5,7 +5,9 @@ import 'package:tg_frontend/widgets/large_button.dart';
 import 'package:tg_frontend/widgets/travel_card.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:tg_frontend/datasource/travel_data.dart';
+import 'package:tg_frontend/models/user_model.dart';
+import 'package:tg_frontend/device/environment.dart';
 
 class AvailableTravels extends StatefulWidget {
   const AvailableTravels({
@@ -17,42 +19,10 @@ class AvailableTravels extends StatefulWidget {
 }
 
 class _ListedTravelsState extends State<AvailableTravels> {
+  TravelDatasourceMethods travelDatasourceMethods =
+      Environment.sl.get<TravelDatasourceMethods>();
+  User user = Environment.sl.get<User>();
   List<Travel> travelsList = [];
-
-  /*
-    Travel(
-        id: '1',
-        arrivalPoint: 'Carrera 59 #11-94',
-        startingPoint: 'Univalle',
-        driver: 'Javier Perez',
-        passengers: ['Sara Eraso, Andrea Perez'],
-        price: '3000',
-        seats: 3,
-        hour: '11:00 am',
-        date: '1-Dic-2023'),
-    Travel(
-        id: '2',
-        arrivalPoint: 'Univalle',
-        startingPoint: 'Conjunto Cantabria ',
-        driver: 'Carlos Perez',
-        passengers: ['Sara Eraso'],
-        price: '4000',
-        seats: 1,
-        hour: '3:00 pm',
-        date: '3-Dic-2023')
-  ];
-
-  Travel perfectTravel = Travel(
-      id: '3',
-      arrivalPoint: 'Univalle',
-      startingPoint: 'Comfandi guadalupe ',
-      driver: 'Carlos Perez',
-      passengers: ['Sara Eraso'],
-      price: '4000',
-      seats: 1,
-      hour: '1:00 pm',
-      date: '3-Dic-2023');
-      */
 
   @override
   void initState() {
@@ -61,17 +31,8 @@ class _ListedTravelsState extends State<AvailableTravels> {
   }
 
   Future<void> _cargarViajes() async {
-    final response = await http
-        .get(Uri.parse('https://tg-backend-cojj.onrender.com/api/Trip/'));
-
-    if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
-      setState(() {
-        travelsList = data.map((json) => Travel.fromJson(json)).toList();
-      });
-    } else {
-      throw Exception('Error al cargar los viajes');
-    }
+    travelsList = await travelDatasourceMethods.getTravelsRemote(travelId: 2);
+    setState(() {});
   }
 
   @override

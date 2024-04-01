@@ -1,4 +1,5 @@
 import 'package:tg_frontend/device/local_tables.dart';
+import 'package:tg_frontend/models/passenger_model.dart';
 import 'package:tg_frontend/models/travel_model.dart';
 import 'package:dio/dio.dart';
 import 'package:tg_frontend/services/auth_services.dart';
@@ -19,6 +20,9 @@ abstract class TravelDatasource {
       {required int travelId,
       required List<String> fields,
       required List<String> values});
+  Future<List<Passenger>> getPassangersRemote({required int travelId});
+  Future<void> insertPassengerRemote({required Passenger passenger});
+  Future<void> updatePassengerRemote({required int passengerTripId, required bool valueConfirmed});
 }
 
 class TravelDatasourceMethods implements TravelDatasource {
@@ -26,6 +30,7 @@ class TravelDatasourceMethods implements TravelDatasource {
   DatabaseProvider databaseProvider = DatabaseProvider.db;
   late Database database;
   final _endPoints = EndPoints();
+  String? token;
 
   TravelDatasourceMethods() {
     initDatabase();
@@ -33,6 +38,7 @@ class TravelDatasourceMethods implements TravelDatasource {
 
   Future<void> initDatabase() async {
     database = await databaseProvider.database;
+    token = await AuthStorage().getToken();
   }
 
   @override
@@ -167,4 +173,71 @@ class TravelDatasourceMethods implements TravelDatasource {
 
     return request;
   }
+
+   @override
+  Future<List<Passenger>> getPassangersRemote({required int travelId}) async {
+    Passenger passenger;
+    List<Passenger> passengersList = [];
+    Response<dynamic> response;
+
+      try {
+        //Map<String, dynamic> parameters = {"id_trip": travelId};
+        dio.options.headers['Authorization'] = 'Token $token';
+        response = await dio.get(
+          _endPoints.baseUrl + _endPoints.getTravel,
+          //queryParameters: parameters,
+        );
+        for (var data in response.data) {
+          passenger = Passenger.fromJson(data);
+          passengersList.add(passenger);
+        }
+        // travel = Travel.fromJson(response.data);
+        // travelList.add(travel);
+        //insertTravelsLocal(travels: travelList);
+      } catch (error) {
+        print('Error al realizar la solicitud viaje remoto: $error');
+      }
+   
+    return passengersList;
+  }
+
+  @override
+Future<void> updatePassengerRemote({required int passengerTripId, required bool valueConfirmed}) async {
+  try {
+      Response response = await dio.patch(
+        _endPoints.baseUrl + _endPoints.patchPassengerTrip,
+        queryParameters: {"id_passenger_trip": passengerTripId},
+        data: {"is_confirmed": valueConfirmed},
+      );
+      
+    } catch (error) {
+      print('Error al actualizar un pasajero : $error');
+    }
+}
+
+@override
+  Future<int> insertPassengerRemote({required Passenger passenger}) async {
+    Response? response;
+    int send = 0;
+    try {
+      Map<String, dynamic> jsonPassengerTrip = passenger.toJson();
+      dio.options.headers['Authorization'] = 'Token $token';
+      response = await dio.post(_endPoints.baseUrl + _endPoints.postPassengerTrip,
+          data: jsonPassengerTrip);
+      // String data = Travel.toJson(travels[send] as Travel);
+
+      //  print(response.data);
+
+      // await updateTravelLocal(
+      //     travelId: int.parse(travels[send].id),
+      //     fields: [Local.FIELD_SINCRONIZADO_ORDEN],
+      //     values: [SINCRONIZADO.toString()]);
+      send++;
+    } catch (e) {
+      rethrow;
+    }
+    return send;
+  }
+
+
 }

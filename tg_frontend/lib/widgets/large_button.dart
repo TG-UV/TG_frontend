@@ -44,7 +44,7 @@ class LargeButton extends StatelessWidget {
           text,
           style: const TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: 17,
+              fontSize: 18,
               color: Colors.white,
               fontFamily: 'Jost,'),
         )

@@ -4,6 +4,9 @@ import 'package:tg_frontend/models/travel_model.dart';
 import 'package:tg_frontend/widgets/large_button.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:tg_frontend/models/user_model.dart';
+import 'package:tg_frontend/datasource/travel_data.dart';
+import 'package:tg_frontend/device/environment.dart';
 
 class DriverDetailsCard extends StatefulWidget {
   const DriverDetailsCard({
@@ -18,7 +21,11 @@ class DriverDetailsCard extends StatefulWidget {
 }
 
 class _DriverDetailsCardState extends State<DriverDetailsCard> {
-  List<Passenger> passengersList = [];
+  TravelDatasourceMethods travelDatasourceImpl =
+      Environment.sl.get<TravelDatasourceMethods>();
+  User user = Environment.sl.get<User>();
+  List<Passenger> confirmedPassengersList = [];
+  List<Passenger> pendingPassengersList = [];
 
   @override
   void initState() {
@@ -27,17 +34,20 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
   }
 
   Future<void> _loadPassengers() async {
-    final response = await http
-        .get(Uri.parse('https://tg-backend-cojj.onrender.com/api/Passenger/'));
+    List<Passenger> passengersList =
+        await travelDatasourceImpl.getPassangersRemote(travelId: 2);
+    confirmedPassengersList =
+        passengersList.where((element) => element.isConfirmed == 1).toList();
+    pendingPassengersList =
+        passengersList.where((element) => element.isConfirmed == 0).toList();
+    setState(() {});
+  }
 
-    if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
-      setState(() {
-        passengersList = data.map((json) => Passenger.fromJson(json)).toList();
-      });
-    } else {
-      throw Exception('Error al cargar los pasajeros de un viaje creado');
-    }
+  Future<void> _updatePassengers(
+      int passengerTripId, bool valueConfirmed) async {
+    void updatePassengers = await travelDatasourceImpl.updatePassengerRemote(
+        passengerTripId: passengerTripId, valueConfirmed: valueConfirmed);
+    _loadPassengers();
   }
 
   Card buildPassengerInfo(Passenger myPassenger) {
@@ -78,16 +88,23 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                   Icons.close,
                   color: Colors.red,
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  _updatePassengers(myPassenger.idPassenger, false);
+                },
               ),
               const SizedBox(width: 8),
             ],
           ),
           Text(
-            'Recoger en:  Calle 13 # 45-32',
+            'recoger en: ${myPassenger.pickupPoint}',
             style: Theme.of(context).textTheme.titleSmall,
           ),
-          LargeButton(text: 'aceptar', large: false, onPressed: () {})
+          LargeButton(
+              text: 'aceptar',
+              large: false,
+              onPressed: () {
+                _updatePassengers(myPassenger.idPassenger, true);
+              })
         ],
       ),
     );
@@ -147,9 +164,10 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                       ListView.builder(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
-                          itemCount: passengersList.length,
+                          itemCount: confirmedPassengersList.length,
                           itemBuilder: (context, index) {
-                            return buildPassengerInfo(passengersList[index]);
+                            return buildPassengerInfo(
+                                confirmedPassengersList[index]);
                           }),
                       const SizedBox(
                         height: 40,
@@ -166,9 +184,10 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                         alignment: Alignment.topLeft,
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
-                          itemCount: passengersList.length,
+                          itemCount: pendingPassengersList.length,
                           itemBuilder: (context, index) {
-                            return buildPassengerCard(passengersList[index]);
+                            return buildPassengerCard(
+                                pendingPassengersList[index]);
                           },
                         ),
                       ),

@@ -4,7 +4,10 @@ import 'package:tg_frontend/widgets/input_field.dart';
 import 'package:tg_frontend/models/travel_model.dart';
 import 'package:tg_frontend/widgets/travel_card.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:tg_frontend/datasource/endPoints/end_point.dart';
+import 'package:tg_frontend/datasource/travel_data.dart';
+import 'package:tg_frontend/models/user_model.dart';
+import 'package:tg_frontend/device/environment.dart';
 
 class SearchTravels extends StatefulWidget {
   const SearchTravels({super.key});
@@ -14,6 +17,11 @@ class SearchTravels extends StatefulWidget {
 }
 
 class _SearchTravelsState extends State<SearchTravels> {
+  User user = Environment.sl.get<User>();
+  TravelDatasourceMethods travelDatasourceMethods =
+      Environment.sl.get<TravelDatasourceMethods>();
+  EndPoints endPoint = EndPoints();
+
   final TextEditingController startingPointController = TextEditingController();
   final TextEditingController arrivalPointController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
@@ -27,17 +35,8 @@ class _SearchTravelsState extends State<SearchTravels> {
   }
 
   Future<void> _cargarViajes() async {
-    final response = await http
-        .get(Uri.parse('https://tg-backend-cojj.onrender.com/api/Trip/'));
-
-    if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
-      setState(() {
-        travelsList = data.map((json) => Travel.fromJson(json)).toList();
-      });
-    } else {
-      throw Exception('Error al cargar los viajes');
-    }
+    travelsList = await travelDatasourceMethods.getTravelsRemote(travelId: 2);
+    setState(() {});
   }
 
   @override
@@ -104,17 +103,17 @@ class _SearchTravelsState extends State<SearchTravels> {
                   style: Theme.of(context).textTheme.titleSmall,
                   textAlign: TextAlign.left,
                 )),
-            Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-              //BotonPersonalizado('Botón 1'),
-              SquareButton(text: '10 min', onPressed: () {}),
-              SquareButton(text: '30 min', onPressed: () {}),
-              SquareButton(text: '1 hora', onPressed: () {}),
-              SquareButton(
-                myIcon: Icons.edit,
-                text: '',
-                onPressed: () {},
-              ),
-            ]),
+            // Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+            //   //BotonPersonalizado('Botón 1'),
+            //   SquareButton(text: '10 min', onPressed: () {}),
+            //   SquareButton(text: '30 min', onPressed: () {}),
+            //   SquareButton(text: '1 hora', onPressed: () {}),
+            //   SquareButton(
+            //     myIcon: Icons.edit,
+            //     text: '',
+            //     onPressed: () {},
+            //   ),
+            // ]),
             const SizedBox(height: 20),
             Align(
                 alignment: Alignment.topLeft,

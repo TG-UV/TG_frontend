@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 
 class SquareButton extends StatelessWidget {
-  const SquareButton(
-      {super.key, required this.text, required this.onPressed, this.myIcon});
+  const SquareButton({
+    super.key,
+    required this.text,
+    required this.onPressed,
+    this.myIcon,
+    required this.isSelected,
+  });
 
   final VoidCallback? onPressed;
   final String text;
   final IconData? myIcon;
+  final bool isSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -16,8 +22,10 @@ class SquareButton extends StatelessWidget {
         minimumSize: MaterialStateProperty.all(const Size(50, 50)),
         backgroundColor: MaterialStateProperty.all<Color>(
             Theme.of(context).colorScheme.primary),
-        side: MaterialStateProperty.all<BorderSide>(const BorderSide(
-          color: Colors.black, // Color del borde
+        side: MaterialStateProperty.all<BorderSide>(BorderSide(
+          color: isSelected
+              ? Colors.black
+              : const Color.fromARGB(255, 225, 225, 225), // Color del borde
           width: 2.0, // Ancho del borde
         )),
         shape: MaterialStateProperty.all<RoundedRectangleBorder>(

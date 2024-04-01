@@ -30,7 +30,6 @@ class _LoginState extends State<Login> {
     super.initState();
   }
 
-
   Future<void> loginUser(String username, String password) async {
     final token = await userDatasourceImpl.getUserAuth(
         endPoint: endPoint.baseUrl + endPoint.getUserAuth,
@@ -46,7 +45,7 @@ class _LoginState extends State<Login> {
     await AuthStorage().saveNickname(username);
     await AuthStorage().savePassword(password);
     userDatasourceImpl.getUserRemote(
-    endPoint: endPoint.baseUrl + endPoint.getUserLogged);
+        endPoint: endPoint.baseUrl + endPoint.getUserLogged);
     User user = await userDatasourceImpl.getUserLocal();
     Environment.sl.registerSingleton<User>(user);
     Get.to(() => const Home());
@@ -70,50 +69,62 @@ class _LoginState extends State<Login> {
   Widget build(BuildContext context) {
     return Scaffold(
         resizeToAvoidBottomInset: false,
-        body: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            alignment: Alignment.center,
-            child: Stack(children: [
-              Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                const SizedBox(height: 150),
-                Text(
-                  "Inicia sesión",
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                const SizedBox(height: 35),
-                InputField(
-                  controller: mailLoginController,
-                  textInput: 'Correo electrónico',
-                  textInputType: TextInputType.text,
-                  obscure: false,
-                  icon: const Icon(Icons.key),
-                ),
-                const SizedBox(height: 15),
-                InputField(
-                  controller: passwordLoginController,
-                  textInput: 'Contraseña',
-                  textInputType: TextInputType.text,
-                  obscure: false,
-                  icon: const Icon(null),
-                ),
-                const SizedBox(height: 200),
-                LargeButton(
-                    text: 'Iniciar sesion',
-                    large: true,
-                    onPressed: () {
-                      loginUser(mailLoginController.text,
-                          passwordLoginController.text);
-                    }),
-              ]),
-              Positioned(
-                  top: 30.0,
-                  left: 5.0,
-                  child: IconButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      icon: const Icon(Icons.arrow_back)))
-            ])));
+        body: SingleChildScrollView(
+            child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                alignment: Alignment.center,
+                child: Stack(children: [
+                  Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SizedBox(height: 130),
+                        Center(
+                            child: Image.asset(
+                          'assets/1200px-U+2301.svg.png',
+                          width: 100, // ajusta el ancho según tus necesidades
+                          height: 100, // ajusta la altura según tus necesidades
+                          fit: BoxFit
+                              .cover, // ajusta el modo de ajuste de la imagen
+                        )),
+                        const SizedBox(height: 30),
+                        Text(
+                          "Inicia sesión",
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        const SizedBox(height: 85),
+                        InputField(
+                          controller: mailLoginController,
+                          textInput: 'Correo electrónico',
+                          textInputType: TextInputType.text,
+                          obscure: false,
+                          icon: const Icon(Icons.key),
+                        ),
+                        const SizedBox(height: 15),
+                        InputField(
+                          controller: passwordLoginController,
+                          textInput: 'Contraseña',
+                          textInputType: TextInputType.text,
+                          obscure: false,
+                          icon: const Icon(null),
+                        ),
+                        const SizedBox(height: 200),
+                        LargeButton(
+                            text: 'Iniciar sesion',
+                            large: true,
+                            onPressed: () {
+                              loginUser(mailLoginController.text,
+                                  passwordLoginController.text);
+                            }),
+                      ]),
+                  Positioned(
+                      top: 30.0,
+                      left: 5.0,
+                      child: IconButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          icon: const Icon(Icons.arrow_back)))
+                ]))));
   }
 }

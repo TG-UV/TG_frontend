@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:tg_frontend/models/passenger_model.dart';
 import 'package:tg_frontend/models/travel_model.dart';
 import 'package:tg_frontend/widgets/large_button.dart';
+import 'package:tg_frontend/datasource/travel_data.dart';
+import 'package:tg_frontend/models/user_model.dart';
+import 'package:tg_frontend/device/environment.dart';
 
 class DetailsCard extends StatefulWidget {
   const DetailsCard({
@@ -15,11 +19,38 @@ class DetailsCard extends StatefulWidget {
 }
 
 class _DetailsCardState extends State<DetailsCard> {
+  TravelDatasourceMethods travelDatasourceMethods =
+      Environment.sl.get<TravelDatasourceMethods>();
+  User user = Environment.sl.get<User>();
   var _seats = 1;
+
   void seatsIncrement() {
     setState(() {
       _seats++;
     });
+  }
+
+  void _reserveSpot() async {
+    Passenger passenger = Passenger(
+        idPassenger: 200,
+        pickupPoint: "no se aun",
+        seats: _seats,
+        isConfirmed: 0,
+        trip: widget.travel.id,
+        passenger: widget.travel.driver,
+        phoneNumber: '324342534',
+        firstName: 'nada',
+        lastName: "aun");
+  
+    int sendResponse = await travelDatasourceMethods.insertPassengerRemote(passenger: passenger);
+    if(sendResponse == 1){
+      
+    }
+    
+  }
+
+  void _cancelSpot() async {
+    
   }
 
   @override
@@ -107,7 +138,9 @@ class _DetailsCardState extends State<DetailsCard> {
                   LargeButton(
                     large: false,
                     text: "reservar",
-                    onPressed: () {/* ... */},
+                    onPressed: () {
+                      _reserveSpot();
+                    },
                   ),
                   //const SizedBox(width: 8),
                 ],
@@ -202,7 +235,9 @@ class _DetailsCardState extends State<DetailsCard> {
                   LargeButton(
                     large: false,
                     text: "cancelar",
-                    onPressed: () {/* ... */},
+                    onPressed: () {
+                      _cancelSpot();
+                    },
                   ),
                   //const SizedBox(width: 8),
                 ],

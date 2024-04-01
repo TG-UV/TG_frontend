@@ -32,21 +32,22 @@ class InputField extends StatelessWidget {
             hintText: textInput,
             hintStyle: const TextStyle(
                 color: Color.fromARGB(255, 71, 71, 71), fontSize: 12),
-            //filled: true,
+            filled: true,
             suffixIcon: icon,
             //fillColor: Colors.grey.shade200,
             fillColor: ColorManager.thirdColor,
             border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(20.0),
+                borderRadius: BorderRadius.circular(15.0),
                 borderSide: const BorderSide(
                   width: 0,
                   style: BorderStyle.none,
                 )),
-            labelStyle: const TextStyle(color: Colors.black, fontSize: 18),
+            labelStyle: const TextStyle(
+                color: Color.fromARGB(255, 32, 32, 32), fontSize: 18),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.0),
               borderSide: const BorderSide(
-                color: Colors.black,
+                color: Color.fromARGB(255, 24, 24, 24),
                 width: 2.0,
               ),
               /*

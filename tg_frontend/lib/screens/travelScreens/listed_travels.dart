@@ -33,8 +33,6 @@ class _ListedTravelsState extends State<ListedTravels> {
     setState(() {});
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
