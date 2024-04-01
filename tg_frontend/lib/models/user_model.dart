@@ -52,7 +52,7 @@ class User {
       "birth_date": birthDate,
       "residence_city": residenceCity,
       "is_active": isActive == 1 ? true : false,
-      //"type": type,
+       //"type": idUser,
     };
   }
 

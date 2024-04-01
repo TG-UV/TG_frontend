@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:tg_frontend/models/travel_model.dart';
+import 'package:tg_frontend/screens/home.dart';
 import 'package:tg_frontend/widgets/travel_card.dart';
 import 'package:http/http.dart' as http;
 import 'package:tg_frontend/models/user_model.dart';
@@ -15,22 +17,29 @@ class ListedTravels extends StatefulWidget {
 }
 
 class _ListedTravelsState extends State<ListedTravels> {
-
-  TravelDatasourceMethods travelDatasourceImpl = Environment.sl.get<TravelDatasourceMethods>();
+  TravelDatasourceMethods travelDatasourceImpl =
+      Environment.sl.get<TravelDatasourceMethods>();
   User user = Environment.sl.get<User>();
 
-
-  List<Travel> travelsList = [];
+  late List<Travel> travelsList;
 
   @override
   void initState() {
     super.initState();
-    _cargarViajes();
+    //_cargarViajes();
   }
 
-  Future<void> _cargarViajes() async {
-    travelsList = await travelDatasourceImpl.getTravelsRemote(travelId: 2);
-    setState(() {});
+  // Future<void> _cargarViajes() async {
+  //   travelsList = await travelDatasourceImpl.getTravelsRemote(travelId: 2);
+  //   setState(() {});
+  // }
+
+  Stream<List<Travel>> _fetchTravelsStream() async* {
+    final value = await travelDatasourceImpl.getTravelsRemote();
+    yield value;
+    // setState(() {
+      
+    // });
   }
 
   @override
@@ -47,7 +56,7 @@ class _ListedTravelsState extends State<ListedTravels> {
                   Row(children: [
                     IconButton(
                         onPressed: () {
-                          Navigator.pop(context);
+                          Get.to(() => const Home());
                         },
                         icon: const Icon(Icons.arrow_back)),
                     const SizedBox(width: 10),
@@ -69,17 +78,49 @@ class _ListedTravelsState extends State<ListedTravels> {
                   ]),
 
                   const SizedBox(height: 30),
-                  //const TravelCard(),
-                  travelsList.isEmpty
-                      ? const Center(
-                          child: Text('No tiene viajes por el momento...'),
-                        )
-                      : Expanded(
-                          child: ListView.builder(
-                              itemCount: travelsList.length,
-                              itemBuilder: (context, index) {
-                                return TravelCard(travel: travelsList[index]);
-                              }))
+                  Expanded(
+                      child: SizedBox(
+                          height: 500,
+                          child: StreamBuilder<List<Travel>>(
+                              stream: _fetchTravelsStream(),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return const Center(
+                                      child: CircularProgressIndicator());
+                                } else if (snapshot.hasError) {
+                                  return Center(
+                                      child: Text('Error: ${snapshot.error}'));
+                                } else {
+                                  travelsList = snapshot.data ?? [];
+                                  if (travelsList.isEmpty) {
+                                    return const Center(
+                                      child: Text(
+                                          'No tiene viajes por el momento...'),
+                                    );
+                                  } else {
+                                    
+                                          return ListView.builder(
+                                              itemCount: travelsList.length,
+                                              //physics:const AlwaysScrollableScrollPhysics(),
+                                              itemBuilder: (context, index) {
+                                                return TravelCard(
+                                                    travel: travelsList[index]);
+                                              });
+                          }
+                                  }
+                                }
+                              )))
+                  // travelsList.isEmpty
+                  //     ? const Center(
+                  //         child: Text('No tiene viajes por el momento...'),
+                  //       )
+                  //     : Expanded(
+                  //         child: ListView.builder(
+                  //             itemCount: travelsList.length,
+                  //             itemBuilder: (context, index) {
+                  //               return TravelCard(travel: travelsList[index]);
+                  //             }))
                 ])));
   }
 }

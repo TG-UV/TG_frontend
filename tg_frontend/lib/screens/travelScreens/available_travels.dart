@@ -31,7 +31,7 @@ class _ListedTravelsState extends State<AvailableTravels> {
   }
 
   Future<void> _cargarViajes() async {
-    travelsList = await travelDatasourceMethods.getTravelsRemote(travelId: 2);
+    travelsList = await travelDatasourceMethods.getTravelsRemote();
     setState(() {});
   }
 

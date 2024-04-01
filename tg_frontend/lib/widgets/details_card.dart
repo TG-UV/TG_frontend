@@ -32,15 +32,15 @@ class _DetailsCardState extends State<DetailsCard> {
 
   void _reserveSpot() async {
     Passenger passenger = Passenger(
-        idPassenger: 200,
-        pickupPoint: "no se aun",
+        idPassenger: int.parse(user.idUser),
+        pickupPoint: "no se aún",
         seats: _seats,
         isConfirmed: 0,
         trip: widget.travel.id,
         passenger: widget.travel.driver,
         phoneNumber: '324342534',
         firstName: 'nada',
-        lastName: "aun");
+        lastName: "aún");
   
     int sendResponse = await travelDatasourceMethods.insertPassengerRemote(passenger: passenger);
     if(sendResponse == 1){
@@ -49,8 +49,11 @@ class _DetailsCardState extends State<DetailsCard> {
     
   }
 
-  void _cancelSpot() async {
-    
+  void _cancelSpot(int passengerId) async {
+    int sendResponse = await travelDatasourceMethods.deletePassengerRemote(passengerId: passengerId);
+    if(sendResponse == 1){
+      
+    }
   }
 
   @override
@@ -236,7 +239,7 @@ class _DetailsCardState extends State<DetailsCard> {
                     large: false,
                     text: "cancelar",
                     onPressed: () {
-                      _cancelSpot();
+                      _cancelSpot(int.parse(user.idUser));
                     },
                   ),
                   //const SizedBox(width: 8),

@@ -11,7 +11,7 @@ abstract class TravelDatasource {
   Future<void> insertTravelsLocal({required List<Travel> travels});
   Future<void> insertTravelRemote({required Travel travel});
   Future<void> getTravelLocal({required int travelId, String filter});
-  Future<void> getTravelsRemote({required int travelId});
+  Future<void> getTravelsRemote();
   Future<int?> updateTravelLocal(
       {required int travelId,
       required List<String> fields,
@@ -21,8 +21,10 @@ abstract class TravelDatasource {
       required List<String> fields,
       required List<String> values});
   Future<List<Passenger>> getPassangersRemote({required int travelId});
-  Future<void> insertPassengerRemote({required Passenger passenger});
+  Future<int> insertPassengerRemote({required Passenger passenger});
   Future<void> updatePassengerRemote({required int passengerTripId, required bool valueConfirmed});
+  Future<int> deletePassengerRemote({required int passengerId});
+
 }
 
 class TravelDatasourceMethods implements TravelDatasource {
@@ -69,26 +71,26 @@ class TravelDatasourceMethods implements TravelDatasource {
   @override
   Future<int> insertTravelRemote({required Travel travel}) async {
     Response? response;
-    int send = 0;
+    int sent = 0;
     try {
       String? token = await AuthStorage().getToken();
       Map<String, dynamic> jsonTravel = travel.toJson();
       dio.options.headers['Authorization'] = 'Token $token';
       response = await dio.post(_endPoints.baseUrl + _endPoints.getTravel,
           data: jsonTravel);
-      // String data = Travel.toJson(travels[send] as Travel);
+      // String data = Travel.toJson(travels[sent] as Travel);
 
       //  print(response.data);
 
       // await updateTravelLocal(
-      //     travelId: int.parse(travels[send].id),
+      //     travelId: int.parse(travels[sent].id),
       //     fields: [Local.FIELD_SINCRONIZADO_ORDEN],
       //     values: [SINCRONIZADO.toString()]);
-      send++;
+      sent++;
     } catch (e) {
       rethrow;
     }
-    return send;
+    return sent;
   }
 
   @override
@@ -113,7 +115,7 @@ class TravelDatasourceMethods implements TravelDatasource {
   }
 
   @override
-  Future<List<Travel>> getTravelsRemote({required int travelId}) async {
+  Future<List<Travel>> getTravelsRemote() async {
     String? token = await AuthStorage().getToken();
     Travel travel;
     List<Travel> travelList = [];
@@ -121,11 +123,11 @@ class TravelDatasourceMethods implements TravelDatasource {
 
     if (token != null) {
       try {
-        Map<String, dynamic> parameters = {"id_trip": travelId};
+        //Map<String, dynamic> parameters = {"id_trip": travelId};
         dio.options.headers['Authorization'] = 'Token $token';
         response = await dio.get(
-          _endPoints.baseUrl + _endPoints.getTravel,
-          queryParameters: parameters,
+          _endPoints.baseUrl + _endPoints.getTravel
+          //queryParameters: parameters,
         );
         for (var data in response.data) {
           Travel travel = Travel.fromJson(data);
@@ -218,25 +220,33 @@ Future<void> updatePassengerRemote({required int passengerTripId, required bool 
 @override
   Future<int> insertPassengerRemote({required Passenger passenger}) async {
     Response? response;
-    int send = 0;
+    int sent = 0;
     try {
       Map<String, dynamic> jsonPassengerTrip = passenger.toJson();
       dio.options.headers['Authorization'] = 'Token $token';
       response = await dio.post(_endPoints.baseUrl + _endPoints.postPassengerTrip,
           data: jsonPassengerTrip);
-      // String data = Travel.toJson(travels[send] as Travel);
-
-      //  print(response.data);
-
-      // await updateTravelLocal(
-      //     travelId: int.parse(travels[send].id),
-      //     fields: [Local.FIELD_SINCRONIZADO_ORDEN],
-      //     values: [SINCRONIZADO.toString()]);
-      send++;
+      sent++;
     } catch (e) {
       rethrow;
     }
-    return send;
+    return sent;
+  }
+
+  @override
+  Future<int> deletePassengerRemote({required int passengerId }) async {
+    Response? response;
+    int sent = 0;
+    try {
+     
+      dio.options.headers['Authorization'] = 'Token $token';
+      response = await dio.delete(_endPoints.baseUrl + _endPoints.patchPassengerTrip,
+          );
+      sent++;
+    } catch (e) {
+      rethrow;
+    }
+    return sent;
   }
 
 

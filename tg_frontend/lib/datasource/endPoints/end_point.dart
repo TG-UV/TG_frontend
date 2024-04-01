@@ -5,4 +5,5 @@ class EndPoints {
   final String getTravel = "/trip/";
   final String patchPassengerTrip = "/passenger-trip/{id_passenger_trip}/";
   final String postPassengerTrip = "/passenger-trip/";
+
 }
