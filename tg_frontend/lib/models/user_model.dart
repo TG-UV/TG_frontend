@@ -5,10 +5,11 @@ class User {
   final String lastName;
   final String? birthDate;
   final String residenceCity;
-  //final String type;
-  final String idUser;
+  final int type;
+  final int idUser;
   final String email;
   final int isActive;
+  String password;
 
   User({
     required this.identityDocument,
@@ -17,15 +18,16 @@ class User {
     required this.lastName,
     required this.birthDate,
     required this.residenceCity,
-    //required this.type,
+    required this.type,
     required this.idUser,
     required this.email,
     required this.isActive,
+    required this.password
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      idUser: json['id_user']?.toString() ?? '',
+      idUser: json['id_user']as int? ?? 0,
       email: json['email']?.toString() ?? '',
       phoneNumber: json['phone_number']?.toString() ?? '',
       birthDate: json['date_of_birth']?.toString() ?? '',
@@ -34,25 +36,23 @@ class User {
       identityDocument: json['identity_document']?.toString() ?? '',
       residenceCity: json['residence_city']?.toString() ?? '',
       isActive: json['is_active'] == true ? 1 : 0,
-      //type: json['type']?.toString() ?? '',
-      // registrationDate: json['registration_date'] != null
-      //     ? DateTime.parse('${json['registration_date']}')
-      //     : null,
+      type: json['type']as int? ?? 0,
+      password: ""
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'idUser': idUser,
       "email": email,
       "phone_number": phoneNumber,
       "first_name": firstName,
       "last_name": lastName,
       "identity_document": identityDocument,
-      "birth_date": birthDate,
+      "date_of_birth": birthDate,
       "residence_city": residenceCity,
-      "is_active": isActive == 1 ? true : false,
-       //"type": idUser,
+      //"is_active": isActive == 1 ? true : false,
+      "password": password,
+      "type" : type,
     };
   }
 

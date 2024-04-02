@@ -9,7 +9,7 @@ class LocalDB {
   static const String isActive = "is_active";
   static const String idUser = "id_user";
   static const String email = "email";
-  //static const String registrationDate = "registro";
+  static const String type = "type";
 
   static const String tbTravel = "travel";
   static const String idTravel = "id_trip";
@@ -35,7 +35,8 @@ class LocalDB {
           $residenceCity INTEGER,
           $isActive INTEGER,
           $idUser INTEGER,
-          $email VARCHAR(200)
+          $email VARCHAR(200),
+          $type INTEGER
           );
         """;
 

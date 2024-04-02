@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:tg_frontend/datasource/endPoints/end_point.dart';
 import 'package:tg_frontend/device/local_tables.dart';
 import 'package:tg_frontend/models/user_model.dart';
 import 'package:dio/dio.dart';
@@ -9,6 +10,7 @@ import 'package:sqflite/sqflite.dart';
 
 abstract class UserDatasource {
   Future<void> insertUserLocal({required User user});
+  Future<void> insertUserRemote({required User user});
   Future<void> getUserRemote({required String endPoint});
   Future<String?> getUserAuth(
       {required String endPoint,
@@ -22,6 +24,8 @@ abstract class UserDatasource {
 class UserDatasourceMethods implements UserDatasource {
   Dio dio = Dio();
   DatabaseProvider databaseProvider = DatabaseProvider.db;
+  final _endPoints = EndPoints();
+  String? token;
 
   late Database database;
 
@@ -33,6 +37,26 @@ class UserDatasourceMethods implements UserDatasource {
 
   Future<void> initDatabase() async {
     database = await databaseProvider.database;
+        token = await AuthStorage().getToken();
+  }
+
+
+  @override
+  Future<int> insertUserRemote({required User user}) async {
+    Response? response;
+    int sent = 0;
+    try {
+      Map<String, dynamic> jsonUser = user.toJson();
+      dio.options.headers['Authorization'] = 'Token $token';
+      response = await dio.post(_endPoints.baseUrl + _endPoints.getAndPostUser,
+          data: jsonUser);
+      User userResponse = User.fromJson(response.data);
+        insertUserLocal(user: userResponse);
+      sent++;
+    } catch (e) {
+      rethrow;
+    }
+    return sent;
   }
 
   @override
@@ -49,8 +73,7 @@ class UserDatasourceMethods implements UserDatasource {
         LocalDB.residenceCity: user.residenceCity,
         LocalDB.isActive: user.isActive,
         LocalDB.identityDocument: user.identityDocument,
-
-        //LocalDB.registrationDate: user.registrationDate,
+        LocalDB.type: user.type,
       }).timeout(const Duration(seconds: 300));
     } catch (e) {
       print('Error al insertar user locar ' + e.toString());

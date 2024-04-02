@@ -22,7 +22,6 @@ class _NewTravelState extends State<NewTravel> {
   User user = Environment.sl.get<User>();
   TravelDatasourceMethods travelDatasourceMethods =
       Environment.sl.get<TravelDatasourceMethods>();
-  EndPoints endPoint = EndPoints();
   int _selectedTimeButtonIndex = -1;
 
   final _formKey = GlobalKey<FormState>();
@@ -45,7 +44,7 @@ class _NewTravelState extends State<NewTravel> {
           id: 100,
           arrivalPoint: arrivalPointController.text,
           startingPoint: startingPointController.text,
-          driver: int.parse(user.idUser),
+          driver: user.idUser,
           price: int.parse(priceController.text),
           seats: int.parse(seatsController.text),
           date: dateControlelr.text,

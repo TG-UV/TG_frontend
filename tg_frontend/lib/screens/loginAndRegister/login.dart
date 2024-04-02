@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:tg_frontend/datasource/endPoints/end_point.dart';
 import 'package:tg_frontend/device/environment.dart';
 import 'package:tg_frontend/screens/home.dart';
+import 'package:tg_frontend/screens/loginAndRegister/sign_up.dart';
 import 'package:tg_frontend/widgets/input_field.dart';
 import 'package:tg_frontend/widgets/large_button.dart';
 import 'package:tg_frontend/services/auth_services.dart';
@@ -108,7 +109,7 @@ class _LoginState extends State<Login> {
                           obscure: false,
                           icon: const Icon(null),
                         ),
-                        const SizedBox(height: 200),
+                        const SizedBox(height: 100),
                         LargeButton(
                             text: 'Iniciar sesion',
                             large: true,
@@ -117,14 +118,48 @@ class _LoginState extends State<Login> {
                                   passwordLoginController.text);
                             }),
                       ]),
-                  Positioned(
-                      top: 30.0,
-                      left: 5.0,
-                      child: IconButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          icon: const Icon(Icons.arrow_back)))
+                      Row(
+                          children: <Widget>[
+                            const Expanded(
+                              child: Text(
+                                '¿No tienes una cuenta?',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontFamily: 'Jost',
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: TextButton(
+                                onPressed: () {
+                                  //Get.to(() => const SignUp());
+                                  Get.to(() => const SignUp());
+                                },
+                                child: const Text(
+                                  'Regístrate !',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontFamily: 'Jost',
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        )
+                  // Positioned(
+                  //     top: 30.0,
+                  //     left: 5.0,
+                  //     child: IconButton(
+                  //         onPressed: () {
+                  //           Navigator.pop(context);
+                  //         },
+                  //         icon: const Icon(Icons.arrow_back)))
                 ]))));
   }
 }

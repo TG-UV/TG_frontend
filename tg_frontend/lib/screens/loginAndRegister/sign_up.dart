@@ -36,7 +36,7 @@ class SignUp extends StatelessWidget {
                   text: 'Pasajero',
                   large: true,
                   onPressed: () {
-                    Get.to(() => const UserRegister());
+                    Get.to(() => const UserRegister(userType: 3));
                   }),
               const SizedBox(height: 10),
               Text(
@@ -49,7 +49,7 @@ class SignUp extends StatelessWidget {
                   text: 'Conductor',
                   large: true,
                   onPressed: () {
-                    Get.to(() => const UserRegister());
+                    Get.to(() => const UserRegister(userType: 2));
                   }),
               const SizedBox(height: 10),
               Text(
