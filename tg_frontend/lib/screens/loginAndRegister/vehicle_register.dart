@@ -1,23 +1,100 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tg_frontend/models/vehicleOptions_model.dart';
+import 'package:tg_frontend/models/vehicle_model.dart';
+import 'package:tg_frontend/screens/home.dart';
 import 'package:tg_frontend/screens/loginAndRegister/password_register.dart';
-//import 'package:tg_frontend/screens/vehicleRegister.dart';
 import 'package:tg_frontend/widgets/input_field.dart';
 import 'package:tg_frontend/widgets/large_button.dart';
+import 'package:tg_frontend/models/user_model.dart';
+import 'package:flutter_dropdown/flutter_dropdown.dart';
+import 'package:tg_frontend/datasource/user_data.dart';
+import 'package:tg_frontend/device/environment.dart';
+
+
 
 class VehicleRegister extends StatefulWidget {
-  const VehicleRegister({super.key});
+  const VehicleRegister({super.key, required this.user});
+  final User user;
 
   @override
   State<VehicleRegister> createState() => _VehicleRegisterState();
 }
 
 class _VehicleRegisterState extends State<VehicleRegister> {
-  final TextEditingController vehicleTypeController = TextEditingController();
-  final TextEditingController colorController = TextEditingController();
-  final TextEditingController licensePlateController = TextEditingController();
-  final TextEditingController brandController = TextEditingController();
-  final TextEditingController modelController = TextEditingController();
+  UserDatasourceMethods userDatasourceImpl =
+      Environment.sl.get<UserDatasourceMethods>();
+  final _formKey = GlobalKey<FormState>();
+
+  late Future<Map<String, dynamic>> options;
+  final TextEditingController plateController = TextEditingController();
+  final ValueNotifier<int?> typeController = ValueNotifier<int?>(null);
+  final ValueNotifier<int?> brandController = ValueNotifier<int?>(null);
+  final ValueNotifier<int?> modelController = ValueNotifier<int?>(null);
+  final ValueNotifier<int?> colorController = ValueNotifier<int?>(null);
+
+  late Vehicle vehicle;
+ 
+  @override
+  void initState() {
+    super.initState();
+    options = fetchOptions();
+  }
+
+  Future<Map<String, dynamic>> fetchOptions() async {
+    final listResponse = await userDatasourceImpl.getVehicleOptionsRemote();
+      
+    listResponse != null
+        ? options = listResponse;
+        : showErrorMessage('El usuario no existe, intente de nuevo');
+
+
+    final response = await http.get(Uri.parse('https://tu-api.com/data'));
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Failed to load options');
+    }
+  }
+
+Future<List<VehicleOption>> fetchOptions(String endpoint) async {
+    final response = await http.get(Uri.parse('https://tu-api.com/$endpoint'));
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body)[endpoint];
+      return data.map((item) => Option.fromJson(item)).toList();
+    } else {
+      throw Exception('Failed to load options');
+    }
+  }
+  void submitForm(BuildContext context) async {
+    if (_formKey.currentState!.validate()) {
+      //List<Travel> travelList = [];
+      vehicle = Vehicle(
+          idVehicle: 0,
+          licensePlate: licensePlateController.text,
+          vehicleBrand: 0,
+          vehicleColor: 0,
+          vehicleModel: 0,
+          vehicleType: 0,
+          owner: widget.user.idUser);
+      //userDatasourceImpl.insertUserRemote(user: user);
+      Get.to(() => const Home());
+    } else {
+      AlertDialog(
+          title: const Text("Error"),
+          content: const SingleChildScrollView(
+              child: ListBody(
+            children: <Widget>[
+              Text("Faltan campos por llenar."),
+            ],
+          )),
+          actions: [
+            ElevatedButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text("Aceptar"))
+          ]);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +163,7 @@ class _VehicleRegisterState extends State<VehicleRegister> {
                           text: 'Continuar',
                           large: true,
                           onPressed: () {
-                            Get.to(() => const PasswordRegister());
+                            Get.to(() => PasswordRegister(user: widget.user));
                           })),
 
                   // child: const GlobalButton(text: 'Iniciar sesión'),

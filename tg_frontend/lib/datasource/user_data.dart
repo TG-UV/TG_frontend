@@ -6,12 +6,14 @@ import 'package:dio/dio.dart';
 import 'package:tg_frontend/services/auth_services.dart';
 import 'package:tg_frontend/datasource/local_database_provider.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:sqflite/sqflite.dart';
+
+import 'dart:convert';
 
 abstract class UserDatasource {
   Future<void> insertUserLocal({required User user});
   Future<void> insertUserRemote({required User user});
   Future<void> getUserRemote({required String endPoint});
+  Future<Map<String, dynamic>?> getVehicleOptionsRemote();
   Future<String?> getUserAuth(
       {required String endPoint,
       required String username,
@@ -123,6 +125,25 @@ class UserDatasourceMethods implements UserDatasource {
     } else {
       print('No se encontró ningún token.');
     }
+  }
+
+  @override
+  Future<Map<String, dynamic>?> getVehicleOptionsRemote() async {
+    String? token = await AuthStorage().getToken();
+    Map<String, dynamic>?  options;
+
+    if (token != null) {
+      try {
+        dio.options.headers['Authorization'] = 'Token $token';
+        Response response = await dio.get(_endPoints.baseUrl+_endPoints.getVehicleOptions);
+        options = json.decode(response.data);
+      } catch (error) {
+        print('Error al realizar la solicitud vehiclesOptions: $error');
+      }
+    } else {
+      print('No se encontró ningún token.');
+    }
+    return options;
   }
 
   @override

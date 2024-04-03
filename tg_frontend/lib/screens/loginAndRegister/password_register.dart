@@ -3,10 +3,11 @@ import 'package:get/get.dart';
 import 'package:tg_frontend/screens/home.dart';
 import 'package:tg_frontend/widgets/input_field.dart';
 import 'package:tg_frontend/widgets/large_button.dart';
+import 'package:tg_frontend/models/user_model.dart';
 
 class PasswordRegister extends StatefulWidget {
-  const PasswordRegister({super.key});
-
+  const PasswordRegister({super.key ,required this.user});
+  final User user;
   @override
   State<PasswordRegister> createState() => _PasswordRegisterState();
 }

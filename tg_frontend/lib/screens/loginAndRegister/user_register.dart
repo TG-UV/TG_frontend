@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tg_frontend/screens/home.dart';
+import 'package:tg_frontend/screens/loginAndRegister/password_register.dart';
 import 'package:tg_frontend/screens/loginAndRegister/vehicle_register.dart';
 import 'package:tg_frontend/widgets/input_field.dart';
 import 'package:tg_frontend/widgets/large_button.dart';
@@ -20,6 +20,7 @@ class _UserRegisterState extends State<UserRegister> {
   UserDatasourceMethods userDatasourceImpl =
       Environment.sl.get<UserDatasourceMethods>();
   final _formKey = GlobalKey<FormState>();
+  late User user;
 
   final TextEditingController nameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
@@ -32,7 +33,7 @@ class _UserRegisterState extends State<UserRegister> {
 
     if (_formKey.currentState!.validate()) {
       //List<Travel> travelList = [];
-      User user = User(
+       user = User(
         idUser: 0,
         identityDocument: nameController.text,
         phoneNumber: phoneController.text,
@@ -47,7 +48,10 @@ class _UserRegisterState extends State<UserRegister> {
 
           );
       //userDatasourceImpl.insertUserRemote(user: user);
-      Get.to(() => const Home());
+       widget.userType == 2 ?
+                    Get.to(() => VehicleRegister(user: user))
+                    : Get.to(() =>  PasswordRegister(user: user));
+      
     } else {
       AlertDialog(
           title: const Text("Error"),
@@ -140,7 +144,7 @@ class _UserRegisterState extends State<UserRegister> {
                   text: 'Continuar',
                   large: true,
                   onPressed: () {
-                    Get.to(() => const VehicleRegister());
+                   submitForm(context);
                   }),
             ),
             // child: const GlobalButton(text: 'Iniciar sesión'),
