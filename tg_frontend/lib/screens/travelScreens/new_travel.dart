@@ -6,7 +6,6 @@ import 'package:tg_frontend/widgets/large_button.dart';
 import 'package:tg_frontend/widgets/square_button.dart';
 import 'package:tg_frontend/widgets/input_field.dart';
 import 'package:tg_frontend/models/travel_model.dart';
-import 'package:tg_frontend/datasource/endPoints/end_point.dart';
 import 'package:tg_frontend/datasource/travel_data.dart';
 import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/device/environment.dart';

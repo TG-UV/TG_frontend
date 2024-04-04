@@ -6,7 +6,7 @@ class EndPoints {
   final String getTravel = "/trip/";
   final String patchPassengerTrip = "/passenger-trip/{id_passenger_trip}/";
   final String postPassengerTrip = "/passenger-trip/";
-    final String getVehicleOptions = "/vehicle/registration/";
-
-
+  final String getVehicleOptions = "/vehicle/registration/";
+  final String postDriverVehicleAdd = "/driver/vehicle/add/";
+  final String getAndPostVehicle = "/vehicle/";
 }

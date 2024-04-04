@@ -11,8 +11,6 @@ import 'package:flutter_dropdown/flutter_dropdown.dart';
 import 'package:tg_frontend/datasource/user_data.dart';
 import 'package:tg_frontend/device/environment.dart';
 
-
-
 class VehicleRegister extends StatefulWidget {
   const VehicleRegister({super.key, required this.user});
   final User user;
@@ -26,66 +24,74 @@ class _VehicleRegisterState extends State<VehicleRegister> {
       Environment.sl.get<UserDatasourceMethods>();
   final _formKey = GlobalKey<FormState>();
 
-  late Future<Map<String, dynamic>> options;
-  final TextEditingController plateController = TextEditingController();
+  int? _selectedType;
+  int? _selectedBrand;
+  int? _selectedModel;
+  int? _selectedColor;
+
+  late Map<String, dynamic> options;
+  final TextEditingController licensePlateController = TextEditingController();
   final ValueNotifier<int?> typeController = ValueNotifier<int?>(null);
   final ValueNotifier<int?> brandController = ValueNotifier<int?>(null);
   final ValueNotifier<int?> modelController = ValueNotifier<int?>(null);
   final ValueNotifier<int?> colorController = ValueNotifier<int?>(null);
 
   late Vehicle vehicle;
- 
+
   @override
   void initState() {
     super.initState();
-    options = fetchOptions();
+    fetchOptions().then((value) {
+      setState(() {
+        options = value;
+      });
+    }).catchError((error) {
+      //showErrorMessage(error.toString());
+    });
   }
 
   Future<Map<String, dynamic>> fetchOptions() async {
-    final listResponse = await userDatasourceImpl.getVehicleOptionsRemote();
-      
-    listResponse != null
-        ? options = listResponse;
-        : showErrorMessage('El usuario no existe, intente de nuevo');
+    final Map<String, dynamic>? listResponse =
+        await userDatasourceImpl.getVehicleOptionsRemote();
 
-
-    final response = await http.get(Uri.parse('https://tu-api.com/data'));
-    if (response.statusCode == 200) {
-      return json.decode(response.body);
+    if (listResponse != null) {
+      return listResponse;
     } else {
-      throw Exception('Failed to load options');
+      throw Exception('El usuario no existe, intente de nuevo');
     }
   }
 
-Future<List<VehicleOption>> fetchOptions(String endpoint) async {
-    final response = await http.get(Uri.parse('https://tu-api.com/$endpoint'));
-    if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body)[endpoint];
-      return data.map((item) => Option.fromJson(item)).toList();
-    } else {
-      throw Exception('Failed to load options');
-    }
-  }
+// Future<List<VehicleOption>> fetchOptions(String endpoint) async {
+//     final response = await http.get(Uri.parse('https://tu-api.com/$endpoint'));
+//     if (response.statusCode == 200) {
+//       final List<dynamic> data = json.decode(response.body)[endpoint];
+//       return data.map((item) => Option.fromJson(item)).toList();
+//     } else {
+//       throw Exception('Failed to load options');
+//     }
+//   }
   void submitForm(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       //List<Travel> travelList = [];
       vehicle = Vehicle(
           idVehicle: 0,
           licensePlate: licensePlateController.text,
-          vehicleBrand: 0,
-          vehicleColor: 0,
-          vehicleModel: 0,
-          vehicleType: 0,
+          vehicleBrand: brandController.value!,
+          vehicleColor: colorController.value!,
+          vehicleModel: modelController.value!,
+          vehicleType: typeController.value!,
           owner: widget.user.idUser);
       //userDatasourceImpl.insertUserRemote(user: user);
-      Get.to(() => const Home());
+      //Get.to(() => const Home());
+       Get.to(() => PasswordRegister(user: widget.user, vehicle: 
+       vehicle));
     } else {
       AlertDialog(
           title: const Text("Error"),
           content: const SingleChildScrollView(
               child: ListBody(
             children: <Widget>[
-              Text("Faltan campos por llenar."),
+              Text("Faltan campos por completar."),
             ],
           )),
           actions: [
@@ -98,85 +104,229 @@ Future<List<VehicleOption>> fetchOptions(String endpoint) async {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            alignment: Alignment.center,
-            child: Stack(children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const SizedBox(height: 150),
-                  Container(
-                    alignment: Alignment.center,
-                    child: Text(
-                      "Añade los datos de tu Vehículo",
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                  ),
-                  const SizedBox(height: 35),
-                  InputField(
-                    controller: vehicleTypeController,
-                    textInput: 'Tipo de vehículo',
-                    textInputType: TextInputType.text,
-                    obscure: false,
-                    icon: const Icon(Icons.motorcycle),
-                  ),
-                  const SizedBox(height: 15),
-                  InputField(
-                    controller: colorController,
-                    textInput: 'Color',
-                    textInputType: TextInputType.text,
-                    obscure: false,
-                    icon: const Icon(null),
-                  ),
-                  const SizedBox(height: 15),
-                  InputField(
-                    controller: licensePlateController,
-                    textInput: 'Placa',
-                    textInputType: TextInputType.text,
-                    obscure: false,
-                    icon: const Icon(null),
-                  ),
-                  const SizedBox(height: 15),
-                  InputField(
-                    controller: brandController,
-                    textInput: 'Marca',
-                    textInputType: TextInputType.text,
-                    obscure: false,
-                    icon: const Icon(null),
-                  ),
-                  const SizedBox(height: 15),
-                  InputField(
-                    controller: modelController,
-                    textInput: 'Modelo',
-                    textInputType: TextInputType.text,
-                    obscure: false,
-                    icon: const Icon(null),
-                  ),
+    return FutureBuilder<Map<String, dynamic>>(
+        future: Future.value(options),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(
+                child: Text(
+                    'Error al cargar future de vehicle options: ${snapshot.error}'));
+          } else {
+            return SingleChildScrollView(
+                padding: const EdgeInsets.all(16.0),
+                child: Form(
+                    key: _formKey,
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          TextFormField(
+                            controller: licensePlateController,
+                            decoration:
+                                const InputDecoration(labelText: 'Placa'),
+                            validator: (value) {
+                              if (value == null) {
+                                return 'Por favor ingrese la placa';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 16.0),
+                          DropdownButtonFormField<int>(
+                            value: _selectedType,
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedType = value;
+                              });
+                            },
+                            items: (snapshot.data?['types'] as List<dynamic>)
+                                .map<DropdownMenuItem<int>>((type) {
+                              return DropdownMenuItem<int>(
+                                value: VehicleOption.fromJson(
+                                        type, 'id_vehicle_type')
+                                    .id,
+                                child: Text(
+                                    VehicleOption.fromJson(type, 'name').name),
+                              );
+                            }).toList(),
+                            decoration: InputDecoration(labelText: 'Tipo'),
+                            validator: (value) {
+                              if (value == null) {
+                                return 'Por favor seleccione el tipo';
+                              }
+                              return null;
+                            },
+                          ),
+                          SizedBox(height: 16.0),
+                          DropdownButtonFormField<int>(
+                            value: _selectedBrand,
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedBrand = value;
+                              });
+                            },
+                            items: (snapshot.data?['brands'] as List<dynamic>)
+                                .map<DropdownMenuItem<int>>((brand) {
+                              return DropdownMenuItem<int>(
+                                value: VehicleOption.fromJson(
+                                        brand, 'id_vehicle_brand')
+                                    .id,
+                                child: Text(
+                                    VehicleOption.fromJson(brand, 'name').name),
+                              );
+                            }).toList(),
+                            decoration: InputDecoration(labelText: 'Marca'),
+                            validator: (value) {
+                              if (value == null) {
+                                return 'Por favor seleccione la marca';
+                              }
+                              return null;
+                            },
+                          ),
+                          SizedBox(height: 16.0),
+                          DropdownButtonFormField<int>(
+                            value: _selectedModel,
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedModel = value;
+                              });
+                            },
+                            items: (snapshot.data?['models'] as List<dynamic>)
+                                .map<DropdownMenuItem<int>>((model) {
+                              return DropdownMenuItem<int>(
+                                value: VehicleOption.fromJson(
+                                        model, 'id_vehicle_model')
+                                    .id,
+                                child: Text(
+                                    VehicleOption.fromJson(model, 'name').name),
+                              );
+                            }).toList(),
+                            decoration: InputDecoration(labelText: 'Modelo'),
+                            validator: (value) {
+                              if (value == null) {
+                                return 'Por favor seleccione el modelo';
+                              }
+                              return null;
+                            },
+                          ),
+                          SizedBox(height: 16.0),
+                          DropdownButtonFormField<int>(
+                            value: _selectedColor,
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedColor = value;
+                              });
+                            },
+                            items: (snapshot.data?['colors'] as List<dynamic>)
+                                .map<DropdownMenuItem<int>>((color) {
+                              return DropdownMenuItem<int>(
+                                value: VehicleOption.fromJson(
+                                        color, 'id_vehicle_color')
+                                    .id,
+                                child: Text(
+                                    VehicleOption.fromJson(color, 'name').name),
+                              );
+                            }).toList(),
+                            decoration: InputDecoration(labelText: 'Color'),
+                            validator: (value) {
+                              if (value == null) {
+                                return 'Por favor seleccione el color';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 80),
+                          Container(
+                              alignment: Alignment.center,
+                              child: LargeButton(
+                                  text: 'Continuar',
+                                  large: true,
+                                  onPressed: () {
+                                    submitForm(context);
+                                  })),
+                        ])));
+          }
+        });
+    // return Scaffold(
+    //     body: Container(
+    //         padding: const EdgeInsets.symmetric(horizontal: 16.0),
+    //         alignment: Alignment.center,
+    //         child: Stack(children: [
+    //           Column(
+    //             mainAxisAlignment: MainAxisAlignment.center,
+    //             children: [
+    //               const SizedBox(height: 150),
+    //               Container(
+    //                 alignment: Alignment.center,
+    //                 child: Text(
+    //                   "Añade los datos de tu Vehículo",
+    //                   textAlign: TextAlign.center,
+    //                   style: Theme.of(context).textTheme.titleLarge,
+    //                 ),
+    //               ),
+    //               const SizedBox(height: 35),
+    //               InputField(
+    //                 controller: vehicleTypeController,
+    //                 textInput: 'Tipo de vehículo',
+    //                 textInputType: TextInputType.text,
+    //                 obscure: false,
+    //                 icon: const Icon(Icons.motorcycle),
+    //               ),
+    //               const SizedBox(height: 15),
+    //               InputField(
+    //                 controller: colorController,
+    //                 textInput: 'Color',
+    //                 textInputType: TextInputType.text,
+    //                 obscure: false,
+    //                 icon: const Icon(null),
+    //               ),
+    //               const SizedBox(height: 15),
+    //               InputField(
+    //                 controller: licensePlateController,
+    //                 textInput: 'Placa',
+    //                 textInputType: TextInputType.text,
+    //                 obscure: false,
+    //                 icon: const Icon(null),
+    //               ),
+    //               const SizedBox(height: 15),
+    //               InputField(
+    //                 controller: brandController,
+    //                 textInput: 'Marca',
+    //                 textInputType: TextInputType.text,
+    //                 obscure: false,
+    //                 icon: const Icon(null),
+    //               ),
+    //               const SizedBox(height: 15),
+    //               InputField(
+    //                 controller: modelController,
+    //                 textInput: 'Modelo',
+    //                 textInputType: TextInputType.text,
+    //                 obscure: false,
+    //                 icon: const Icon(null),
+    //               ),
 
-                  const SizedBox(height: 80),
-                  Container(
-                      alignment: Alignment.center,
-                      child: LargeButton(
-                          text: 'Continuar',
-                          large: true,
-                          onPressed: () {
-                            Get.to(() => PasswordRegister(user: widget.user));
-                          })),
+    //               const SizedBox(height: 80),
+    //               Container(
+    //                   alignment: Alignment.center,
+    //                   child: LargeButton(
+    //                       text: 'Continuar',
+    //                       large: true,
+    //                       onPressed: () {
+    //                         Get.to(() => PasswordRegister(user: widget.user));
+    //                       })),
 
-                  // child: const GlobalButton(text: 'Iniciar sesión'),
-                ],
-              ),
-              Positioned(
-                  top: 30.0,
-                  left: 5.0,
-                  child: IconButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      icon: const Icon(Icons.arrow_back)))
-            ])));
+    //               // child: const GlobalButton(text: 'Iniciar sesión'),
+    //             ],
+    //           ),
+    //           Positioned(
+    //               top: 30.0,
+    //               left: 5.0,
+    //               child: IconButton(
+    //                   onPressed: () {
+    //                     Navigator.pop(context);
+    //                   },
+    //                   icon: const Icon(Icons.arrow_back)))
+    //         ])));
   }
 }

@@ -49,7 +49,7 @@ class User {
       "last_name": lastName,
       "identity_document": identityDocument,
       "date_of_birth": birthDate,
-      "residence_city": residenceCity,
+      "residence_city": int.parse(residenceCity),
       //"is_active": isActive == 1 ? true : false,
       "password": password,
       "type" : type,

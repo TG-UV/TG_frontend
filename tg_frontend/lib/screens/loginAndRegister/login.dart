@@ -33,9 +33,7 @@ class _LoginState extends State<Login> {
 
   Future<void> loginUser(String username, String password) async {
     final token = await userDatasourceImpl.getUserAuth(
-        endPoint: endPoint.baseUrl + endPoint.getUserAuth,
-        username: username,
-        password: password);
+        username: username, password: password);
     token != null
         ? saveAuthInformation(token, username, password)
         : showErrorMessage('El usuario no existe, intente de nuevo');
@@ -43,6 +41,7 @@ class _LoginState extends State<Login> {
 
   void saveAuthInformation(token, username, password) async {
     await AuthStorage().saveToken(token);
+    print('tokennnnnn-----------$token');
     await AuthStorage().saveNickname(username);
     await AuthStorage().savePassword(password);
     userDatasourceImpl.getUserRemote(
@@ -118,40 +117,40 @@ class _LoginState extends State<Login> {
                                   passwordLoginController.text);
                             }),
                       ]),
-                      Row(
-                          children: <Widget>[
-                            const Expanded(
-                              child: Text(
-                                '¿No tienes una cuenta?',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontFamily: 'Jost',
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.black,
-                                ),
-                              ),
+                  Row(
+                    children: <Widget>[
+                      const Expanded(
+                        child: Text(
+                          '¿No tienes una cuenta?',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontFamily: 'Jost',
+                            fontSize: 17,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: TextButton(
+                          onPressed: () {
+                            //Get.to(() => const SignUp());
+                            Get.to(() => const SignUp());
+                          },
+                          child: const Text(
+                            'Regístrate !',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontFamily: 'Jost',
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.red,
                             ),
-                            Expanded(
-                              child: TextButton(
-                                onPressed: () {
-                                  //Get.to(() => const SignUp());
-                                  Get.to(() => const SignUp());
-                                },
-                                child: const Text(
-                                  'Regístrate !',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontFamily: 'Jost',
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.red,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        )
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
                   // Positioned(
                   //     top: 30.0,
                   //     left: 5.0,

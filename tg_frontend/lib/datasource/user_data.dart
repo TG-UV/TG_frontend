@@ -3,6 +3,7 @@ import 'package:tg_frontend/datasource/endPoints/end_point.dart';
 import 'package:tg_frontend/device/local_tables.dart';
 import 'package:tg_frontend/models/user_model.dart';
 import 'package:dio/dio.dart';
+import 'package:tg_frontend/models/vehicle_model.dart';
 import 'package:tg_frontend/services/auth_services.dart';
 import 'package:tg_frontend/datasource/local_database_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -11,13 +12,12 @@ import 'dart:convert';
 
 abstract class UserDatasource {
   Future<void> insertUserLocal({required User user});
-  Future<void> insertUserRemote({required User user});
+  Future<int> insertUserRemote({required User user});
+  Future<int> insertVehicleRemote({required Vehicle vehicle});
   Future<void> getUserRemote({required String endPoint});
   Future<Map<String, dynamic>?> getVehicleOptionsRemote();
   Future<String?> getUserAuth(
-      {required String endPoint,
-      required String username,
-      required String password});
+      {required String username, required String password});
   Future<User> getUserLocal();
   // Future<User> requestLoginUserRemote(
   //     {required String nick, required String password});
@@ -39,9 +39,8 @@ class UserDatasourceMethods implements UserDatasource {
 
   Future<void> initDatabase() async {
     database = await databaseProvider.database;
-        token = await AuthStorage().getToken();
+    token = await AuthStorage().getToken();
   }
-
 
   @override
   Future<int> insertUserRemote({required User user}) async {
@@ -53,7 +52,26 @@ class UserDatasourceMethods implements UserDatasource {
       response = await dio.post(_endPoints.baseUrl + _endPoints.getAndPostUser,
           data: jsonUser);
       User userResponse = User.fromJson(response.data);
-        insertUserLocal(user: userResponse);
+      insertUserLocal(user: userResponse);
+      sent++;
+    } catch (e) {
+      rethrow;
+    }
+    return sent;
+  }
+
+  @override
+  Future<int> insertVehicleRemote({required Vehicle vehicle}) async {
+    Response? response;
+    int sent = 0;
+    try {
+      Map<String, dynamic> jsonUser = vehicle.toJson();
+      dio.options.headers['Authorization'] = 'Token $token';
+      response = await dio.post(
+          _endPoints.baseUrl + _endPoints.getAndPostVehicle,
+          data: jsonUser);
+      // User userResponse = User.fromJson(response.data);
+      // insertUserLocal(user: userResponse);
       sent++;
     } catch (e) {
       rethrow;
@@ -129,13 +147,15 @@ class UserDatasourceMethods implements UserDatasource {
 
   @override
   Future<Map<String, dynamic>?> getVehicleOptionsRemote() async {
-    String? token = await AuthStorage().getToken();
-    Map<String, dynamic>?  options;
+    //String? token = await AuthStorage().getToken();
+    token = '0e82ae3cb06e3e4611ee2b3986951a2720659243';
+    Map<String, dynamic>? options;
 
     if (token != null) {
       try {
         dio.options.headers['Authorization'] = 'Token $token';
-        Response response = await dio.get(_endPoints.baseUrl+_endPoints.getVehicleOptions);
+        Response response =
+            await dio.get(_endPoints.baseUrl + _endPoints.getVehicleOptions);
         options = json.decode(response.data);
       } catch (error) {
         print('Error al realizar la solicitud vehiclesOptions: $error');
@@ -148,13 +168,11 @@ class UserDatasourceMethods implements UserDatasource {
 
   @override
   Future<String?> getUserAuth(
-      {required String endPoint,
-      required String username,
-      required String password}) async {
+      {required String username, required String password}) async {
     String? token;
     try {
       var response = await dio.post(
-        endPoint,
+        _endPoints.baseUrl + _endPoints.getUserAuth,
         data: {"password": password, "email": username},
       );
 

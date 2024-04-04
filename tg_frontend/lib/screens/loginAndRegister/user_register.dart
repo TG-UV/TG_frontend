@@ -7,7 +7,7 @@ import 'package:tg_frontend/widgets/large_button.dart';
 import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/datasource/user_data.dart';
 import 'package:tg_frontend/device/environment.dart';
-
+import 'package:intl/intl.dart';
 
 class UserRegister extends StatefulWidget {
   const UserRegister({super.key, required this.userType});
@@ -30,10 +30,12 @@ class _UserRegisterState extends State<UserRegister> {
   final TextEditingController residenceController = TextEditingController();
 
   void submitForm(BuildContext context) async {
-
     if (_formKey.currentState!.validate()) {
-      //List<Travel> travelList = [];
-       user = User(
+      DateTime now = DateTime.now();
+      DateTime newTime = now.add(const Duration(minutes: 10));
+      String formattedTime = DateFormat('HH:mm:ss').format(newTime);
+      dateController.text = formattedTime;
+      user = User(
         idUser: 0,
         identityDocument: nameController.text,
         phoneNumber: phoneController.text,
@@ -42,16 +44,14 @@ class _UserRegisterState extends State<UserRegister> {
         birthDate: dateController.text,
         residenceCity: residenceController.text,
         type: widget.userType,
-        email: "",
+        email: emailController.text,
         password: "",
         isActive: 1,
-
-          );
+      );
       //userDatasourceImpl.insertUserRemote(user: user);
-       widget.userType == 2 ?
-                    Get.to(() => VehicleRegister(user: user))
-                    : Get.to(() =>  PasswordRegister(user: user));
-      
+      widget.userType == 2
+          ? Get.to(() => VehicleRegister(user: user))
+          : Get.to(() => PasswordRegister(user: user));
     } else {
       AlertDialog(
           title: const Text("Error"),
@@ -75,90 +75,92 @@ class _UserRegisterState extends State<UserRegister> {
         body: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             alignment: Alignment.center,
-            child: Stack(
-      children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const SizedBox(height: 100),
-            Container(
-              alignment: Alignment.center,
-              child: Text(
-                "Regístrate",
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-            ),
+            child: Form(
+                key: _formKey, // Aquí se usa la clave _formKey
+                child: Stack(
+                  children: [
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SizedBox(height: 100),
+                        Container(
+                          alignment: Alignment.center,
+                          child: Text(
+                            "Regístrate",
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                        ),
 
-            const SizedBox(height: 50),
-            InputField(
-              controller: nameController,
-              textInput: 'Nombre',
-              textInputType: TextInputType.text,
-              obscure: false,
-              icon: const Icon(Icons.person),
-            ),
-            const SizedBox(height: 15),
-            InputField(
-              controller: lastNameController,
-              textInput: 'Apellido',
-              textInputType: TextInputType.text,
-              obscure: false,
-              icon: const Icon(Icons.person),
-            ),
-            const SizedBox(height: 15),
-            InputField(
-              controller: dateController,
-              textInput: 'Fecha de nacimiento',
-              textInputType: TextInputType.text,
-              obscure: false,
-              icon: const Icon(Icons.calendar_today_rounded),
-            ),
-            const SizedBox(height: 15),
-            InputField(
-              controller: phoneController,
-              textInput: 'Celular',
-              textInputType: TextInputType.text,
-              obscure: false,
-              icon: const Icon(Icons.phone),
-            ),
-            const SizedBox(height: 15),
-            InputField(
-              controller: emailController,
-              textInput: 'Correo Insitucional',
-              textInputType: TextInputType.text,
-              obscure: false,
-              icon: const Icon(Icons.mail),
-            ),
-            const SizedBox(height: 15),
-            InputField(
-              controller: residenceController,
-              textInput: 'Ciudad de residencia',
-              textInputType: TextInputType.text,
-              obscure: false,
-              icon: const Icon(Icons.location_city),
-            ),
-            const SizedBox(height: 100),
-            Container(
-              alignment: Alignment.center,
-              child: LargeButton(
-                  text: 'Continuar',
-                  large: true,
-                  onPressed: () {
-                   submitForm(context);
-                  }),
-            ),
-            // child: const GlobalButton(text: 'Iniciar sesión'),
-          ],
-        ),
-        Positioned(
-            top: 30.0,
-            left: 5.0,
-            child: IconButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                icon: const Icon(Icons.arrow_back)))
-      ],
-    )));
+                        const SizedBox(height: 50),
+                        InputField(
+                          controller: nameController,
+                          textInput: 'Nombre',
+                          textInputType: TextInputType.text,
+                          obscure: false,
+                          icon: const Icon(Icons.person),
+                        ),
+                        const SizedBox(height: 15),
+                        InputField(
+                          controller: lastNameController,
+                          textInput: 'Apellido',
+                          textInputType: TextInputType.text,
+                          obscure: false,
+                          icon: const Icon(Icons.person),
+                        ),
+                        const SizedBox(height: 15),
+                        InputField(
+                          controller: dateController,
+                          textInput: 'Fecha de nacimiento',
+                          textInputType: TextInputType.text,
+                          obscure: false,
+                          icon: const Icon(Icons.calendar_today_rounded),
+                        ),
+                        const SizedBox(height: 15),
+                        InputField(
+                          controller: phoneController,
+                          textInput: 'Celular',
+                          textInputType: TextInputType.text,
+                          obscure: false,
+                          icon: const Icon(Icons.phone),
+                        ),
+                        const SizedBox(height: 15),
+                        InputField(
+                          controller: emailController,
+                          textInput: 'Correo Insitucional',
+                          textInputType: TextInputType.text,
+                          obscure: false,
+                          icon: const Icon(Icons.mail),
+                        ),
+                        const SizedBox(height: 15),
+                        InputField(
+                          controller: residenceController,
+                          textInput: 'Ciudad de residencia',
+                          textInputType: TextInputType.text,
+                          obscure: false,
+                          icon: const Icon(Icons.location_city),
+                        ),
+                        const SizedBox(height: 100),
+                        Container(
+                          alignment: Alignment.center,
+                          child: LargeButton(
+                              text: 'Continuar',
+                              large: true,
+                              onPressed: () {
+                                submitForm(context);
+                              }),
+                        ),
+                        // child: const GlobalButton(text: 'Iniciar sesión'),
+                      ],
+                    ),
+                    Positioned(
+                        top: 30.0,
+                        left: 5.0,
+                        child: IconButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            icon: const Icon(Icons.arrow_back)))
+                  ],
+                ))));
   }
 }
