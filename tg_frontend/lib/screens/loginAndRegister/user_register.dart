@@ -33,11 +33,11 @@ class _UserRegisterState extends State<UserRegister> {
     if (_formKey.currentState!.validate()) {
       DateTime now = DateTime.now();
       DateTime newTime = now.add(const Duration(minutes: 10));
-      String formattedTime = DateFormat('HH:mm:ss').format(newTime);
+      String formattedTime = DateFormat('yyyy-MM-dd').format(newTime);
       dateController.text = formattedTime;
       user = User(
         idUser: 0,
-        identityDocument: nameController.text,
+        identityDocument: '367289345',
         phoneNumber: phoneController.text,
         firstName: nameController.text,
         lastName: lastNameController.text,

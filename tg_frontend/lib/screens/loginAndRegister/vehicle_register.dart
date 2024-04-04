@@ -57,34 +57,25 @@ class _VehicleRegisterState extends State<VehicleRegister> {
     if (listResponse != null) {
       return listResponse;
     } else {
-      throw Exception('El usuario no existe, intente de nuevo');
+      throw Exception(
+          'Error al llamar la opciones de vehiculo, intente de nuevo');
     }
   }
 
-// Future<List<VehicleOption>> fetchOptions(String endpoint) async {
-//     final response = await http.get(Uri.parse('https://tu-api.com/$endpoint'));
-//     if (response.statusCode == 200) {
-//       final List<dynamic> data = json.decode(response.body)[endpoint];
-//       return data.map((item) => Option.fromJson(item)).toList();
-//     } else {
-//       throw Exception('Failed to load options');
-//     }
-//   }
   void submitForm(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       //List<Travel> travelList = [];
       vehicle = Vehicle(
           idVehicle: 0,
           licensePlate: licensePlateController.text,
-          vehicleBrand: brandController.value!,
-          vehicleColor: colorController.value!,
-          vehicleModel: modelController.value!,
-          vehicleType: typeController.value!,
+          vehicleBrand: _selectedBrand!,
+          vehicleColor: _selectedColor!,
+          vehicleModel: _selectedModel!,
+          vehicleType: _selectedType!,
           owner: widget.user.idUser);
       //userDatasourceImpl.insertUserRemote(user: user);
       //Get.to(() => const Home());
-       Get.to(() => PasswordRegister(user: widget.user, vehicle: 
-       vehicle));
+      Get.to(() => PasswordRegister(user: widget.user, vehicle: vehicle));
     } else {
       AlertDialog(
           title: const Text("Error"),
@@ -104,8 +95,14 @@ class _VehicleRegisterState extends State<VehicleRegister> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<Map<String, dynamic>>(
-        future: Future.value(options),
+
+    return Scaffold(
+        body: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            alignment: Alignment.center,
+            child:
+     FutureBuilder<Map<String, dynamic>>(
+        future: fetchOptions(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -114,6 +111,7 @@ class _VehicleRegisterState extends State<VehicleRegister> {
                 child: Text(
                     'Error al cargar future de vehicle options: ${snapshot.error}'));
           } else {
+            options = snapshot.data!;
             return SingleChildScrollView(
                 padding: const EdgeInsets.all(16.0),
                 child: Form(
@@ -121,16 +119,12 @@ class _VehicleRegisterState extends State<VehicleRegister> {
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          TextFormField(
+                          InputField(
                             controller: licensePlateController,
-                            decoration:
-                                const InputDecoration(labelText: 'Placa'),
-                            validator: (value) {
-                              if (value == null) {
-                                return 'Por favor ingrese la placa';
-                              }
-                              return null;
-                            },
+                            textInput: 'Placa',
+                            textInputType: TextInputType.text,
+                            obscure: false,
+                            icon: const Icon(null),
                           ),
                           const SizedBox(height: 16.0),
                           DropdownButtonFormField<int>(
@@ -140,14 +134,11 @@ class _VehicleRegisterState extends State<VehicleRegister> {
                                 _selectedType = value;
                               });
                             },
-                            items: (snapshot.data?['types'] as List<dynamic>)
+                            items: (options['types'] as List<dynamic>)
                                 .map<DropdownMenuItem<int>>((type) {
                               return DropdownMenuItem<int>(
-                                value: VehicleOption.fromJson(
-                                        type, 'id_vehicle_type')
-                                    .id,
-                                child: Text(
-                                    VehicleOption.fromJson(type, 'name').name),
+                                value: type['id_vehicle_type'],
+                                child: Text(type['name']),
                               );
                             }).toList(),
                             decoration: InputDecoration(labelText: 'Tipo'),
@@ -166,14 +157,11 @@ class _VehicleRegisterState extends State<VehicleRegister> {
                                 _selectedBrand = value;
                               });
                             },
-                            items: (snapshot.data?['brands'] as List<dynamic>)
+                            items: (options['brands'] as List<dynamic>)
                                 .map<DropdownMenuItem<int>>((brand) {
                               return DropdownMenuItem<int>(
-                                value: VehicleOption.fromJson(
-                                        brand, 'id_vehicle_brand')
-                                    .id,
-                                child: Text(
-                                    VehicleOption.fromJson(brand, 'name').name),
+                                value: brand['id_vehicle_brand'],
+                                child: Text(brand['name']),
                               );
                             }).toList(),
                             decoration: InputDecoration(labelText: 'Marca'),
@@ -192,14 +180,11 @@ class _VehicleRegisterState extends State<VehicleRegister> {
                                 _selectedModel = value;
                               });
                             },
-                            items: (snapshot.data?['models'] as List<dynamic>)
+                            items: (options['models'] as List<dynamic>)
                                 .map<DropdownMenuItem<int>>((model) {
                               return DropdownMenuItem<int>(
-                                value: VehicleOption.fromJson(
-                                        model, 'id_vehicle_model')
-                                    .id,
-                                child: Text(
-                                    VehicleOption.fromJson(model, 'name').name),
+                                value: model['id_vehicle_model'],
+                                child: Text(model['name']),
                               );
                             }).toList(),
                             decoration: InputDecoration(labelText: 'Modelo'),
@@ -218,14 +203,11 @@ class _VehicleRegisterState extends State<VehicleRegister> {
                                 _selectedColor = value;
                               });
                             },
-                            items: (snapshot.data?['colors'] as List<dynamic>)
+                            items: (options['colors'] as List<dynamic>)
                                 .map<DropdownMenuItem<int>>((color) {
                               return DropdownMenuItem<int>(
-                                value: VehicleOption.fromJson(
-                                        color, 'id_vehicle_color')
-                                    .id,
-                                child: Text(
-                                    VehicleOption.fromJson(color, 'name').name),
+                                value: color['id_vehicle_color'],
+                                child: Text(color['name']),
                               );
                             }).toList(),
                             decoration: InputDecoration(labelText: 'Color'),
@@ -247,7 +229,7 @@ class _VehicleRegisterState extends State<VehicleRegister> {
                                   })),
                         ])));
           }
-        });
+        })));
     // return Scaffold(
     //     body: Container(
     //         padding: const EdgeInsets.symmetric(horizontal: 16.0),

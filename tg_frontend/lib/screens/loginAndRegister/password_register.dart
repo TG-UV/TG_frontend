@@ -24,26 +24,28 @@ class _PasswordRegisterState extends State<PasswordRegister> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController passwordConfirmationController =
       TextEditingController();
+      int sent = 1;
 
   void submitForm(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       widget.user.password = passwordConfirmationController.text;
-      int sent = await userDatasourceImpl.insertUserRemote(user: widget.user);
+   //   int idUser= await userDatasourceImpl.insertUserRemote(user: widget.user);
+     // if (idUser != 0) {
       if (sent == 1) {
-        User newUser = await userDatasourceImpl.getUserLocal();
-        if (widget.vehicle != null) {
-          Vehicle newVehicle = Vehicle(
-            idVehicle: widget.vehicle!.idVehicle,
-            owner: newUser.idUser,
-            vehicleBrand: widget.vehicle!.vehicleBrand,
-            vehicleColor: widget.vehicle!.vehicleColor,
-            vehicleModel: widget.vehicle!.vehicleModel,
-            vehicleType: widget.vehicle!.vehicleType,
-            licensePlate: widget.vehicle!.licensePlate,
-          );
-          await userDatasourceImpl.insertVehicleRemote(vehicle: newVehicle);
-        }
-        saveAuthInformation(newUser, newUser.email, newUser.password);
+        User newUser = await userDatasourceImpl.getUserLocal(21);
+        // if (widget.vehicle != null) {
+        //   Vehicle newVehicle = Vehicle(
+        //     idVehicle: widget.vehicle!.idVehicle,
+        //     owner: newUser.idUser,
+        //     vehicleBrand: widget.vehicle!.vehicleBrand,
+        //     vehicleColor: widget.vehicle!.vehicleColor,
+        //     vehicleModel: widget.vehicle!.vehicleModel,
+        //     vehicleType: widget.vehicle!.vehicleType,
+        //     licensePlate: widget.vehicle!.licensePlate,
+        //   );
+        //   await userDatasourceImpl.insertVehicleRemote(vehicle: newVehicle);
+        // }
+        saveAuthInformation(newUser, newUser.email, passwordConfirmationController.text);
       }
     } else {
       AlertDialog(
@@ -116,7 +118,7 @@ class _PasswordRegisterState extends State<PasswordRegister> {
                             text: 'Crear cuenta',
                             large: true,
                             onPressed: () {
-                              Get.to(() => const Home());
+                              submitForm(context);
                             }),
                       ]),
                   // child: const GlobalButton(text: 'Iniciar sesión'),

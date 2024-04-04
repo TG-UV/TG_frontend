@@ -32,7 +32,7 @@ class LocalDB {
           $firstName VARCHAR(200),
           $lastName VARCHAR(200),
           $birthDate VARCHAR(200),
-          $residenceCity INTEGER,
+          $residenceCity VARCHAR(200),
           $isActive INTEGER,
           $idUser INTEGER,
           $email VARCHAR(200),
