@@ -29,22 +29,22 @@ class _PasswordRegisterState extends State<PasswordRegister> {
   void submitForm(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       widget.user.password = passwordConfirmationController.text;
-   //   int idUser= await userDatasourceImpl.insertUserRemote(user: widget.user);
-     // if (idUser != 0) {
-      if (sent == 1) {
+     int idUser= await userDatasourceImpl.insertUserRemote(user: widget.user);
+     if (idUser != 0) {
+      ///if (sent == 1) {
         User newUser = await userDatasourceImpl.getUserLocal(21);
-        // if (widget.vehicle != null) {
-        //   Vehicle newVehicle = Vehicle(
-        //     idVehicle: widget.vehicle!.idVehicle,
-        //     owner: newUser.idUser,
-        //     vehicleBrand: widget.vehicle!.vehicleBrand,
-        //     vehicleColor: widget.vehicle!.vehicleColor,
-        //     vehicleModel: widget.vehicle!.vehicleModel,
-        //     vehicleType: widget.vehicle!.vehicleType,
-        //     licensePlate: widget.vehicle!.licensePlate,
-        //   );
-        //   await userDatasourceImpl.insertVehicleRemote(vehicle: newVehicle);
-        // }
+        if (widget.vehicle != null) {
+          Vehicle newVehicle = Vehicle(
+            idVehicle: widget.vehicle!.idVehicle,
+            owner: newUser.idUser,
+            vehicleBrand: widget.vehicle!.vehicleBrand,
+            vehicleColor: widget.vehicle!.vehicleColor,
+            vehicleModel: widget.vehicle!.vehicleModel,
+            vehicleType: widget.vehicle!.vehicleType,
+            licensePlate: widget.vehicle!.licensePlate,
+          );
+          await userDatasourceImpl.insertVehicleRemote(vehicle: newVehicle);
+        }
         saveAuthInformation(newUser, newUser.email, passwordConfirmationController.text);
       }
     } else {
@@ -86,7 +86,7 @@ class _PasswordRegisterState extends State<PasswordRegister> {
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             alignment: Alignment.center,
             child: Form(
-                key: _formKey, // Aquí se usa la clave _formKey
+                key: _formKey, 
                 child: Stack(children: [
                   Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -121,8 +121,6 @@ class _PasswordRegisterState extends State<PasswordRegister> {
                               submitForm(context);
                             }),
                       ]),
-                  // child: const GlobalButton(text: 'Iniciar sesión'),
-
                   Positioned(
                       top: 30.0,
                       left: 5.0,

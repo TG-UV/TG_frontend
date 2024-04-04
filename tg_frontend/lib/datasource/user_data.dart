@@ -19,8 +19,7 @@ abstract class UserDatasource {
   Future<String?> getUserAuth(
       {required String username, required String password});
   Future<User> getUserLocal(int idUser);
-  // Future<User> requestLoginUserRemote(
-  //     {required String nick, required String password});
+ 
 }
 
 class UserDatasourceMethods implements UserDatasource {
@@ -31,16 +30,14 @@ class UserDatasourceMethods implements UserDatasource {
 
   late Database database;
 
-  //final database = await databaseProvider.database;
-
   UserDatasourceMethods() {
     initDatabase();
   }
 
   Future<void> initDatabase() async {
     database = await databaseProvider.database;
-    //token = await AuthStorage().getToken();
-    token = "0e82ae3cb06e3e4611ee2b3986951a2720659243";
+    token = await AuthStorage().getToken();
+    //token = "0e82ae3cb06e3e4611ee2b3986951a2720659243";
   }
 
   @override
@@ -50,8 +47,7 @@ class UserDatasourceMethods implements UserDatasource {
     int sent = 0;
     try {
       Map<String, dynamic> jsonUser = user.toJson();
-      print('user json $jsonUser');
-      dio.options.headers['Authorization'] = 'Token $token';
+            //dio.options.headers['Authorization'] = 'Token $token';
       response = await dio.post(_endPoints.baseUrl + _endPoints.getAndPostUser,
           data: jsonUser);
       userResponse = User.fromJson(response.data);
@@ -71,7 +67,7 @@ class UserDatasourceMethods implements UserDatasource {
       Map<String, dynamic> jsonUser = vehicle.toJson();
       dio.options.headers['Authorization'] = 'Token $token';
       response = await dio.post(
-          _endPoints.baseUrl + _endPoints.getAndPostVehicle,
+          _endPoints.baseUrl + _endPoints.postVehicle,
           data: jsonUser);
       // User userResponse = User.fromJson(response.data);
       // insertUserLocal(user: userResponse);
@@ -109,21 +105,12 @@ class UserDatasourceMethods implements UserDatasource {
   @override
   Future<User> getUserLocal(int idUser) async {
     var response;
-    // List<Map<String, dynamic>> userMaps;
-    // User user;
     try {
       response = await database.query(
         LocalDB.tbUser,
         where: '${LocalDB.idUser} = ?',
         whereArgs: [idUser],
       ).timeout(const Duration(seconds: 300));
-
-      // if (userMaps.isNotEmpty) {
-      //  // insertUserLocal(user:  User.fromJson(userMaps.first));
-      //   return User.fromJson(userMaps.first);
-      // } else {
-      //   return null;
-      // }
     } catch (e) {
       print(e.toString());
     }
@@ -156,16 +143,14 @@ class UserDatasourceMethods implements UserDatasource {
 
   @override
   Future<Map<String, dynamic>?> getVehicleOptionsRemote() async {
-    //String? token = await AuthStorage().getToken();
-    token = '0e82ae3cb06e3e4611ee2b3986951a2720659243';
+    
     Map<String, dynamic>? options;
 
     if (token != null) {
       try {
-        dio.options.headers['Authorization'] = 'Token $token';
+        //dio.options.headers['Authorization'] = 'Token $token';
         Response response =
             await dio.get(_endPoints.baseUrl + _endPoints.getVehicleOptions);
-            //print(response);
         if (response.data is Map<String, dynamic>) {
           options = response.data;
         }
@@ -194,7 +179,6 @@ class UserDatasourceMethods implements UserDatasource {
         token = responseData['auth_token'];
       }
     } catch (error) {
-      // Maneja los errores de autenticación aquí.
       print('Error al autenticar: $error');
     }
     return token;

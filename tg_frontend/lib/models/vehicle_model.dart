@@ -37,7 +37,7 @@ class Vehicle {
       'vehicle_brand' : vehicleBrand,
       'vehicle_model': vehicleModel,
       'vehicle_color': vehicleColor,
-      'owner' : owner,
+      //'owner' : owner,
     };
   }
 }
