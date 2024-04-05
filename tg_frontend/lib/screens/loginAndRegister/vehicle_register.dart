@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tg_frontend/models/vehicleOptions_model.dart';
 import 'package:tg_frontend/models/vehicle_model.dart';
-import 'package:tg_frontend/screens/home.dart';
 import 'package:tg_frontend/screens/loginAndRegister/password_register.dart';
 import 'package:tg_frontend/widgets/input_field.dart';
 import 'package:tg_frontend/widgets/large_button.dart';

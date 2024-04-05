@@ -10,4 +10,5 @@ class EndPoints {
   final String getVehicleOptions = "/vehicle/registration/";
   //final String postDriverVehicleAdd = "/driver/vehicle/add/";
   final String postVehicle = "/driver/vehicle/add/";
+  final String getCities = "/city/";
 }

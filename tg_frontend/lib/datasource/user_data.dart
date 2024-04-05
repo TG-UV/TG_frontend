@@ -19,7 +19,7 @@ abstract class UserDatasource {
   Future<String?> getUserAuth(
       {required String username, required String password});
   Future<User> getUserLocal(int idUser);
- 
+  Future<List<dynamic>?> getUserCitiesRemote();
 }
 
 class UserDatasourceMethods implements UserDatasource {
@@ -183,4 +183,25 @@ class UserDatasourceMethods implements UserDatasource {
     }
     return token;
   }
+
+    @override
+  Future<List<dynamic>?> getUserCitiesRemote() async {
+    
+    List<dynamic>? citiesOptions;
+      try {
+        //dio.options.headers['Authorization'] = 'Token $token';
+         Response response =
+            await dio.get(_endPoints.baseUrl + _endPoints.getCities);
+            //citiesOptions = response.data;
+        if (response.data is List<dynamic>?) {
+          citiesOptions = response.data;
+        }
+        
+      } catch (error) {
+        print('Error al realizar la solicitud vehiclesOptions: $error');
+      }
+   
+    return citiesOptions;
+  }
+
 }
