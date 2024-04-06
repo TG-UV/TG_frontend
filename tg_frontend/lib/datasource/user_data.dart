@@ -11,16 +11,15 @@ import 'package:sqflite/sqflite.dart';
 import 'dart:convert';
 
 abstract class UserDatasource {
-  Future<void> insertUserLocal({required User user});
+  Future<int> insertUserLocal({required User user});
   Future<int> insertUserRemote({required User user});
   Future<int> insertVehicleRemote({required Vehicle vehicle});
   Future<void> getUserRemote({required String endPoint});
   Future<Map<String, dynamic>?> getVehicleOptionsRemote();
   Future<String?> getUserAuth(
       {required String username, required String password});
-  Future<User> getUserLocal();
-  // Future<User> requestLoginUserRemote(
-  //     {required String nick, required String password});
+  Future<User> getUserLocal(int idUser);
+  Future<List<dynamic>?> getUserCitiesRemote();
 }
 
 class UserDatasourceMethods implements UserDatasource {
@@ -31,8 +30,6 @@ class UserDatasourceMethods implements UserDatasource {
 
   late Database database;
 
-  //final database = await databaseProvider.database;
-
   UserDatasourceMethods() {
     initDatabase();
   }
@@ -40,24 +37,26 @@ class UserDatasourceMethods implements UserDatasource {
   Future<void> initDatabase() async {
     database = await databaseProvider.database;
     token = await AuthStorage().getToken();
+    //token = "0e82ae3cb06e3e4611ee2b3986951a2720659243";
   }
 
   @override
   Future<int> insertUserRemote({required User user}) async {
     Response? response;
+    User userResponse;
     int sent = 0;
     try {
       Map<String, dynamic> jsonUser = user.toJson();
-      dio.options.headers['Authorization'] = 'Token $token';
+            //dio.options.headers['Authorization'] = 'Token $token';
       response = await dio.post(_endPoints.baseUrl + _endPoints.getAndPostUser,
           data: jsonUser);
-      User userResponse = User.fromJson(response.data);
+      userResponse = User.fromJson(response.data);
       insertUserLocal(user: userResponse);
       sent++;
     } catch (e) {
       rethrow;
     }
-    return sent;
+    return userResponse.idUser;
   }
 
   @override
@@ -68,7 +67,7 @@ class UserDatasourceMethods implements UserDatasource {
       Map<String, dynamic> jsonUser = vehicle.toJson();
       dio.options.headers['Authorization'] = 'Token $token';
       response = await dio.post(
-          _endPoints.baseUrl + _endPoints.getAndPostVehicle,
+          _endPoints.baseUrl + _endPoints.postVehicle,
           data: jsonUser);
       // User userResponse = User.fromJson(response.data);
       // insertUserLocal(user: userResponse);
@@ -80,7 +79,8 @@ class UserDatasourceMethods implements UserDatasource {
   }
 
   @override
-  Future<void> insertUserLocal({required User user}) async {
+  Future<int> insertUserLocal({required User user}) async {
+    int sent=0;
     try {
       //final database = await databaseProvider.database;
       await database.insert(LocalDB.tbUser, {
@@ -95,29 +95,22 @@ class UserDatasourceMethods implements UserDatasource {
         LocalDB.identityDocument: user.identityDocument,
         LocalDB.type: user.type,
       }).timeout(const Duration(seconds: 300));
+      sent ++;
     } catch (e) {
       print('Error al insertar user locar ' + e.toString());
     }
+    return sent;
   }
 
   @override
-  Future<User> getUserLocal() async {
+  Future<User> getUserLocal(int idUser) async {
     var response;
-    // List<Map<String, dynamic>> userMaps;
-    // User user;
     try {
       response = await database.query(
         LocalDB.tbUser,
         where: '${LocalDB.idUser} = ?',
-        whereArgs: [14],
+        whereArgs: [idUser],
       ).timeout(const Duration(seconds: 300));
-
-      // if (userMaps.isNotEmpty) {
-      //  // insertUserLocal(user:  User.fromJson(userMaps.first));
-      //   return User.fromJson(userMaps.first);
-      // } else {
-      //   return null;
-      // }
     } catch (e) {
       print(e.toString());
     }
@@ -126,15 +119,17 @@ class UserDatasourceMethods implements UserDatasource {
   }
 
   @override
-  Future<void> getUserRemote({required String endPoint}) async {
+  Future<int> getUserRemote({required String endPoint}) async {
     String? token = await AuthStorage().getToken();
     User user;
+    int idUser = 0;
 
     if (token != null) {
       try {
         dio.options.headers['Authorization'] = 'Token $token';
         Response response = await dio.get(endPoint);
         user = User.fromJson(response.data);
+        idUser = user.idUser;
         print(user);
         insertUserLocal(user: user);
       } catch (error) {
@@ -143,20 +138,23 @@ class UserDatasourceMethods implements UserDatasource {
     } else {
       print('No se encontró ningún token.');
     }
+    return idUser;
   }
 
   @override
   Future<Map<String, dynamic>?> getVehicleOptionsRemote() async {
-    //String? token = await AuthStorage().getToken();
-    token = '0e82ae3cb06e3e4611ee2b3986951a2720659243';
+    
     Map<String, dynamic>? options;
 
     if (token != null) {
       try {
-        dio.options.headers['Authorization'] = 'Token $token';
+        //dio.options.headers['Authorization'] = 'Token $token';
         Response response =
             await dio.get(_endPoints.baseUrl + _endPoints.getVehicleOptions);
-        options = json.decode(response.data);
+        if (response.data is Map<String, dynamic>) {
+          options = response.data;
+        }
+        print('response data $options');
       } catch (error) {
         print('Error al realizar la solicitud vehiclesOptions: $error');
       }
@@ -181,9 +179,29 @@ class UserDatasourceMethods implements UserDatasource {
         token = responseData['auth_token'];
       }
     } catch (error) {
-      // Maneja los errores de autenticación aquí.
       print('Error al autenticar: $error');
     }
     return token;
   }
+
+    @override
+  Future<List<dynamic>?> getUserCitiesRemote() async {
+    
+    List<dynamic>? citiesOptions;
+      try {
+        //dio.options.headers['Authorization'] = 'Token $token';
+         Response response =
+            await dio.get(_endPoints.baseUrl + _endPoints.getCities);
+            //citiesOptions = response.data;
+        if (response.data is List<dynamic>?) {
+          citiesOptions = response.data;
+        }
+        
+      } catch (error) {
+        print('Error al realizar la solicitud vehiclesOptions: $error');
+      }
+   
+    return citiesOptions;
+  }
+
 }

@@ -7,7 +7,13 @@ import 'package:tg_frontend/widgets/large_button.dart';
 import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/datasource/user_data.dart';
 import 'package:tg_frontend/device/environment.dart';
+//import 'package:flutter_datetime_picker/flutter_datetime_picker.dart' show  DatePicker;
+//import 'package:flutter_datetime_picker/flutter_datetime_picker.dart' as dt_picker;
 import 'package:intl/intl.dart';
+
+
+
+
 
 class UserRegister extends StatefulWidget {
   const UserRegister({super.key, required this.userType});
@@ -21,34 +27,67 @@ class _UserRegisterState extends State<UserRegister> {
       Environment.sl.get<UserDatasourceMethods>();
   final _formKey = GlobalKey<FormState>();
   late User user;
+  late List<dynamic>? cities;
+  int? _selectedCity;
+  DateTime? _selectedDate;
 
   final TextEditingController nameController = TextEditingController();
+  final TextEditingController identifactionController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
   final TextEditingController dateController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController residenceController = TextEditingController();
 
+  @override
+  void initState() {
+    super.initState();
+    _fetchCities();
+  }
+  
+ Future<void> _selectDate(BuildContext context) async {
+  final DateTime? selectedTime = await showDatePicker(
+    context: context,
+    firstDate: DateTime(1950),
+    lastDate: DateTime(2010)
+  );
+  if(selectedTime != null){
+   
+          _selectedDate = selectedTime;
+
+
+  }
+  }
+
+  Future<List<dynamic>?> _fetchCities() async {
+    final List<dynamic>? jsonResponse =
+        await userDatasourceImpl.getUserCitiesRemote();
+    if (jsonResponse != null) {
+      
+              cities = jsonResponse;
+     
+    } else {
+      print('Error al obtener la lista de ciudades desde la API.');
+    }
+    return cities;
+  }
+
   void submitForm(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
-      DateTime now = DateTime.now();
-      DateTime newTime = now.add(const Duration(minutes: 10));
-      String formattedTime = DateFormat('HH:mm:ss').format(newTime);
-      dateController.text = formattedTime;
+      
       user = User(
         idUser: 0,
-        identityDocument: nameController.text,
+        identityDocument: identifactionController.text,
         phoneNumber: phoneController.text,
         firstName: nameController.text,
         lastName: lastNameController.text,
         birthDate: dateController.text,
-        residenceCity: residenceController.text,
+        residenceCity: _selectedCity.toString(),
         type: widget.userType,
         email: emailController.text,
         password: "",
         isActive: 1,
       );
-      //userDatasourceImpl.insertUserRemote(user: user);
       widget.userType == 2
           ? Get.to(() => VehicleRegister(user: user))
           : Get.to(() => PasswordRegister(user: user));
@@ -72,11 +111,22 @@ class _UserRegisterState extends State<UserRegister> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            alignment: Alignment.center,
-            child: Form(
-                key: _formKey, // Aquí se usa la clave _formKey
+        body: 
+     FutureBuilder<List<dynamic>?>(
+        future: _fetchCities(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(
+                child: Text(
+                    'Error al cargar ciudades: ${snapshot.error}'));
+          } else {
+            cities = snapshot.data!;
+            return SingleChildScrollView(
+      padding: const EdgeInsets.all(16.0),
+      child: Form(
+        key: _formKey, // Aquí se usa la clave _formKey
                 child: Stack(
                   children: [
                     Column(
@@ -109,12 +159,34 @@ class _UserRegisterState extends State<UserRegister> {
                         ),
                         const SizedBox(height: 15),
                         InputField(
-                          controller: dateController,
-                          textInput: 'Fecha de nacimiento',
+                          controller: identifactionController,
                           textInputType: TextInputType.text,
                           obscure: false,
-                          icon: const Icon(Icons.calendar_today_rounded),
+                          textInput: 'Documento de identificación',
+                          icon: const Icon(Icons.insert_drive_file),
                         ),
+                        const SizedBox(height: 15),
+                        GestureDetector(
+      onTap: () {
+    // Tu función asíncrona aquí, por ejemplo:
+    _selectDate(context); 
+      // Lógica asíncrona aquí
+    },
+      child: InputField(
+                textInput: 'Fecha de Nacimiento',
+                textInputType: TextInputType.text,
+                controller: TextEditingController(
+                  text: _selectedDate != null
+                      ? dateController.text= DateFormat('yyyy-MM-dd').format(_selectedDate!)
+                      : '',
+                ),
+                obscure: false,
+                icon: const Icon(Icons.calendar_month),
+                
+                
+              ),
+            ),
+                     
                         const SizedBox(height: 15),
                         InputField(
                           controller: phoneController,
@@ -132,12 +204,28 @@ class _UserRegisterState extends State<UserRegister> {
                           icon: const Icon(Icons.mail),
                         ),
                         const SizedBox(height: 15),
-                        InputField(
-                          controller: residenceController,
-                          textInput: 'Ciudad de residencia',
-                          textInputType: TextInputType.text,
-                          obscure: false,
-                          icon: const Icon(Icons.location_city),
+                        DropdownButtonFormField<int>(
+                          value: _selectedCity,
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedCity = value;
+                            });
+                          },
+                          items: cities!
+                              .map<DropdownMenuItem<int>>((city) {
+                            return DropdownMenuItem<int>(
+                              value: city['id_city'] as int,
+                              child: Text(city['name'] as String),
+                            );
+                          }).toList(),
+                          decoration:
+                              const InputDecoration(labelText: 'Ciudad'),
+                          validator: (value) {
+                            if (value == null) {
+                              return 'Por favor seleccione la ciudad';
+                            }
+                            return null;
+                          },
                         ),
                         const SizedBox(height: 100),
                         Container(
@@ -161,6 +249,6 @@ class _UserRegisterState extends State<UserRegister> {
                             },
                             icon: const Icon(Icons.arrow_back)))
                   ],
-                ))));
+                )));}}));
   }
 }

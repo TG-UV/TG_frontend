@@ -74,12 +74,12 @@ class _HomeState extends State<Home> {
   //   });
   // }
 
-  Future<User> _getUser() async {
-    database = await databaseProvider.database;
-    userDatasourceImpl = UserDatasourceMethods();
-    User user = await userDatasourceImpl.getUserLocal();
-    return user;
-  }
+  // Future<User> _getUser() async {
+  //   database = await databaseProvider.database;
+  //   userDatasourceImpl = UserDatasourceMethods();
+  //   User user = await userDatasourceImpl.getUserLocal();
+  //   return user;
+  // }
 
   @override
   Widget build(BuildContext context) {

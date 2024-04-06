@@ -24,13 +24,15 @@ class _PasswordRegisterState extends State<PasswordRegister> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController passwordConfirmationController =
       TextEditingController();
+      int sent = 1;
 
   void submitForm(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       widget.user.password = passwordConfirmationController.text;
-      int sent = await userDatasourceImpl.insertUserRemote(user: widget.user);
-      if (sent == 1) {
-        User newUser = await userDatasourceImpl.getUserLocal();
+     int idUser= await userDatasourceImpl.insertUserRemote(user: widget.user);
+     if (idUser != 0) {
+      ///if (sent == 1) {
+        User newUser = await userDatasourceImpl.getUserLocal(21);
         if (widget.vehicle != null) {
           Vehicle newVehicle = Vehicle(
             idVehicle: widget.vehicle!.idVehicle,
@@ -43,7 +45,7 @@ class _PasswordRegisterState extends State<PasswordRegister> {
           );
           await userDatasourceImpl.insertVehicleRemote(vehicle: newVehicle);
         }
-        saveAuthInformation(newUser, newUser.email, newUser.password);
+        saveAuthInformation(newUser, newUser.email, passwordConfirmationController.text);
       }
     } else {
       AlertDialog(
@@ -84,7 +86,7 @@ class _PasswordRegisterState extends State<PasswordRegister> {
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             alignment: Alignment.center,
             child: Form(
-                key: _formKey, // Aquí se usa la clave _formKey
+                key: _formKey, 
                 child: Stack(children: [
                   Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -116,11 +118,9 @@ class _PasswordRegisterState extends State<PasswordRegister> {
                             text: 'Crear cuenta',
                             large: true,
                             onPressed: () {
-                              Get.to(() => const Home());
+                              submitForm(context);
                             }),
                       ]),
-                  // child: const GlobalButton(text: 'Iniciar sesión'),
-
                   Positioned(
                       top: 30.0,
                       left: 5.0,

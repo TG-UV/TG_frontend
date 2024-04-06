@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tg_frontend/device/environment.dart';
 import 'package:tg_frontend/screens/travelScreens/available_travels.dart';
 import 'package:tg_frontend/screens/travelScreens/new_travel.dart';
+import 'package:tg_frontend/screens/travelScreens/search_travels.dart';
 import 'package:tg_frontend/widgets/large_button.dart';
 import 'package:get/get.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -102,25 +103,29 @@ class _MapScreenState extends State<MapScreen> {
             style: Theme.of(context).textTheme.titleLarge,
           )),
       Positioned(
-        top: 600.0,
+        top: MediaQuery.of(context).size.width / 1.5,
         left: 50,
         right: 50,
         child: LargeButton(
           text: 'Voy para la U',
           onPressed: () {
-            Get.to(() => const NewTravel());
+            user.type == 2?
+            Get.to(() => const NewTravel())
+            : Get.to(() => const SearchTravels());
           },
           large: true,
         ),
       ),
       Positioned(
-        top: 700.0,
+        top: MediaQuery.of(context).size.width / 1.5 + 100,
         left: 50,
         right: 50,
         child: LargeButton(
           text: 'Salgo de la U',
           onPressed: () {
-            Get.to(() => const AvailableTravels());
+            user.type == 2?
+            Get.to(() => const NewTravel())
+            : Get.to(() => const SearchTravels());
           },
           large: true,
         ),

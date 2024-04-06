@@ -76,7 +76,7 @@ class TravelDatasourceMethods implements TravelDatasource {
       String? token = await AuthStorage().getToken();
       Map<String, dynamic> jsonTravel = travel.toJson();
       dio.options.headers['Authorization'] = 'Token $token';
-      response = await dio.post(_endPoints.baseUrl + _endPoints.getTravel,
+      response = await dio.post(_endPoints.baseUrl + _endPoints.postTravel,
           data: jsonTravel);
       // String data = Travel.toJson(travels[sent] as Travel);
 
