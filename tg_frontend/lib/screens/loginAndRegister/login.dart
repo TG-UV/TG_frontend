@@ -77,22 +77,21 @@ class _LoginState extends State<Login> {
                   Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const SizedBox(height: 130),
+                        const SizedBox(height: 100),
                         Center(
                             child: Image.asset(
                           'assets/1200px-U+2301.svg.png',
-                          width: 100, // ajusta el ancho según tus necesidades
-                          height: 100, // ajusta la altura según tus necesidades
-                          fit: BoxFit
-                              .cover, // ajusta el modo de ajuste de la imagen
+                          width: 100,
+                          height: 100,
+                          fit: BoxFit.cover,
                         )),
-                        const SizedBox(height: 30),
+                        const SizedBox(height: 60),
                         Text(
                           "Inicia sesión",
                           textAlign: TextAlign.center,
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
-                        const SizedBox(height: 85),
+                        const SizedBox(height: 50),
                         InputField(
                           controller: mailLoginController,
                           textInput: 'Correo electrónico',
@@ -108,7 +107,7 @@ class _LoginState extends State<Login> {
                           obscure: false,
                           icon: const Icon(null),
                         ),
-                        const SizedBox(height: 100),
+                        const SizedBox(height: 50),
                         LargeButton(
                             text: 'Iniciar sesion',
                             large: true,
@@ -116,41 +115,43 @@ class _LoginState extends State<Login> {
                               loginUser(mailLoginController.text,
                                   passwordLoginController.text);
                             }),
-                      ]),
-                  Row(
-                    children: <Widget>[
-                      const Expanded(
-                        child: Text(
-                          '¿No tienes una cuenta?',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontFamily: 'Jost',
-                            fontSize: 17,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: TextButton(
-                          onPressed: () {
-                            //Get.to(() => const SignUp());
-                            Get.to(() => const SignUp());
-                          },
-                          child: const Text(
-                            'Regístrate !',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontFamily: 'Jost',
-                              fontSize: 18,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.red,
+                        const SizedBox(height: 80),
+                        Row(
+                          children: <Widget>[
+                            const Expanded(
+                              child: Text(
+                                '¿No tienes una cuenta?',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontFamily: 'Jost',
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.black,
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  )
+                            Expanded(
+                              child: TextButton(
+                                onPressed: () {
+                                  //Get.to(() => const SignUp());
+                                  Get.to(() => const SignUp());
+                                },
+                                child: const Text(
+                                  'Regístrate !',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontFamily: 'Jost',
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        )
+                      ]),
+
                   // Positioned(
                   //     top: 30.0,
                   //     left: 5.0,
