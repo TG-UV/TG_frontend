@@ -71,7 +71,8 @@ class _VehicleRegisterState extends State<VehicleRegister> {
           vehicleColor: _selectedColor!,
           vehicleModel: _selectedModel!,
           vehicleType: _selectedType!,
-          owner: widget.user.idUser);
+         // owner: widget.user.idUser
+         );
       //userDatasourceImpl.insertUserRemote(user: user);
       //Get.to(() => const Home());
       Get.to(() => PasswordRegister(user: widget.user, vehicle: vehicle));

@@ -25,7 +25,7 @@ class Passenger {
 
   factory Passenger.fromJson(Map<String, dynamic> json) {
     return Passenger(
-      idPassenger: json['trip'] as int? ?? 0,
+      idPassenger: json['id_passenger_trip'] as int? ?? 0,
       isConfirmed: json['is_confirmed'] == true ? 1 : 0,
       pickupPoint: json['pickup_point']?.toString() ?? '',
       phoneNumber: json['phone_number']?.toString() ?? '',

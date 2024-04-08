@@ -5,7 +5,7 @@ class Vehicle {
   final int vehicleBrand;
   final int vehicleModel;
   final int vehicleColor;
-  final int owner;
+ // final int owner;
 
   Vehicle({
     required this.idVehicle,
@@ -14,7 +14,7 @@ class Vehicle {
     required this.vehicleBrand,
     required this.vehicleModel,
     required this.vehicleColor,
-    required this.owner,
+    //required this.owner,
   });
 
   factory Vehicle.fromJson(Map<String, dynamic> json) {
@@ -25,7 +25,7 @@ class Vehicle {
       vehicleBrand: json['vehicle_brand']as int? ?? 0,
       vehicleModel: json['vehicle_model']as int? ?? 0,
       vehicleColor: json['vehicle_color']as int? ?? 0,
-      owner: json['owner']as int? ?? 0,
+      //owner: json['owner']as int? ?? 0,
       
     );
   }

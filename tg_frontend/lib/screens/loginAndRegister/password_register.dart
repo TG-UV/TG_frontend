@@ -36,7 +36,7 @@ class _PasswordRegisterState extends State<PasswordRegister> {
         if (widget.vehicle != null) {
           Vehicle newVehicle = Vehicle(
             idVehicle: widget.vehicle!.idVehicle,
-            owner: newUser.idUser,
+            //owner: newUser.idUser,
             vehicleBrand: widget.vehicle!.vehicleBrand,
             vehicleColor: widget.vehicle!.vehicleColor,
             vehicleModel: widget.vehicle!.vehicleModel,

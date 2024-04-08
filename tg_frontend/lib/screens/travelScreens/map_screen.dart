@@ -103,7 +103,7 @@ class _MapScreenState extends State<MapScreen> {
             style: Theme.of(context).textTheme.titleLarge,
           )),
       Positioned(
-        top: MediaQuery.of(context).size.width / 1.5,
+        top: MediaQuery.of(context).size.width / 0.8,
         left: 50,
         right: 50,
         child: LargeButton(
@@ -117,7 +117,7 @@ class _MapScreenState extends State<MapScreen> {
         ),
       ),
       Positioned(
-        top: MediaQuery.of(context).size.width / 1.5 + 100,
+        top: MediaQuery.of(context).size.width / 0.8 + 100,
         left: 50,
         right: 50,
         child: LargeButton(

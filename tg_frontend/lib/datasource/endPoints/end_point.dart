@@ -3,7 +3,9 @@ class EndPoints {
   final String getUserLogged = "/users/me/";
   final String getUserAuth = '/auth/token/login/';
   final String getAndPostUser = '/users/';
-  final String getTravel = "/trip/";
+  final String getTravel = "/driver/trip/";
+  final String getTravelPlannedDriver = "/driver/trip/planned/";
+  final String getTravelHistoryDriver = "/driver/trip/history/";
   final String postTravel = "/driver/trip/add/";
   final String patchPassengerTrip = "/passenger-trip/{id_passenger_trip}/";
   final String postPassengerTrip = "/passenger-trip/";

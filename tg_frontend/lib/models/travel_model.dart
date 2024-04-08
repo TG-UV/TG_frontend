@@ -54,10 +54,9 @@ class Travel {
     // DateTime dateFormatted = DateTime.parse(date);
     // DateTime hourFormatted = DateTime.parse(hour);
     return {
-      'id_trip': id,
       'arrival_point': arrivalPoint,
       'starting_point': startingPoint,
-      'driver': driver,
+      //'driver': driver,
       'fare': price,
       'seats': seats,
       'start_time': hour,
@@ -65,6 +64,7 @@ class Travel {
       // 'start_time': DateFormat("yyyy-MM-ddTHH:mm "),
       // 'start_date': DateFormat("yyyy-MM-dd").format(date).toString(),
       'current_trip': currentTrip == 1 ? true : false,
+      'vehicle': 1
     };
   }
 }

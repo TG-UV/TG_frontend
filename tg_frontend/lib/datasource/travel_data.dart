@@ -125,10 +125,10 @@ class TravelDatasourceMethods implements TravelDatasource {
       try {
         //Map<String, dynamic> parameters = {"id_trip": travelId};
         dio.options.headers['Authorization'] = 'Token $token';
-        response = await dio.get(_endPoints.baseUrl + _endPoints.getTravel
+        response = await dio.get(_endPoints.baseUrl + _endPoints.getTravelPlannedDriver
             //queryParameters: parameters,
             );
-        for (var data in response.data) {
+        for (var data in response.data['results']) {
           Travel travel = Travel.fromJson(data);
           travelList.add(travel);
         }
@@ -160,7 +160,7 @@ class TravelDatasourceMethods implements TravelDatasource {
           ${LocalDB.idTravel} = ?
           """, whereArgs: [travelId]).timeout(const Duration(seconds: 300));
     } catch (error) {
-      print('Error al realizar la solicitud viaje remoto: $error');
+      print('Error al realizar updateTRavelLocal: $error');
     }
     return request;
   }
@@ -180,23 +180,41 @@ class TravelDatasourceMethods implements TravelDatasource {
     Passenger passenger;
     List<Passenger> passengersList = [];
     Response<dynamic> response;
+    String? token = await AuthStorage().getToken();
 
     try {
-      Map<String, dynamic> parameters = {"id_trip": travelId};
+      Map<String, dynamic> parameters = {"id_trip": travelId.toString()};
       dio.options.headers['Authorization'] = 'Token $token';
       response = await dio.get(
         _endPoints.baseUrl + _endPoints.getTravel,
         queryParameters: parameters,
       );
-      for (var passengerData in response.data['passengers']) {
-        passenger = Passenger.fromJson(passengerData['passenger']);
-        passengersList.add(passenger);
+      if(response.data != null){
+               List<dynamic> passengersData = response.data['passengers'];
+
+        for (var passengerData in passengersData) {
+      var passengerDetails = passengerData['passenger'];
+      Passenger passenger = Passenger.fromJson({
+        'id_passenger_trip': passengerData['id_passenger_trip'],
+        'is_confirmed': passengerData['is_confirmed'],
+        'pickup_point': passengerData['pickup_point'],
+        'phone_number': passengerDetails['phone_number'],
+        'first_name': passengerDetails['first_name'],
+        'last_name': passengerDetails['last_name'],
+        'trip': travelId, 
+        'seats': passengerData['seats'],
+      });
+      passengersList.add(passenger);
+    }
+      }else{
+        passengersList =[];
       }
+    
       // travel = Travel.fromJson(response.data);
       // travelList.add(travel);
       //insertTravelsLocal(travels: travelList);
     } catch (error) {
-      print('Error al realizar la solicitud viaje remoto: $error');
+      print('Error al realizar get pasajeros remoto: $error');
     }
 
     return passengersList;
