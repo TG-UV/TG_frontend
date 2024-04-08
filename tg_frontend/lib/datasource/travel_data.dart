@@ -22,9 +22,9 @@ abstract class TravelDatasource {
       required List<String> values});
   Future<List<Passenger>> getPassangersRemote({required int travelId});
   Future<int> insertPassengerRemote({required Passenger passenger});
-  Future<void> updatePassengerRemote({required int passengerTripId, required bool valueConfirmed});
+  Future<void> updatePassengerRemote(
+      {required int passengerTripId, required bool valueConfirmed});
   Future<int> deletePassengerRemote({required int passengerId});
-
 }
 
 class TravelDatasourceMethods implements TravelDatasource {
@@ -125,10 +125,9 @@ class TravelDatasourceMethods implements TravelDatasource {
       try {
         //Map<String, dynamic> parameters = {"id_trip": travelId};
         dio.options.headers['Authorization'] = 'Token $token';
-        response = await dio.get(
-          _endPoints.baseUrl + _endPoints.getTravel
-          //queryParameters: parameters,
-        );
+        response = await dio.get(_endPoints.baseUrl + _endPoints.getTravel
+            //queryParameters: parameters,
+            );
         for (var data in response.data) {
           Travel travel = Travel.fromJson(data);
           travelList.add(travel);
@@ -176,55 +175,56 @@ class TravelDatasourceMethods implements TravelDatasource {
     return request;
   }
 
-   @override
+  @override
   Future<List<Passenger>> getPassangersRemote({required int travelId}) async {
     Passenger passenger;
     List<Passenger> passengersList = [];
     Response<dynamic> response;
 
-      try {
-        //Map<String, dynamic> parameters = {"id_trip": travelId};
-        dio.options.headers['Authorization'] = 'Token $token';
-        response = await dio.get(
-          _endPoints.baseUrl + _endPoints.getTravel,
-          //queryParameters: parameters,
-        );
-        for (var data in response.data) {
-          passenger = Passenger.fromJson(data);
-          passengersList.add(passenger);
-        }
-        // travel = Travel.fromJson(response.data);
-        // travelList.add(travel);
-        //insertTravelsLocal(travels: travelList);
-      } catch (error) {
-        print('Error al realizar la solicitud viaje remoto: $error');
+    try {
+      Map<String, dynamic> parameters = {"id_trip": travelId};
+      dio.options.headers['Authorization'] = 'Token $token';
+      response = await dio.get(
+        _endPoints.baseUrl + _endPoints.getTravel,
+        queryParameters: parameters,
+      );
+      for (var passengerData in response.data['passengers']) {
+        passenger = Passenger.fromJson(passengerData['passenger']);
+        passengersList.add(passenger);
       }
-   
+      // travel = Travel.fromJson(response.data);
+      // travelList.add(travel);
+      //insertTravelsLocal(travels: travelList);
+    } catch (error) {
+      print('Error al realizar la solicitud viaje remoto: $error');
+    }
+
     return passengersList;
   }
 
   @override
-Future<void> updatePassengerRemote({required int passengerTripId, required bool valueConfirmed}) async {
-  try {
+  Future<void> updatePassengerRemote(
+      {required int passengerTripId, required bool valueConfirmed}) async {
+    try {
       Response response = await dio.patch(
         _endPoints.baseUrl + _endPoints.patchPassengerTrip,
         queryParameters: {"id_passenger_trip": passengerTripId},
         data: {"is_confirmed": valueConfirmed},
       );
-      
     } catch (error) {
       print('Error al actualizar un pasajero : $error');
     }
-}
+  }
 
-@override
+  @override
   Future<int> insertPassengerRemote({required Passenger passenger}) async {
     Response? response;
     int sent = 0;
     try {
       Map<String, dynamic> jsonPassengerTrip = passenger.toJson();
       dio.options.headers['Authorization'] = 'Token $token';
-      response = await dio.post(_endPoints.baseUrl + _endPoints.postPassengerTrip,
+      response = await dio.post(
+          _endPoints.baseUrl + _endPoints.postPassengerTrip,
           data: jsonPassengerTrip);
       sent++;
     } catch (e) {
@@ -234,20 +234,18 @@ Future<void> updatePassengerRemote({required int passengerTripId, required bool 
   }
 
   @override
-  Future<int> deletePassengerRemote({required int passengerId }) async {
+  Future<int> deletePassengerRemote({required int passengerId}) async {
     Response? response;
     int sent = 0;
     try {
-     
       dio.options.headers['Authorization'] = 'Token $token';
-      response = await dio.delete(_endPoints.baseUrl + _endPoints.patchPassengerTrip,
-          );
+      response = await dio.delete(
+        _endPoints.baseUrl + _endPoints.patchPassengerTrip,
+      );
       sent++;
     } catch (e) {
       rethrow;
     }
     return sent;
   }
-
-
 }

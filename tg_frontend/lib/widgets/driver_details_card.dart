@@ -35,7 +35,7 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
 
   Future<void> _loadPassengers() async {
     List<Passenger> passengersList =
-        await travelDatasourceImpl.getPassangersRemote(travelId: 7);
+        await travelDatasourceImpl.getPassangersRemote(travelId: widget.travel.id);
     confirmedPassengersList =
         passengersList.where((element) => element.isConfirmed == 1).toList();
     pendingPassengersList =
