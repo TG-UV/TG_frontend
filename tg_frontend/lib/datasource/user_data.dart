@@ -37,6 +37,7 @@ class UserDatasourceMethods implements UserDatasource {
   Future<void> initDatabase() async {
     database = await databaseProvider.database;
     token = await AuthStorage().getToken();
+    print('token: --------------- $token');
     //token = "0e82ae3cb06e3e4611ee2b3986951a2720659243";
   }
 

@@ -7,6 +7,9 @@ import 'dart:convert';
 import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/datasource/travel_data.dart';
 import 'package:tg_frontend/device/environment.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:intl/intl.dart';
+
 
 class DriverDetailsCard extends StatefulWidget {
   const DriverDetailsCard({
@@ -36,23 +39,31 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
   Future<void> _loadPassengers() async {
     List<Passenger> passengersList =
         await travelDatasourceImpl.getPassangersRemote(travelId: widget.travel.id);
-    confirmedPassengersList =
+    setState(() {
+      confirmedPassengersList =
         passengersList.where((element) => element.isConfirmed == 1).toList();
     pendingPassengersList =
         passengersList.where((element) => element.isConfirmed == 0).toList();
-    setState(() {});
+    });
   }
 
   Future<void> _updatePassengers(
       int passengerTripId, bool valueConfirmed) async {
-    void updatePassengers = await travelDatasourceImpl.updatePassengerRemote(
+    int updatePassengers = await travelDatasourceImpl.updatePassengerRemote(
         passengerTripId: passengerTripId, valueConfirmed: valueConfirmed);
-    _loadPassengers();
+     if(updatePassengers != 0){
+       _loadPassengers();
+     }   
+      else {
+          await EasyLoading.showInfo("Error");
+          return;
+      }
+   
   }
 
   Card buildPassengerInfo(Passenger myPassenger) {
     return Card(
-        //color: Colors.white54,
+        color: Colors.white54,
         borderOnForeground: false,
         child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
           Row(
@@ -112,7 +123,7 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return Expanded(
         child: Card(
             color: Colors.white,
             child: Padding(
@@ -121,18 +132,49 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Partida:  ${widget.travel.startingPoint}',
-                        style: Theme.of(context).textTheme.titleSmall,
-                      ),
-                      Text(
-                        'Destino:   ${widget.travel.arrivalPoint}',
-                        style: Theme.of(context).textTheme.titleSmall,
-                      ),
-                      Text(
-                        'Fecha: ${widget.travel.date},  ${widget.travel.hour}',
-                        style: Theme.of(context).textTheme.titleSmall,
-                      ),
+                      Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                 Text(
+                    DateFormat('EEEE').format(DateTime.parse(widget.travel.date)),
+                    //travel.date,
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                 
+                
+                const SizedBox(width: 10),
+                
+                  Text(
+                    widget.travel.hour,
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleLarge!
+                        .copyWith(fontSize: 25.0),
+                    overflow: TextOverflow.ellipsis,
+                  ),]),
+                  
+                
+                const SizedBox(height: 20),
+                Text(
+                      'Desde: ${widget.travel.startingPoint}',
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    Text(
+                      'Hacia: ${widget.travel.arrivalPoint}',
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                      // Text(
+                      //   'Partida:  ${widget.travel.startingPoint}',
+                      //   style: Theme.of(context).textTheme.titleSmall,
+                      // ),
+                      // Text(
+                      //   'Destino:   ${widget.travel.arrivalPoint}',
+                      //   style: Theme.of(context).textTheme.titleSmall,
+                      // ),
+                      // Text(
+                      //   'Fecha: ${widget.travel.date},  ${widget.travel.hour}',
+                      //   style: Theme.of(context).textTheme.titleSmall,
+                      // ),
                       Text(
                         '${widget.travel.seats} cupos disponibles ',
                         style: Theme.of(context)
@@ -163,15 +205,17 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                           ]),
                       ListView.builder(
                           shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
+                          //physics: const NeverScrollableScrollPhysics(),
                           itemCount: confirmedPassengersList.length,
                           itemBuilder: (context, index) {
                             return buildPassengerInfo(
                                 confirmedPassengersList[index]);
                           }),
+                          
                       const SizedBox(
                         height: 40,
                       ),
+                     
                       Text(
                         'Pasajeros pendientes',
                         style: Theme.of(context)
@@ -179,19 +223,29 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                             .titleMedium!
                             .copyWith(fontWeight: FontWeight.w800),
                       ),
-                      Container(
-                        height: 150,
+                       Expanded(
+                        child: Container(
+                      
                         alignment: Alignment.topLeft,
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
                           itemCount: pendingPassengersList.length,
                           itemBuilder: (context, index) {
-                            return buildPassengerCard(
-                                pendingPassengersList[index]);
+                            return
+                            pendingPassengersList.isNotEmpty?
+                             buildPassengerCard(
+                                pendingPassengersList[index])
+                                :Text(
+                        'No tienes pasajeros pendientes',
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleSmall!
+                            .copyWith(fontWeight: FontWeight.normal),
+                      );
                           },
                         ),
-                      ),
-                      const SizedBox(height: 10),
+                      ),)
+                      
                     ]))));
   }
 }

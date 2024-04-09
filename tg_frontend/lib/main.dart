@@ -6,6 +6,7 @@ import 'package:tg_frontend/screens/loginAndRegister/splash.dart';
 import 'package:tg_frontend/device/environment.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:tg_frontend/services/auth_services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,6 +25,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Rayo',
       theme: myTheme,
+      builder: EasyLoading.init(),
       home: const Splash(),
       //home: const Home(),
     );
@@ -50,11 +52,11 @@ class MyApp extends StatelessWidget {
         fontSize: 22.0,
       ),
       titleSmall: TextStyle(
-          // Equivalente a bodyText2
-          color: Color(0xFF333333),
-          fontFamily: 'Jost',
-          fontSize: 16.0,
-          fontWeight: FontWeight.bold),
+        fontFamily: 'Jost',
+        fontSize: 17,
+        fontWeight: FontWeight.w400,
+        color: Colors.black,
+      ),
     ),
   );
 }

@@ -6,12 +6,14 @@ import 'package:tg_frontend/services/auth_services.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:tg_frontend/datasource/local_database_provider.dart';
 import 'package:tg_frontend/datasource/endPoints/end_point.dart';
+import 'package:tg_frontend/models/user_model.dart';
+import 'package:tg_frontend/device/environment.dart';
 
 abstract class TravelDatasource {
   Future<void> insertTravelsLocal({required List<Travel> travels});
   Future<void> insertTravelRemote({required Travel travel});
   Future<void> getTravelLocal({required int travelId, String filter});
-  Future<void> getTravelsRemote();
+  Future<void> getTravelsRemote({required String finalEndPoint});
   Future<int?> updateTravelLocal(
       {required int travelId,
       required List<String> fields,
@@ -22,7 +24,7 @@ abstract class TravelDatasource {
       required List<String> values});
   Future<List<Passenger>> getPassangersRemote({required int travelId});
   Future<int> insertPassengerRemote({required Passenger passenger});
-  Future<void> updatePassengerRemote(
+  Future<int> updatePassengerRemote(
       {required int passengerTripId, required bool valueConfirmed});
   Future<int> deletePassengerRemote({required int passengerId});
 }
@@ -33,6 +35,7 @@ class TravelDatasourceMethods implements TravelDatasource {
   late Database database;
   final _endPoints = EndPoints();
   String? token;
+  late User user = Environment.sl.get<User>();
 
   TravelDatasourceMethods() {
     initDatabase();
@@ -115,7 +118,7 @@ class TravelDatasourceMethods implements TravelDatasource {
   }
 
   @override
-  Future<List<Travel>> getTravelsRemote() async {
+  Future<List<Travel>> getTravelsRemote({required String finalEndPoint}) async {
     String? token = await AuthStorage().getToken();
     Travel travel;
     List<Travel> travelList = [];
@@ -125,13 +128,21 @@ class TravelDatasourceMethods implements TravelDatasource {
       try {
         //Map<String, dynamic> parameters = {"id_trip": travelId};
         dio.options.headers['Authorization'] = 'Token $token';
-        response = await dio.get(_endPoints.baseUrl + _endPoints.getTravelPlannedDriver
+        response = await dio.get(_endPoints.baseUrl + finalEndPoint
             //queryParameters: parameters,
             );
-        for (var data in response.data['results']) {
+            if(user.type == 2){
+              for (var data in response.data['results']) {
           Travel travel = Travel.fromJson(data);
           travelList.add(travel);
         }
+            }else {
+              for (var data in response.data) {
+          Travel travel = Travel.fromJson(data);
+          travelList.add(travel);
+            }}
+        
+        
         // travel = Travel.fromJson(response.data);
         // travelList.add(travel);
         //insertTravelsLocal(travels: travelList);
@@ -182,12 +193,14 @@ class TravelDatasourceMethods implements TravelDatasource {
     Response<dynamic> response;
     String? token = await AuthStorage().getToken();
 
+
     try {
-      Map<String, dynamic> parameters = {"id_trip": travelId.toString()};
+      //Map<String, dynamic> parameters = {"id_trip": travelId.toString()};
       dio.options.headers['Authorization'] = 'Token $token';
-      response = await dio.get(
-        _endPoints.baseUrl + _endPoints.getTravel,
-        queryParameters: parameters,
+      String url = _endPoints.baseUrl + _endPoints.getTravel + travelId.toString();
+      print(url);
+      response = await dio.get(url,
+      //  queryParameters: parameters,
       );
       if(response.data != null){
                List<dynamic> passengersData = response.data['passengers'];
@@ -221,17 +234,20 @@ class TravelDatasourceMethods implements TravelDatasource {
   }
 
   @override
-  Future<void> updatePassengerRemote(
+  Future<int> updatePassengerRemote(
       {required int passengerTripId, required bool valueConfirmed}) async {
+        int sent =0;
     try {
       Response response = await dio.patch(
-        _endPoints.baseUrl + _endPoints.patchPassengerTrip,
-        queryParameters: {"id_passenger_trip": passengerTripId},
-        data: {"is_confirmed": valueConfirmed},
+        _endPoints.baseUrl + _endPoints.patchPassengerTrip + passengerTripId.toString(),
+        //queryParameters: {"id_passenger_trip": passengerTripId},
+        data: {"is_confirmed": valueConfirmed}
       );
+      sent++;
     } catch (error) {
       print('Error al actualizar un pasajero : $error');
     }
+    return sent;
   }
 
   @override
@@ -246,7 +262,7 @@ class TravelDatasourceMethods implements TravelDatasource {
           data: jsonPassengerTrip);
       sent++;
     } catch (e) {
-      rethrow;
+      return sent;
     }
     return sent;
   }

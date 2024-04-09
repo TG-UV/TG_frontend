@@ -39,15 +39,15 @@ class Passenger {
 
   Map<String, dynamic> toJson() {
     return {
-      'id_passenger_trip': idPassenger,
+      //'id_passenger_trip': idPassenger,
       'pickup_point': pickupPoint,
       'seats': seats,
       'is_confirmed': isConfirmed == 1 ? true : false,
       'trip': trip,
       'passenger': passenger,
-      'phone_number': phoneNumber,
-      'first_name': firstName,
-      'last_name': lastName,
+      //'phone_number': phoneNumber,
+      //'first_name': firstName,
+      //'last_name': lastName,
     };
   }
 }

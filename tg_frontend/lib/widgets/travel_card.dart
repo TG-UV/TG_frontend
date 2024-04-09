@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:tg_frontend/models/travel_model.dart';
 import 'package:tg_frontend/screens/travelScreens/travel_details.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+
 
 class TravelCard extends StatelessWidget {
   const TravelCard({
@@ -12,6 +14,7 @@ class TravelCard extends StatelessWidget {
   // final TextEditingController controller;
 
   final Travel travel;
+
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +29,8 @@ class TravelCard extends StatelessWidget {
               children: <Widget>[
                 TextButton(
                   child: Text(
-                    travel.date,
+                    DateFormat('EEEE').format(DateTime.parse(travel.date)),
+                    //travel.date,
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   onPressed: () {
@@ -56,7 +60,7 @@ class TravelCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text(
-                      '    Desde: ${travel.startingPoint}',
+                      'Desde: ${travel.startingPoint}',
                       style: Theme.of(context).textTheme.titleSmall,
                     ),
                     Text(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tg_frontend/datasource/endPoints/end_point.dart';
 import 'package:tg_frontend/widgets/notification_card.dart';
 import 'package:tg_frontend/models/travel_model.dart';
 import 'package:tg_frontend/models/user_model.dart';
@@ -20,11 +21,12 @@ class _ListedNotificationsState extends State<ListedNotifications> {
   TravelDatasourceMethods travelDatasourceImpl =
       Environment.sl.get<TravelDatasourceMethods>();
   User user = Environment.sl.get<User>();
+  EndPoints endPoints = EndPoints();
 
   late List<Travel> travelsList;
 
   _fetchTravelsStream() async* {
-    final value = await travelDatasourceImpl.getTravelsRemote();
+    final value = await travelDatasourceImpl.getTravelsRemote(finalEndPoint: endPoints.getTravelPlannedDriver);
     yield value;
   }
   @override

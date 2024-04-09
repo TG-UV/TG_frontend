@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tg_frontend/datasource/endPoints/end_point.dart';
 import 'package:tg_frontend/models/travel_model.dart';
 import 'package:tg_frontend/screens/travelScreens/search_travels.dart';
 import 'package:tg_frontend/widgets/large_button.dart';
@@ -13,9 +14,10 @@ class AvailableTravels extends StatefulWidget {
   const AvailableTravels({
     super.key,
   });
-
+  
   @override
   State<AvailableTravels> createState() => _ListedTravelsState();
+  
 }
 
 class _ListedTravelsState extends State<AvailableTravels> {
@@ -23,7 +25,8 @@ class _ListedTravelsState extends State<AvailableTravels> {
       Environment.sl.get<TravelDatasourceMethods>();
   User user = Environment.sl.get<User>();
   List<Travel> travelsList = [];
-
+  final EndPoints _endPoints = EndPoints();
+  
   @override
   void initState() {
     super.initState();
@@ -31,7 +34,7 @@ class _ListedTravelsState extends State<AvailableTravels> {
   }
 
   Future<void> _cargarViajes() async {
-    travelsList = await travelDatasourceMethods.getTravelsRemote();
+    travelsList = await travelDatasourceMethods.getTravelsRemote(finalEndPoint: _endPoints.getTravelPlannedDriver);
     setState(() {});
   }
 

@@ -5,6 +5,8 @@ import 'package:tg_frontend/widgets/large_button.dart';
 import 'package:tg_frontend/datasource/travel_data.dart';
 import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/device/environment.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+
 
 class DetailsCard extends StatefulWidget {
   const DetailsCard({
@@ -37,14 +39,21 @@ class _DetailsCardState extends State<DetailsCard> {
         seats: _seats,
         isConfirmed: 0,
         trip: widget.travel.id,
-        passenger: widget.travel.driver,
-        phoneNumber: '324342534',
-        firstName: 'nada',
-        lastName: "aún");
+        passenger: user.idUser,
+        phoneNumber: user.phoneNumber,
+        firstName: user.firstName,
+        lastName: user.lastName);
 
     int sendResponse = await travelDatasourceMethods.insertPassengerRemote(
         passenger: passenger);
-    if (sendResponse == 1) {}
+    if (sendResponse == 1) {
+        await EasyLoading.showInfo("Cupo solicitado");
+          Navigator.of(context).pop();
+    }else{
+      await EasyLoading.showInfo("Error al reservar");
+      return;
+    }
+
   }
 
   void _cancelSpot(int passengerId) async {
@@ -246,6 +255,6 @@ class _DetailsCardState extends State<DetailsCard> {
             ],
           )),
     );
-    return Center(child: bookedTravelInformation);
+    return Center(child: generalTravelInformation);
   }
 }
