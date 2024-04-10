@@ -6,6 +6,8 @@ import 'package:tg_frontend/datasource/travel_data.dart';
 import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/device/environment.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:dio/dio.dart';
+
 
 
 class DetailsCard extends StatefulWidget {
@@ -21,15 +23,27 @@ class DetailsCard extends StatefulWidget {
 }
 
 class _DetailsCardState extends State<DetailsCard> {
-  TravelDatasourceMethods travelDatasourceMethods =
+  TravelDatasourceMethods travelDatasourceImpl =
       Environment.sl.get<TravelDatasourceMethods>();
   User user = Environment.sl.get<User>();
   var _seats = 1;
+  late Map<String, dynamic>? detailsList;
+  
 
   void seatsIncrement() {
     setState(() {
       _seats++;
     });
+  }
+
+  Stream<Map<String, dynamic>?> _loadTravelDetails() async* {
+    Map<String, dynamic>? value;
+      final listResponse =
+        await travelDatasourceImpl.getTravelDetails(travelId: widget.travel.id);
+        if(listResponse != null ){
+            value = listResponse.data;
+        }
+        yield value;
   }
 
   void _reserveSpot() async {
@@ -44,7 +58,7 @@ class _DetailsCardState extends State<DetailsCard> {
         firstName: user.firstName,
         lastName: user.lastName);
 
-    int sendResponse = await travelDatasourceMethods.insertPassengerRemote(
+    int sendResponse = await travelDatasourceImpl.insertPassengerRemote(
         passenger: passenger);
     if (sendResponse == 1) {
         await EasyLoading.showInfo("Cupo solicitado");
@@ -57,7 +71,7 @@ class _DetailsCardState extends State<DetailsCard> {
   }
 
   void _cancelSpot(int passengerId) async {
-    int sendResponse = await travelDatasourceMethods.deletePassengerRemote(
+    int sendResponse = await travelDatasourceImpl.deletePassengerRemote(
         passengerId: passengerId);
     if (sendResponse == 1) {}
   }
@@ -68,7 +82,26 @@ class _DetailsCardState extends State<DetailsCard> {
       color: Colors.grey.shade200,
       child: Padding(
           padding: const EdgeInsets.all(12.0),
-          child: Column(
+          child: StreamBuilder<Map<String, dynamic>?>(
+                          stream: _loadTravelDetails(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const Center(
+                                  child: CircularProgressIndicator());
+                            } else if (snapshot.hasError) {
+                              return Center(
+                                  child: Text('Error: ${snapshot.error}'));
+                            } else {
+                              detailsList = snapshot.data;
+                              if (detailsList!.isEmpty) {
+                                return const Center(
+                                  child:
+                                      Text('No tiene viajes por el momento...'),
+                                );
+                              } else {
+          
+          return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
@@ -81,7 +114,8 @@ class _DetailsCardState extends State<DetailsCard> {
 
                   const SizedBox(width: 10),
                   Text(
-                    "Motocicleta",
+                    detailsList!["vehicle"]["vehicle_type"],
+                    //"Motocicleta",
                     style: Theme.of(context)
                         .textTheme
                         .titleLarge!
@@ -101,7 +135,16 @@ class _DetailsCardState extends State<DetailsCard> {
                       //mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Text(
-                          "Juan Sebastian Estupiñan ",
+                          'Partida:  ${widget.travel.startingPoint}',
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
+                        Text(
+                          'Destino:   ${widget.travel.arrivalPoint}',
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
+                        const SizedBox(height: 25),
+                        Text(
+                           '${detailsList!["driver"]["first_name"]}  ${detailsList!["driver"]["last_name"]}' ,
                           style: Theme.of(context)
                               .textTheme
                               .titleSmall!
@@ -114,15 +157,7 @@ class _DetailsCardState extends State<DetailsCard> {
                               .titleSmall!
                               .copyWith(fontWeight: FontWeight.normal),
                         ),
-                        const SizedBox(height: 25),
-                        Text(
-                          'Partida:  ${widget.travel.startingPoint}',
-                          style: Theme.of(context).textTheme.titleSmall,
-                        ),
-                        Text(
-                          'Destino:   ${widget.travel.arrivalPoint}',
-                          style: Theme.of(context).textTheme.titleSmall,
-                        ),
+                        
                       ])),
               const SizedBox(height: 30),
               Row(
@@ -156,8 +191,8 @@ class _DetailsCardState extends State<DetailsCard> {
               ),
               const SizedBox(height: 15),
             ],
-          )),
-    );
+          );}}}),
+    ));
 
     Card bookedTravelInformation = Card(
       color: Colors.grey.shade200,

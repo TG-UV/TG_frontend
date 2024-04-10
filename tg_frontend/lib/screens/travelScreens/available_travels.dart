@@ -34,28 +34,24 @@ class _ListedTravelsState extends State<AvailableTravels> {
   }
 
   Future<void> _cargarViajes() async {
-    travelsList = await travelDatasourceMethods.getTravelsRemote(finalEndPoint: _endPoints.getTravelPlannedDriver);
+    travelsList = await travelDatasourceMethods.getTravelsRemote(finalEndPoint: _endPoints.getGeneralTravels);
     setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: Container(
-            //color: const Color(0xFFDD3D32),
-            padding: const EdgeInsets.symmetric(horizontal: 18.0),
-            alignment: Alignment.topCenter,
-            child: Column(
+    return Stack(children: [
+    Column(
                 //mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 80),
+                  const SizedBox(height: 50),
                   Row(children: [
                     IconButton(
                         onPressed: () {
                           Navigator.pop(context);
                         },
                         icon: const Icon(Icons.arrow_back)),
-                    const SizedBox(width: 10),
+                    const SizedBox(width: 5),
                     Text(
                       "Busca un viaje",
                       style: Theme.of(context)
@@ -64,7 +60,7 @@ class _ListedTravelsState extends State<AvailableTravels> {
                           .copyWith(fontSize: 26),
                     )
                   ]),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 40),
                   LargeButton(
                     text: 'Buscar',
                     large: false,
@@ -75,11 +71,39 @@ class _ListedTravelsState extends State<AvailableTravels> {
                   const SizedBox(height: 30),
                   Text("!Viajes próximos a salir!",
                       style: Theme.of(context).textTheme.titleMedium),
-                  Align(
+                ]),
+                  Positioned(
+          bottom: 0,
+          left: 5,
+          right: 5,
+          child: Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 14.0, vertical: 8.0),
+
+              //color: const Color.fromARGB(255, 255, 58, 58),
+              width: MediaQuery.of(context).size.width *
+                  0.75, // 3 cuartos de la pantalla
+              height: MediaQuery.of(context).size.height *
+                  0.65, // 3 cuartos de la pantalla
+              decoration: const BoxDecoration(
+                color: Color.fromARGB(255, 255, 58, 58),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(30.0),
+                  topRight: Radius.circular(30.0),
+                ),
+              ),
+              child: ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(30.0),
+                    topRight: Radius.circular(30.0),
+                  ),
+                  child:
+                  Flex(direction: Axis.vertical, children: [
+                    Align(
                       alignment: Alignment.topLeft,
                       child: Text(
-                        "Ahora",
-                        style: Theme.of(context).textTheme.titleSmall,
+                        "  Ahora",
+                        style: Theme.of(context).textTheme.titleSmall!.copyWith(color: Colors.white),
                         textAlign: TextAlign.left,
                       )),
                   //TravelCard(travel: perfectTravel),
@@ -89,7 +113,7 @@ class _ListedTravelsState extends State<AvailableTravels> {
                       alignment: Alignment.topLeft,
                       child: Text(
                         "Mas tarde",
-                        style: Theme.of(context).textTheme.titleSmall,
+                        style: Theme.of(context).textTheme.titleSmall!.copyWith(color: Colors.white),
                         textAlign: TextAlign.left,
                       )),
                   Expanded(
@@ -98,6 +122,9 @@ class _ListedTravelsState extends State<AvailableTravels> {
                           itemBuilder: (context, index) {
                             return TravelCard(travel: travelsList[index]);
                           }))
-                ])));
+                  ],)
+                  
+            )))
+                ]);
   }
 }

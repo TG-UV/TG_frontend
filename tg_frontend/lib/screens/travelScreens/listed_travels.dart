@@ -32,9 +32,13 @@ class _ListedTravelsState extends State<ListedTravels> {
   }
 
   void _selectEndpoint() {
+    //double if to determinate ui case, it depends on user type and travel atribute(past or future) 
     widget.pastTravel
-        ? currentEndPoint = endPoints.getTravelHistoryDriver
-        : currentEndPoint = endPoints.getTravelPlannedDriver;
+        ? user.type == 2?
+         currentEndPoint = endPoints.getTravelHistoryDriver
+         :currentEndPoint = endPoints.getTravelHistoryPassenger
+        :user.type == 2? currentEndPoint = endPoints.getTravelPlannedDriver
+        :currentEndPoint = endPoints.getTravelPlannedPassenger;
   }
 
   // Future<void> _cargarViajes() async {
@@ -54,14 +58,13 @@ class _ListedTravelsState extends State<ListedTravels> {
 
   @override
   Widget build(BuildContext context) {
-  
-    return Stack(
-      children: [
+    return Stack(children: [
       Column(crossAxisAlignment: CrossAxisAlignment.stretch, 
-      children: [ 
-        const SizedBox(height: 50,),
+      children: [
+        const SizedBox(
+          height: 50,
+        ),
         Padding(
-         
           padding: const EdgeInsets.all(16.0),
           child: widget.pastTravel
               ? Text(
@@ -70,7 +73,6 @@ class _ListedTravelsState extends State<ListedTravels> {
                       .textTheme
                       .titleLarge!
                       .copyWith(fontSize: 26),
-                      
                 )
               : Text(
                   "Tus próximos viajes",
@@ -86,16 +88,17 @@ class _ListedTravelsState extends State<ListedTravels> {
           left: 0,
           right: 0,
           child: Container(
-            padding:const EdgeInsets.symmetric(horizontal: 14.0, vertical: 8.0), 
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 14.0, vertical: 8.0),
 
-            //color: const Color.fromARGB(255, 255, 58, 58),
+              //color: const Color.fromARGB(255, 255, 58, 58),
               width: MediaQuery.of(context).size.width *
                   0.75, // 3 cuartos de la pantalla
               height: MediaQuery.of(context).size.height *
                   0.75, // 3 cuartos de la pantalla
-              decoration: const  BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Color.fromARGB(255, 255, 58, 58),
-                borderRadius:  BorderRadius.only(
+                borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(50.0),
                   topRight: Radius.circular(50.0),
                 ),
@@ -129,9 +132,11 @@ class _ListedTravelsState extends State<ListedTravels> {
                                     itemCount: travelsList.length,
                                     //physics:const AlwaysScrollableScrollPhysics(),
                                     itemBuilder: (context, index) {
-                                     return Padding(
-        padding: const EdgeInsets.only(bottom: 16.0),
-        child: TravelCard(travel: travelsList[index]));
+                                      return Padding(
+                                          padding: const EdgeInsets.only(
+                                              bottom: 16.0),
+                                          child: TravelCard(
+                                              travel: travelsList[index]));
                                     });
                               }
                             }

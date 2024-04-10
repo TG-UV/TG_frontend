@@ -5,6 +5,9 @@ import 'package:tg_frontend/screens/loginAndRegister/splash.dart';
 //import 'package:tg_frontend/screens/welcome.dart';
 import 'package:tg_frontend/device/environment.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:tg_frontend/screens/travelScreens/available_travels.dart';
+import 'package:tg_frontend/screens/travelScreens/new_travel.dart';
+import 'package:tg_frontend/screens/travelScreens/search_travels.dart';
 import 'package:tg_frontend/services/auth_services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
@@ -28,6 +31,7 @@ class MyApp extends StatelessWidget {
       builder: EasyLoading.init(),
       home: const Splash(),
       //home: const Home(),
+      
     );
   }
 

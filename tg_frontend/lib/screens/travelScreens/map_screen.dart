@@ -125,7 +125,7 @@ class _MapScreenState extends State<MapScreen> {
           onPressed: () {
             user.type == 2?
             Get.to(() => const NewTravel())
-            : Get.to(() => const SearchTravels());
+            : Get.to(() => const AvailableTravels());
           },
           large: true,
         ),
