@@ -195,7 +195,7 @@ class _NewTravelState extends State<NewTravel> {
                     Align(
                         alignment: Alignment.topLeft,
                         child: Text(
-                          "Cupos",
+                          "Cuposssss",
                           style: Theme.of(context).textTheme.titleSmall,
                           textAlign: TextAlign.left,
                         )),
