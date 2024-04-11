@@ -4,7 +4,6 @@ import 'package:tg_frontend/screens/travelScreens/travel_details.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-
 class TravelCard extends StatelessWidget {
   const TravelCard({
     super.key,
@@ -15,63 +14,66 @@ class TravelCard extends StatelessWidget {
 
   final Travel travel;
 
+  DateTime _parseTimeString(String timeString) {
+    List<String> parts = timeString.split(':');
+    int hour = int.parse(parts[0]);
+    int minute = int.parse(parts[1]);
+    return DateTime(1, 1, 1, hour, minute);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Card(
+    return Card(
         color: const Color.fromARGB(255, 252, 252, 252),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                TextButton(
-                  child: Text(
-                    DateFormat('EEEE').format(DateTime.parse(travel.date)),
-                    //travel.date,
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  onPressed: () {
-                    Get.to(() => TravelDetails(selectedTravel: travel));
-                  },
-                ),
-                const SizedBox(width: 10),
-                TextButton(
-                  child: Text(
-                    travel.hour,
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleLarge!
-                        .copyWith(fontSize: 25.0),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  onPressed: () {
-                    Get.to(() => TravelDetails(selectedTravel: travel));
-                  },
-                ),
-                const SizedBox(width: 8),
-              ],
-            ),
-            Align(
-                alignment: Alignment.centerLeft,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Desde: ${travel.startingPoint}',
-                      style: Theme.of(context).textTheme.titleSmall,
+        child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    TextButton(
+                      child: Text(
+                        DateFormat('EEEE').format(DateTime.parse(travel.date)),
+                        //travel.date,
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      onPressed: () {
+                        Get.to(() => TravelDetails(selectedTravel: travel));
+                      },
                     ),
-                    Text(
-                      'Hacia: ${travel.arrivalPoint}',
-                      style: Theme.of(context).textTheme.titleSmall,
+                    TextButton(
+                      child: Text(
+                        DateFormat('hh:mm a')
+                            .format(_parseTimeString(travel.hour)),
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleLarge!
+                            .copyWith(fontSize: 25.0),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      onPressed: () {
+                        Get.to(() => TravelDetails(selectedTravel: travel));
+                      },
                     ),
+                    const SizedBox(width: 8),
                   ],
-                ))
-          ],
-        ),
-      ),
-    );
+                ),
+                // Align(
+                //     alignment: Alignment.centerLeft,
+                //  child:
+
+                Text(
+                  'Desde: ${travel.startingPoint}',
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+                Text(
+                  'Hacia: ${travel.arrivalPoint}',
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+              ],
+            )));
   }
 }

@@ -14,7 +14,8 @@ abstract class TravelDatasource {
   Future<void> insertTravelRemote({required Travel travel});
   Future<void> getTravelLocal({required int travelId, String filter});
   Future<void> getTravelsRemote({required String finalEndPoint});
-  Future<Response<Map<String, dynamic>>?> getTravelDetails({required int travelId});
+  Future<Response<Map<String, dynamic>>?> getTravelDetails(
+      {required int travelId});
   Future<int?> updateTravelLocal(
       {required int travelId,
       required List<String> fields,
@@ -132,16 +133,10 @@ class TravelDatasourceMethods implements TravelDatasource {
         response = await dio.get(_endPoints.baseUrl + finalEndPoint
             //queryParameters: parameters,
             );
-        if (user.type == 2) {
-          for (var data in response.data['results']) {
-            Travel travel = Travel.fromJson(data);
-            travelList.add(travel);
-          }
-        } else {
-          for (var data in response.data) {
-            Travel travel = Travel.fromJson(data);
-            travelList.add(travel);
-          }
+
+        for (var data in response.data['results']) {
+          Travel travel = Travel.fromJson(data);
+          travelList.add(travel);
         }
 
         // travel = Travel.fromJson(response.data);
@@ -288,8 +283,8 @@ class TravelDatasourceMethods implements TravelDatasource {
   }
 
   @override
-  Future<Response<Map<String, dynamic>>?> getTravelDetails({required int travelId}) async {
-   
+  Future<Response<Map<String, dynamic>>?> getTravelDetails(
+      {required int travelId}) async {
     Response<Map<String, dynamic>>? response;
     String? token = await AuthStorage().getToken();
 
@@ -302,7 +297,6 @@ class TravelDatasourceMethods implements TravelDatasource {
       response = await dio.get(
         url,
       );
-     
     } catch (error) {
       print('Error al realizar get TravelDetails: $error');
     }

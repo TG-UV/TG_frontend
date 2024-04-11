@@ -4,6 +4,9 @@ import 'package:tg_frontend/screens/loginAndRegister/login.dart';
 import 'dart:async';
 import 'package:get/get.dart';
 import 'package:tg_frontend/services/auth_services.dart';
+import 'package:tg_frontend/datasource/user_data.dart';
+import 'package:tg_frontend/models/user_model.dart';
+import 'package:tg_frontend/device/environment.dart';
 
 class Splash extends StatefulWidget {
   // final Splash({Key? key}) : super(key: key);
@@ -15,6 +18,9 @@ class Splash extends StatefulWidget {
 class _LoginState extends State<Splash> {
   final TextEditingController emailController = TextEditingController();
   final authStorage = AuthStorage();
+  UserDatasourceMethods userDatasourceImpl =
+      Environment.sl.get<UserDatasourceMethods>();
+  String? token;
 
   @override
   void initState() {
@@ -36,49 +42,31 @@ class _LoginState extends State<Splash> {
           height: 100, // ajusta la altura según tus necesidades
           fit: BoxFit.cover, // ajusta el modo de ajuste de la imagen
         ),
-
-        /*
-        child: InputField(
-            controller: emailController,
-            textInput: 'Prueba Input',
-            textInputType: TextInputType.text,
-            icon: const Icon(null),
-            obscure: true),
-        
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            SizedBox(height: 40),
-            LargeButton(text: 'Prueba Boton grande', large: true),
-            SizedBox(height: 40),
-            LargeButton(text: 'Prueba Boton corto', large: false),
-          ],
-        ),
-       
-        child: LargeButton(
-          text: 'Prueba Boton',
-          large: true,
-        ), */
       ),
     );
   }
 
-  Future<bool> verifyAuth() async {
-    authStorage.removeValues();
-    bool isLoggedIn = false;
-    final nickname = await authStorage.getNickName();
-    final password = await authStorage.getPassword();
-    print('llega a verifyAuth');
-    if (nickname != null && password != null) {
-      isLoggedIn = true;
-    }
-    return isLoggedIn;
+  Future<void> _saveToken() async {
+    int idUser = await userDatasourceImpl.getUserRemote();
+    User user = await userDatasourceImpl.getUserLocal(idUser);
+    Environment.sl.registerSingleton<User>(user);
+    Get.to(() => const Home());
+    //authStorage.removeValues();
+    //bool isLoggedIn;
+
+    // final nickname = await authStorage.getNickName();
+    // final password = await authStorage.getPassword();
+    // print('llega a verifyAuth');
+    // if (nickname != null && password != null) {
+    //   isLoggedIn = true;
+    // }
+    // token != null ? isLoggedIn = true : isLoggedIn = false;
+    // return isLoggedIn;
   }
 
   Future<void> verifyLoggedIn() async {
-    //Timer(const Duration(seconds: 3));
+    token = await AuthStorage().getToken();
     print('llega a verifyLoggedIn');
-    Future<bool> isAuth = verifyAuth();
-    await isAuth ? Get.to(() => const Home()) : Get.to(() => const Login());
+    token != null ? _saveToken() : Get.to(() => const Login());
   }
 }

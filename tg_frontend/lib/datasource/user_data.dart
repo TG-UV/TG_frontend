@@ -14,7 +14,7 @@ abstract class UserDatasource {
   Future<int> insertUserLocal({required User user});
   Future<int> insertUserRemote({required User user});
   Future<int> insertVehicleRemote({required Vehicle vehicle});
-  Future<void> getUserRemote({required String endPoint});
+  Future<void> getUserRemote();
   Future<Map<String, dynamic>?> getVehicleOptionsRemote();
   Future<String?> getUserAuth(
       {required String username, required String password});
@@ -48,7 +48,7 @@ class UserDatasourceMethods implements UserDatasource {
     int sent = 0;
     try {
       Map<String, dynamic> jsonUser = user.toJson();
-            //dio.options.headers['Authorization'] = 'Token $token';
+      //dio.options.headers['Authorization'] = 'Token $token';
       response = await dio.post(_endPoints.baseUrl + _endPoints.getAndPostUser,
           data: jsonUser);
       userResponse = User.fromJson(response.data);
@@ -67,8 +67,7 @@ class UserDatasourceMethods implements UserDatasource {
     try {
       Map<String, dynamic> jsonUser = vehicle.toJson();
       dio.options.headers['Authorization'] = 'Token $token';
-      response = await dio.post(
-          _endPoints.baseUrl + _endPoints.postVehicle,
+      response = await dio.post(_endPoints.baseUrl + _endPoints.postVehicle,
           data: jsonUser);
       // User userResponse = User.fromJson(response.data);
       // insertUserLocal(user: userResponse);
@@ -81,7 +80,7 @@ class UserDatasourceMethods implements UserDatasource {
 
   @override
   Future<int> insertUserLocal({required User user}) async {
-    int sent=0;
+    int sent = 0;
     try {
       //final database = await databaseProvider.database;
       await database.insert(LocalDB.tbUser, {
@@ -96,7 +95,7 @@ class UserDatasourceMethods implements UserDatasource {
         LocalDB.identityDocument: user.identityDocument,
         LocalDB.type: user.type,
       }).timeout(const Duration(seconds: 300));
-      sent ++;
+      sent++;
     } catch (e) {
       print('Error al insertar user locar ' + e.toString());
     }
@@ -120,7 +119,7 @@ class UserDatasourceMethods implements UserDatasource {
   }
 
   @override
-  Future<int> getUserRemote({required String endPoint}) async {
+  Future<int> getUserRemote() async {
     String? token = await AuthStorage().getToken();
     User user;
     int idUser = 0;
@@ -128,7 +127,8 @@ class UserDatasourceMethods implements UserDatasource {
     if (token != null) {
       try {
         dio.options.headers['Authorization'] = 'Token $token';
-        Response response = await dio.get(endPoint);
+        Response response =
+            await dio.get(_endPoints.baseUrl + _endPoints.getUserLogged);
         user = User.fromJson(response.data);
         idUser = user.idUser;
         print(user);
@@ -144,7 +144,6 @@ class UserDatasourceMethods implements UserDatasource {
 
   @override
   Future<Map<String, dynamic>?> getVehicleOptionsRemote() async {
-    
     Map<String, dynamic>? options;
 
     if (token != null) {
@@ -185,24 +184,21 @@ class UserDatasourceMethods implements UserDatasource {
     return token;
   }
 
-    @override
+  @override
   Future<List<dynamic>?> getUserCitiesRemote() async {
-    
     List<dynamic>? citiesOptions;
-      try {
-        //dio.options.headers['Authorization'] = 'Token $token';
-         Response response =
-            await dio.get(_endPoints.baseUrl + _endPoints.getCities);
-            //citiesOptions = response.data;
-        if (response.data is List<dynamic>?) {
-          citiesOptions = response.data;
-        }
-        
-      } catch (error) {
-        print('Error al realizar la solicitud vehiclesOptions: $error');
+    try {
+      //dio.options.headers['Authorization'] = 'Token $token';
+      Response response =
+          await dio.get(_endPoints.baseUrl + _endPoints.getCities);
+      //citiesOptions = response.data;
+      if (response.data is List<dynamic>?) {
+        citiesOptions = response.data;
       }
-   
+    } catch (error) {
+      print('Error al realizar la solicitud vehiclesOptions: $error');
+    }
+
     return citiesOptions;
   }
-
 }

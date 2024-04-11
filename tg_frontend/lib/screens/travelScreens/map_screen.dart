@@ -32,9 +32,7 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   void initState() {
-
     super.initState();
-
   }
 
   Future<void> getLocation() async {
@@ -51,25 +49,51 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-        child: Stack(children: [
-      FlutterMap(
-        options: const MapOptions(
-            initialCenter: LatLng(3.43722, -76.5225),
-            minZoom: 5,
-            maxZoom: 25,
-            initialZoom: 18),
-        children: [
-          TileLayer(
-            urlTemplate:
-                'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}',
-            additionalOptions: const {
-              'accessToken': mapboxAccessToken,
-              'id':
-                  'mapbox/streets-v11', // Puedes cambiar el estilo según tus necesidades
-            },
+    return Scaffold(
+        drawer: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+              const DrawerHeader(
+                child: Text('Menú'),
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                ),
+              ),
+              ListTile(
+                title: Text('Opción 1'),
+                onTap: () {
+                  // Aquí puedes agregar la lógica para la opción 1
+                },
+              ),
+              ListTile(
+                title: Text('Opción 2'),
+                onTap: () {
+                  // Aquí puedes agregar la lógica para la opción 2
+                },
+              ),
+              // Agrega más listTiles según sea necesario
+            ],
           ),
-          /*
+        ),
+        body: Stack(children: [
+          FlutterMap(
+            options: const MapOptions(
+                initialCenter: LatLng(3.43722, -76.5225),
+                minZoom: 5,
+                maxZoom: 25,
+                initialZoom: 18),
+            children: [
+              TileLayer(
+                urlTemplate:
+                    'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}',
+                additionalOptions: const {
+                  'accessToken': mapboxAccessToken,
+                  'id':
+                      'mapbox/streets-v11', // Puedes cambiar el estilo según tus necesidades
+                },
+              ),
+              /*
           MarkerLayer(markers: [
             Marker(
                 point: LatLng(
@@ -77,10 +101,10 @@ class _MapScreenState extends State<MapScreen> {
                 child: const Icon(Icons.location_on_rounded))
           ])
           */
-        ],
-      ),
+            ],
+          ),
 
-      /*
+          /*
           MapboxMap(
             accessToken: 'TU_TOKEN_DE_ACCESO_AQUI',
             styleString: 'mapbox://styles/mapbox/streets-v11',
@@ -94,42 +118,62 @@ class _MapScreenState extends State<MapScreen> {
           ),
           */
 
-      Positioned(
-          top: 100.0,
-          left: 50,
-          right: 50,
-          child: Text(
-            '¡Hola ${user.firstName}!',
-            style: Theme.of(context).textTheme.titleLarge,
-          )),
-      Positioned(
-        top: MediaQuery.of(context).size.width / 0.8,
-        left: 50,
-        right: 50,
-        child: LargeButton(
-          text: 'Voy para la U',
-          onPressed: () {
-            user.type == 2?
-            Get.to(() => const NewTravel())
-            : Get.to(() => const SearchTravels());
-          },
-          large: true,
-        ),
-      ),
-      Positioned(
-        top: MediaQuery.of(context).size.width / 0.8 + 100,
-        left: 50,
-        right: 50,
-        child: LargeButton(
-          text: 'Salgo de la U',
-          onPressed: () {
-            user.type == 2?
-            Get.to(() => const NewTravel())
-            : Get.to(() => const AvailableTravels());
-          },
-          large: true,
-        ),
-      )
-    ]));
+          Positioned(
+              top: 100.0,
+              left: 50,
+              right: 50,
+              child: Text(
+                '¡Hola ${user.firstName.substring(0, 1).toUpperCase()}${user.firstName.substring(1)}!',
+                style: Theme.of(context).textTheme.titleLarge,
+              )),
+          Positioned(
+            top: 50.0,
+            left: 340,
+            right: 50,
+            child: Builder(builder: (BuildContext context) {
+              return FloatingActionButton(
+                onPressed: () {
+                  Scaffold.of(context).openDrawer(); // Abre el menú lateral
+                },
+                backgroundColor: Colors.transparent,
+                shape: const CircleBorder(),
+                child: const Icon(
+                  Icons.menu,
+                  color: Colors.black,
+                  size: 40,
+                  
+                ),
+              );
+            }),
+          ),
+          Positioned(
+            top: MediaQuery.of(context).size.width / 0.8,
+            left: 50,
+            right: 50,
+            child: LargeButton(
+              text: 'Voy para la U',
+              onPressed: () {
+                user.type == 2
+                    ? Get.to(() => const NewTravel())
+                    : Get.to(() => const SearchTravels());
+              },
+              large: true,
+            ),
+          ),
+          Positioned(
+            top: MediaQuery.of(context).size.width / 0.8 + 100,
+            left: 50,
+            right: 50,
+            child: LargeButton(
+              text: 'Salgo de la U',
+              onPressed: () {
+                user.type == 2
+                    ? Get.to(() => const NewTravel())
+                    : Get.to(() => const AvailableTravels());
+              },
+              large: true,
+            ),
+          )
+        ]));
   }
 }

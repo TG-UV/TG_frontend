@@ -27,18 +27,20 @@ class _ListedTravelsState extends State<ListedTravels> {
 
   @override
   void initState() {
+    _selectEndpoint();
     super.initState();
     //_cargarViajes();
   }
 
   void _selectEndpoint() {
-    //double if to determinate ui case, it depends on user type and travel atribute(past or future) 
+    //double if to determinate ui case, it depends on user type and travel atribute(past or future)
     widget.pastTravel
-        ? user.type == 2?
-         currentEndPoint = endPoints.getTravelHistoryDriver
-         :currentEndPoint = endPoints.getTravelHistoryPassenger
-        :user.type == 2? currentEndPoint = endPoints.getTravelPlannedDriver
-        :currentEndPoint = endPoints.getTravelPlannedPassenger;
+        ? user.type == 2
+            ? currentEndPoint = endPoints.getTravelHistoryDriver
+            : currentEndPoint = endPoints.getTravelHistoryPassenger
+        : user.type == 2
+            ? currentEndPoint = endPoints.getTravelPlannedDriver
+            : currentEndPoint = endPoints.getTravelPlannedPassenger;
   }
 
   // Future<void> _cargarViajes() async {
@@ -59,8 +61,7 @@ class _ListedTravelsState extends State<ListedTravels> {
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
-      Column(crossAxisAlignment: CrossAxisAlignment.stretch, 
-      children: [
+      Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         const SizedBox(
           height: 50,
         ),
