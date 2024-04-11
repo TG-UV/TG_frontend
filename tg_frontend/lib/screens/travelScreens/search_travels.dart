@@ -169,7 +169,7 @@ class _SearchTravelsState extends State<SearchTravels> {
                                   itemCount: travelsList.length,
                                   itemBuilder: (context, index) {
                                     return TravelCard(
-                                        travel: travelsList[index]);
+                                        travel: travelsList[index], pastTravel: false,);
                                   })));
                 })
             : Center(

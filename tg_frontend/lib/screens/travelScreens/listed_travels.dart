@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/datasource/travel_data.dart';
 import 'package:tg_frontend/device/environment.dart';
+import 'package:get_it/get_it.dart';
 
 class ListedTravels extends StatefulWidget {
   const ListedTravels({super.key, required this.pastTravel});
@@ -24,6 +25,7 @@ class _ListedTravelsState extends State<ListedTravels> {
   EndPoints endPoints = EndPoints();
   late String currentEndPoint;
   late List<Travel> travelsList;
+ 
 
   @override
   void initState() {
@@ -60,7 +62,9 @@ class _ListedTravelsState extends State<ListedTravels> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(children: [
+    return Stack(
+      
+      children: [
       Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         const SizedBox(
           height: 50,
@@ -137,7 +141,7 @@ class _ListedTravelsState extends State<ListedTravels> {
                                           padding: const EdgeInsets.only(
                                               bottom: 16.0),
                                           child: TravelCard(
-                                              travel: travelsList[index]));
+                                              travel: travelsList[index], pastTravel: widget.pastTravel,));
                                     });
                               }
                             }

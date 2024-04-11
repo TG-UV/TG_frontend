@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:tg_frontend/device/environment.dart';
 import 'package:tg_frontend/screens/travelScreens/available_travels.dart';
 import 'package:tg_frontend/screens/travelScreens/new_travel.dart';
@@ -51,28 +52,83 @@ class _MapScreenState extends State<MapScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         drawer: Drawer(
+          width: MediaQuery.of(context).size.width / 1.4,
+          shadowColor: Colors.black,
+          backgroundColor: const Color.fromARGB(255, 239, 239, 239),
+          shape: Border(right: BorderSide(color: Colors.red, width: 3)),
           child: ListView(
-            padding: EdgeInsets.zero,
             children: <Widget>[
-              const DrawerHeader(
-                child: Text('Menú'),
-                decoration: BoxDecoration(
-                  color: Colors.blue,
+              SizedBox(
+                  height: 130, // Cambia la altura aquí
+                  child: UserAccountsDrawerHeader(
+                      decoration: const BoxDecoration(
+                          border: Border(
+                              bottom: BorderSide(color: Colors.transparent))
+                              ),
+                      accountName: Text(
+                        '${user.firstName.substring(0, 1).toUpperCase()}${user.firstName.substring(1)} ${user.lastName.substring(0, 1).toUpperCase()}${user.lastName.substring(1)}',
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      accountEmail: Text(
+                        user.email,
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                      otherAccountsPictures: const [
+                        CircleAvatar(
+                          backgroundColor: Colors.white,
+                          backgroundImage: NetworkImage(
+                              //"https://randomuser.me/api/portraits/women/74.jpg"),
+                              "https://api.dicebear.com/8.x/bottts/png"),
+                        ),
+                      ])),
+              if (user.type == 2)
+                ListTile(
+                  leading: Icon(Icons.motorcycle_outlined),
+                  title: Text('Añadir vehículo'),
+                  onTap: () {},
                 ),
+              ListTile(
+                leading: Icon(Icons.settings),
+                title: Text('Configuración'),
+                onTap: () {},
               ),
               ListTile(
-                title: Text('Opción 1'),
-                onTap: () {
-                  // Aquí puedes agregar la lógica para la opción 1
-                },
+                leading: Icon(Icons.support_agent_outlined),
+                title: Text('Soporte'),
+                onTap: () {},
+              ),
+              const AboutListTile(
+                icon: Icon(
+                  Icons.info_outline,
+                ),
+                applicationIcon: Image(
+                  image: AssetImage(
+                    'assets/1200px-U+2301.svg.png',
+                  ),
+                  width: 40,
+                  height: 40,
+                  color: Colors.white,
+                  // fit: BoxFit.cover,
+                ),
+                applicationName: 'Rayo',
+                applicationVersion: '1.0.0',
+                applicationLegalese: '© 2024 Company',
+                aboutBoxChildren: [
+                  Column(
+                    children: [
+                      SizedBox(height: 20),
+                      Text('Autores'),
+                      Text('Sara - Sebastian')
+                    ],
+                  )
+                ],
+                child: Text('Sobre Nosotros'),
               ),
               ListTile(
-                title: Text('Opción 2'),
-                onTap: () {
-                  // Aquí puedes agregar la lógica para la opción 2
-                },
+                leading: Icon(Icons.login_outlined),
+                title: Text('Cerrar sesión'),
+                onTap: () {},
               ),
-              // Agrega más listTiles según sea necesario
             ],
           ),
         ),
@@ -128,7 +184,7 @@ class _MapScreenState extends State<MapScreen> {
               )),
           Positioned(
             top: 50.0,
-            left: 340,
+            left: MediaQuery.of(context).size.width / 1.2,
             right: 50,
             child: Builder(builder: (BuildContext context) {
               return FloatingActionButton(
@@ -138,10 +194,9 @@ class _MapScreenState extends State<MapScreen> {
                 backgroundColor: Colors.transparent,
                 shape: const CircleBorder(),
                 child: const Icon(
-                  Icons.menu,
+                  Icons.boy_rounded,
                   color: Colors.black,
-                  size: 40,
-                  
+                  size: 50,
                 ),
               );
             }),

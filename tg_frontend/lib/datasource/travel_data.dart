@@ -15,7 +15,7 @@ abstract class TravelDatasource {
   Future<void> getTravelLocal({required int travelId, String filter});
   Future<void> getTravelsRemote({required String finalEndPoint});
   Future<Response<Map<String, dynamic>>?> getTravelDetails(
-      {required int travelId});
+      {required int travelId, required String finalUrl});
   Future<int?> updateTravelLocal(
       {required int travelId,
       required List<String> fields,
@@ -277,21 +277,21 @@ class TravelDatasourceMethods implements TravelDatasource {
       );
       sent++;
     } catch (e) {
-      rethrow;
+      return sent;
     }
     return sent;
   }
 
   @override
   Future<Response<Map<String, dynamic>>?> getTravelDetails(
-      {required int travelId}) async {
+      {required int travelId, required String finalUrl}) async {
     Response<Map<String, dynamic>>? response;
     String? token = await AuthStorage().getToken();
 
     try {
       dio.options.headers['Authorization'] = 'Token $token';
       String url = _endPoints.baseUrl +
-          _endPoints.getTravelDetailsPassenger +
+          finalUrl+
           travelId.toString();
       print(url);
       response = await dio.get(

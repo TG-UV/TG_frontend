@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:tg_frontend/datasource/user_data.dart';
@@ -8,6 +10,9 @@ import 'package:tg_frontend/screens/travelScreens/map_screen.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:dio/dio.dart';
 import 'package:tg_frontend/datasource/local_database_provider.dart';
+import 'package:tg_frontend/device/environment.dart';
+import 'package:tg_frontend/services/auth_services.dart';
+
 
 
 class Home extends StatefulWidget {
@@ -32,7 +37,7 @@ class _HomeState extends State<Home> {
 
     // Scheduled Travles (Future)
     const ListedTravels(
-      pastTravel: false,
+      pastTravel: false, 
     ),
     // History Travels (Past)
     const ListedTravels(

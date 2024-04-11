@@ -107,7 +107,7 @@ class _ListedTravelsState extends State<AvailableTravels> {
                         textAlign: TextAlign.left,
                       )),
                   //TravelCard(travel: perfectTravel),
-                  TravelCard(travel: travelsList[0]),
+                  TravelCard(travel: travelsList[0], pastTravel: false,),
                   const SizedBox(height: 30),
                   Align(
                       alignment: Alignment.topLeft,
@@ -120,7 +120,7 @@ class _ListedTravelsState extends State<AvailableTravels> {
                       child: ListView.builder(
                           itemCount: travelsList.length,
                           itemBuilder: (context, index) {
-                            return TravelCard(travel: travelsList[index]);
+                            return TravelCard(travel: travelsList[index], pastTravel: false,);
                           }))
                   ],)
                   

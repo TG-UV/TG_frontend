@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tg_frontend/models/travel_model.dart';
-import 'package:tg_frontend/widgets/details_card.dart';
+import 'package:tg_frontend/widgets/passenger_associated_details_card.dart';
+import 'package:tg_frontend/widgets/passenger_global_details_card.dart';
 import 'package:tg_frontend/widgets/driver_details_card.dart';
 import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/device/environment.dart';
@@ -9,8 +10,10 @@ class TravelDetails extends StatefulWidget {
   const TravelDetails({
     super.key,
     required this.selectedTravel,
+    required this.pastTravel,
   });
 
+  final bool pastTravel;
   final Travel selectedTravel;
 
   @override
@@ -68,7 +71,9 @@ class _TravelDetailsState extends State<TravelDetails> {
                     Flexible(
                         child: user.type == 2
                             ? DriverDetailsCard(travel: widget.selectedTravel)
-                            : DetailsCard(travel: widget.selectedTravel))
+                            : widget.pastTravel?
+                              GlobalDetailsCard(travel: widget.selectedTravel)
+                             :AssociatesDetailsCard(travel: widget.selectedTravel))
                   ]))))
     ]);
   }
