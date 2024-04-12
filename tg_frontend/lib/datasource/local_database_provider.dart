@@ -3,6 +3,7 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
+import 'package:tg_frontend/device/environment.dart';
 
 import 'package:tg_frontend/device/local_tables.dart';
 
@@ -34,8 +35,8 @@ class DatabaseProvider extends ChangeNotifier {
   //   await Environment.sl<Database>().delete(tableName);
   // }
 
-  static cleanDatabase() async {
-    // await Environment.sl<Database>().delete(LocalDB.TB_TIPO);
+  cleanDatabase() async {
+    await Environment.sl<Database>().delete(LocalDB.tbUser);
     // await Environment.sl<Database>().delete(LocalDB.TB_PROGRAMA);
     // await Environment.sl<Database>().delete(LocalDB.TB_ORDEN);
     // await Environment.sl<Database>().delete(LocalDB.TB_ORDEN_FOTO);

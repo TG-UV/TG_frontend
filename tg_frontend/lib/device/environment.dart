@@ -15,12 +15,13 @@ class Environment {
   late User user;
 
   Future<void> startEnvironment() async {
+    
     Database database = await _initDatabase();
-    Dio dio = Dio();
     userDatasourseImpl = UserDatasourceMethods();
     travelDatasourceImpl = TravelDatasourceMethods();
     sl.registerSingleton<UserDatasourceMethods>(userDatasourseImpl);
     sl.registerSingleton<TravelDatasourceMethods>(travelDatasourceImpl);
+    sl.registerSingleton<Database>(database);
   }
 
   Future<Database> _initDatabase() async {

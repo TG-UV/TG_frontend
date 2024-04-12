@@ -20,6 +20,7 @@ class TravelCard extends StatelessWidget {
     List<String> parts = timeString.split(':');
     int hour = int.parse(parts[0]);
     int minute = int.parse(parts[1]);
+    print('pastttt atribute $pastTravel');
     return DateTime(1, 1, 1, hour, minute);
   }
 
@@ -43,7 +44,8 @@ class TravelCard extends StatelessWidget {
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                       onPressed: () {
-                        Get.to(() => TravelDetails(selectedTravel: travel, pastTravel: pastTravel));
+                        Get.to(() => TravelDetails(
+                            selectedTravel: travel, pastTravel: pastTravel));
                       },
                     ),
                     TextButton(
@@ -57,7 +59,10 @@ class TravelCard extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                       onPressed: () {
-                        Get.to(() => TravelDetails(selectedTravel: travel, pastTravel: pastTravel,));
+                        Get.to(() => TravelDetails(
+                              selectedTravel: travel,
+                              pastTravel: pastTravel,
+                            ));
                       },
                     ),
                     const SizedBox(width: 8),

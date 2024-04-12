@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tg_frontend/datasource/endPoints/end_point.dart';
+import 'package:tg_frontend/datasource/local_database_provider.dart';
 import 'package:tg_frontend/device/environment.dart';
 import 'package:tg_frontend/screens/home.dart';
 import 'package:tg_frontend/screens/loginAndRegister/sign_up.dart';
@@ -9,6 +10,7 @@ import 'package:tg_frontend/widgets/large_button.dart';
 import 'package:tg_frontend/services/auth_services.dart';
 import 'package:tg_frontend/datasource/user_data.dart';
 import 'package:tg_frontend/models/user_model.dart';
+import 'package:sqflite/sqflite.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -23,11 +25,16 @@ class _LoginState extends State<Login> {
   UserDatasourceMethods userDatasourceImpl =
       Environment.sl.get<UserDatasourceMethods>();
   EndPoints endPoint = EndPoints();
-
+  DatabaseProvider databaseProvider = DatabaseProvider.db;
+  late Database database;
   late Future<String> user;
 
   @override
-  void initState() {
+  void initState() async {
+    databaseProvider = DatabaseProvider.db;
+    await databaseProvider.cleanDatabase();
+    Environment.sl.unregister<User>();
+
     super.initState();
   }
 

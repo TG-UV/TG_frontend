@@ -134,7 +134,7 @@ class TravelDatasourceMethods implements TravelDatasource {
             //queryParameters: parameters,
             );
 
-        for (var data in response.data['results']) {
+        for (var data in response.data) {
           Travel travel = Travel.fromJson(data);
           travelList.add(travel);
         }
@@ -290,9 +290,7 @@ class TravelDatasourceMethods implements TravelDatasource {
 
     try {
       dio.options.headers['Authorization'] = 'Token $token';
-      String url = _endPoints.baseUrl +
-          finalUrl+
-          travelId.toString();
+      String url = _endPoints.baseUrl + finalUrl + travelId.toString();
       print(url);
       response = await dio.get(
         url,

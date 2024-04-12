@@ -71,9 +71,11 @@ class _TravelDetailsState extends State<TravelDetails> {
                     Flexible(
                         child: user.type == 2
                             ? DriverDetailsCard(travel: widget.selectedTravel)
-                            : widget.pastTravel?
-                              GlobalDetailsCard(travel: widget.selectedTravel)
-                             :AssociatesDetailsCard(travel: widget.selectedTravel))
+                            : widget.pastTravel
+                                ? AssociatesDetailsCard(
+                                    travel: widget.selectedTravel)
+                                : GlobalDetailsCard(
+                                    travel: widget.selectedTravel))
                   ]))))
     ]);
   }

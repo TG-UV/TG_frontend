@@ -34,12 +34,9 @@ class AuthStorage {
     return await storage.read(key: 'password');
   }
 
-Future<void> removeValues() async {
-     await storage.delete(key: 'password');
-     await storage.delete(key: 'nickname');
-     storage.delete(key: 'token');
+  Future<void> removeValues() async {
+    await storage.delete(key: 'password');
+    await storage.delete(key: 'nickname');
+    await storage.delete(key: 'token');
   }
-
- 
-
 }

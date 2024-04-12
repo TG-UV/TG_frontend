@@ -35,7 +35,10 @@ class SquareButton extends StatelessWidget {
         ),
       ),
       child: myIcon != null
-          ? const Icon(Icons.edit)
+          ? const Icon(
+              Icons.edit,
+              color: Colors.black,
+            )
           : Text(
               text,
               textAlign: TextAlign.center,

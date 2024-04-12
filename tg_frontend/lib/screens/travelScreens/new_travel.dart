@@ -9,6 +9,7 @@ import 'package:tg_frontend/models/travel_model.dart';
 import 'package:tg_frontend/datasource/travel_data.dart';
 import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/device/environment.dart';
+import 'package:intl/intl.dart';
 
 class NewTravel extends StatefulWidget {
   const NewTravel({super.key});
@@ -22,6 +23,8 @@ class _NewTravelState extends State<NewTravel> {
   TravelDatasourceMethods travelDatasourceMethods =
       Environment.sl.get<TravelDatasourceMethods>();
   int _selectedTimeButtonIndex = -1;
+  DateTime _selectedDate = DateTime.now();
+  TimeOfDay _selectedTime = TimeOfDay.now();
 
   final _formKey = GlobalKey<FormState>();
 
@@ -29,14 +32,14 @@ class _NewTravelState extends State<NewTravel> {
   final TextEditingController arrivalPointController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
   final TextEditingController timeController = TextEditingController();
-  final TextEditingController dateControlelr = TextEditingController();
+  final TextEditingController dateController = TextEditingController();
   final TextEditingController seatsController = TextEditingController();
 
   void submitForm(BuildContext context) async {
     DateTime now = DateTime.now();
 
     String formattedTime = DateFormat('yyyy-MM-dd').format(now);
-    dateControlelr.text = formattedTime;
+    dateController.text = formattedTime;
     if (_formKey.currentState!.validate()) {
       //List<Travel> travelList = [];
       Travel travel = Travel(
@@ -46,10 +49,10 @@ class _NewTravelState extends State<NewTravel> {
           driver: user.idUser,
           price: int.parse(priceController.text),
           seats: int.parse(seatsController.text),
-          date: dateControlelr.text,
+          date: dateController.text,
           hour: timeController.text,
-          // date: DateFormat('yyyy-MM-dd').parse(dateControlelr.text),
-          // hour: DateFormat('HH:mm').parse(dateControlelr.text),
+          // date: DateFormat('yyyy-MM-dd').parse(dateController.text),
+          // hour: DateFormat('HH:mm').parse(dateController.text),
           currentTrip: 0);
       //travelList.add(travel);
 
@@ -69,6 +72,30 @@ class _NewTravelState extends State<NewTravel> {
                 onPressed: () => Navigator.of(context).pop(),
                 child: const Text("Aceptar"))
           ]);
+    }
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? pickedDate = await showDatePicker(
+        context: context, firstDate: DateTime(1950), lastDate: DateTime(2010));
+    if (pickedDate != null && pickedDate != _selectedDate) {
+      setState(() {
+        _selectedDate = pickedDate;
+        dateController.text = _selectedDate.toString().substring(0, 10);
+      });
+    }
+    _selectTime();
+  }
+
+  Future<void> _selectTime() async {
+    final TimeOfDay? pickedTime =
+        await showTimePicker(context: context, initialTime: TimeOfDay.now());
+
+    if (pickedTime != null && pickedTime != _selectedTime) {
+      setState(() {
+        _selectedTime = pickedTime;
+        _selectedTime.format(context);
+      });
     }
   }
 
@@ -130,6 +157,7 @@ class _NewTravelState extends State<NewTravel> {
                       icon: const Icon(Icons.edit),
                     ),
                     const SizedBox(height: 50),
+
                     Align(
                         alignment: Alignment.topLeft,
                         child: Text(
@@ -167,7 +195,7 @@ class _NewTravelState extends State<NewTravel> {
                                   String formattedTime =
                                       DateFormat('HH:mm:ss').format(newTime);
                                   timeController.text = formattedTime;
-                                  //dateControlelr.text = "$newTime";
+                                  //dateController.text = "$newTime";
                                 });
                               }),
                           SquareButton(
@@ -188,14 +216,19 @@ class _NewTravelState extends State<NewTravel> {
                             isSelected: _selectedTimeButtonIndex == 3,
                             myIcon: Icons.edit,
                             text: '',
-                            onPressed: () {},
+                            onPressed: () => _selectDate(context),
                           ),
                         ]),
+                    Text(
+                      'Fecha y hora: ${dateController.text}, ${timeController.text}',
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
                     const SizedBox(height: 15),
+
                     Align(
                         alignment: Alignment.topLeft,
                         child: Text(
-                          "Cuposssss",
+                          "Cupos",
                           style: Theme.of(context).textTheme.titleSmall,
                           textAlign: TextAlign.left,
                         )),

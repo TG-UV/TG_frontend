@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tg_frontend/device/environment.dart';
+import 'package:tg_frontend/screens/loginAndRegister/login.dart';
 import 'package:tg_frontend/screens/travelScreens/available_travels.dart';
 import 'package:tg_frontend/screens/travelScreens/new_travel.dart';
 import 'package:tg_frontend/screens/travelScreens/search_travels.dart';
+import 'package:tg_frontend/services/auth_services.dart';
 import 'package:tg_frontend/widgets/large_button.dart';
 import 'package:get/get.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -48,6 +50,34 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
+  _showConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirmación'),
+          content: const Text('¿Estás seguro de que quieres cerrar sesión?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () {
+                
+                AuthStorage().removeValues();
+                Get.to(() => const Login());
+              },
+              child: const Text('Salir'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,8 +93,7 @@ class _MapScreenState extends State<MapScreen> {
                   child: UserAccountsDrawerHeader(
                       decoration: const BoxDecoration(
                           border: Border(
-                              bottom: BorderSide(color: Colors.transparent))
-                              ),
+                              bottom: BorderSide(color: Colors.transparent))),
                       accountName: Text(
                         '${user.firstName.substring(0, 1).toUpperCase()}${user.firstName.substring(1)} ${user.lastName.substring(0, 1).toUpperCase()}${user.lastName.substring(1)}',
                         style: Theme.of(context).textTheme.titleLarge,
@@ -127,7 +156,9 @@ class _MapScreenState extends State<MapScreen> {
               ListTile(
                 leading: Icon(Icons.login_outlined),
                 title: Text('Cerrar sesión'),
-                onTap: () {},
+                onTap: () {
+                  _showConfirmationDialog(context);
+                },
               ),
             ],
           ),
