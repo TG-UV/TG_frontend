@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tg_frontend/datasource/endPoints/end_point.dart';
 import 'package:tg_frontend/models/travel_model.dart';
+import 'package:tg_frontend/screens/theme.dart';
 import 'package:tg_frontend/screens/travelScreens/search_travels.dart';
 import 'package:tg_frontend/widgets/large_button.dart';
 import 'package:tg_frontend/widgets/travel_card.dart';
@@ -21,7 +22,7 @@ class AvailableTravels extends StatefulWidget {
 }
 
 class _ListedTravelsState extends State<AvailableTravels> {
-  TravelDatasourceMethods travelDatasourceMethods =
+  TravelDatasourceMethods travelDatasourceImpl =
       Environment.sl.get<TravelDatasourceMethods>();
   User user = Environment.sl.get<User>();
   List<Travel> travelsList = [];
@@ -30,12 +31,16 @@ class _ListedTravelsState extends State<AvailableTravels> {
   @override
   void initState() {
     super.initState();
-    _cargarViajes();
+    //_cargarViajes();
   }
 
-  Future<void> _cargarViajes() async {
-    travelsList = await travelDatasourceMethods.getTravelsRemote(finalEndPoint: _endPoints.getGeneralTravels);
-    setState(() {});
+  Stream<List<Travel>> _fetchTravelsStream() async* {
+    final value = await travelDatasourceImpl.getTravelsRemote(
+        finalEndPoint: _endPoints.getGeneralTravels);
+    yield value;
+    // setState(() {
+
+    // });
   }
 
   @override
@@ -85,9 +90,9 @@ class _ListedTravelsState extends State<AvailableTravels> {
                   0.75, // 3 cuartos de la pantalla
               height: MediaQuery.of(context).size.height *
                   0.65, // 3 cuartos de la pantalla
-              decoration: const BoxDecoration(
-                color: Color.fromARGB(255, 255, 58, 58),
-                borderRadius: BorderRadius.only(
+              decoration:  BoxDecoration(
+                color: ColorManager.fourthColor,
+                borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(30.0),
                   topRight: Radius.circular(30.0),
                 ),
@@ -97,8 +102,27 @@ class _ListedTravelsState extends State<AvailableTravels> {
                     topLeft: Radius.circular(30.0),
                     topRight: Radius.circular(30.0),
                   ),
-                  child:
-                  Flex(direction: Axis.vertical, children: [
+                  child: SizedBox(
+                      height: 500,
+                      child: StreamBuilder<List<Travel>>(
+                          stream: _fetchTravelsStream(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const Center(
+                                  child: CircularProgressIndicator());
+                            } else if (snapshot.hasError) {
+                              return Center(
+                                  child: Text('Error: ${snapshot.error}'));
+                            } else {
+                              travelsList = snapshot.data ?? [];
+                              if (travelsList.isEmpty) {
+                                return const Center(
+                                  child:
+                                      Text('No tiene viajes por el momento...'),
+                                );
+                              } else {
+                  return Flex(direction: Axis.vertical, children: [
                     Align(
                       alignment: Alignment.topLeft,
                       child: Text(
@@ -122,9 +146,9 @@ class _ListedTravelsState extends State<AvailableTravels> {
                           itemBuilder: (context, index) {
                             return TravelCard(travel: travelsList[index], pastTravel: false,);
                           }))
-                  ],)
+                  ],);
                   
-            )))
-                ]);
+  }}})))
+                ))]);
   }
 }

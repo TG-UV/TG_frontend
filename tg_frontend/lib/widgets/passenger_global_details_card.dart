@@ -203,7 +203,7 @@ class _DetailsCardState extends State<GlobalDetailsCard> {
                                       label: const Text(''),
                                       onPressed: () => _seatsIncrement(1),
                                       icon: const Icon(
-                                        Icons.plus_one_rounded,
+                                        Icons.plus_one_outlined,
                                         color: Colors.black,
                                       )),
                                 ],
@@ -216,6 +216,7 @@ class _DetailsCardState extends State<GlobalDetailsCard> {
                                   textInputType: TextInputType.text,
                                   icon: const Icon(Icons.location_history),
                                   obscure: false),
+                                  const SizedBox(height: 10),
                               LargeButton(
                                 large: false,
                                 text: "reservar",

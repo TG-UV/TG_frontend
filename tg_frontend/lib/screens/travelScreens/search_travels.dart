@@ -24,6 +24,12 @@ class _SearchTravelsState extends State<SearchTravels> {
       Environment.sl.get<TravelDatasourceMethods>();
   EndPoints endPoint = EndPoints();
 
+  int _selectedTimeButtonIndex = -1;
+  DateTime _selectedDate = DateTime.now();
+  TimeOfDay _selectedTime = TimeOfDay.now();
+  
+  final TextEditingController dateController= TextEditingController();
+  final TextEditingController timeController = TextEditingController();
   final TextEditingController startingPointController = TextEditingController();
   final TextEditingController arrivalPointController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
@@ -41,6 +47,32 @@ class _SearchTravelsState extends State<SearchTravels> {
     if (value.isNotEmpty) {
       setState(() {
         travelsList = value;
+      });
+    }
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? pickedDate = await showDatePicker(
+        context: context, firstDate: DateTime.now(), lastDate: DateTime(2025));
+    if (pickedDate != null && pickedDate != _selectedDate) {
+      setState(() {
+        _selectedDate = pickedDate;
+        dateController.text = _selectedDate.toString().substring(0, 10);
+      });
+    }
+    _selectTime();
+  }
+
+  Future<void> _selectTime() async {
+    final TimeOfDay? pickedTime =
+        await showTimePicker(context: context, initialTime: TimeOfDay.now());
+
+    if (pickedTime != null && pickedTime != _selectedTime) {
+      setState(() {
+        _selectedTime = pickedTime;
+        // timeController.text = DateFormat('hh:mm a')
+        //     .format(_parseTimeString(_selectedDate.toString()));
+        _selectedTime.format(context);
       });
     }
   }
@@ -112,24 +144,51 @@ class _SearchTravelsState extends State<SearchTravels> {
                       style: Theme.of(context).textTheme.titleSmall,
                       textAlign: TextAlign.left,
                     )),
-                // Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-                //   //BotonPersonalizado('Botón 1'),
-                //   SquareButton(text: '10 min', onPressed: () {}),
-                //   SquareButton(text: '30 min', onPressed: () {}),
-                //   SquareButton(text: '1 hora', onPressed: () {}),
-                //   SquareButton(
-                //     myIcon: Icons.edit,
-                //     text: '',
-                //     onPressed: () {},
-                //   ),
-                // ]),
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      //BotonPersonalizado('Botón 1'),
+                      SquareButton(
+                          text: '10',
+                          isSelected: _selectedTimeButtonIndex == 0,
+                          onPressed: () {
+                            setState(() {
+                              timeController.text = '0';
+                              _selectedTimeButtonIndex = 0;
+                            });
+                          }),
+                      SquareButton(
+                          text: '30',
+                          isSelected: _selectedTimeButtonIndex == 1,
+                          onPressed: () {
+                            setState(() {
+                              timeController.text = '1';
+                              _selectedTimeButtonIndex = 0;
+                            });
+                          }),
+                      SquareButton(
+                          text: '60',
+                          isSelected: _selectedTimeButtonIndex == 2,
+                          onPressed: () {
+                            setState(() {
+                              timeController.text = '2';
+                              _selectedTimeButtonIndex = 0;
+                            });
+                          }),
+                      SquareButton(
+                        isSelected: _selectedTimeButtonIndex == 3,
+                        myIcon: Icons.edit,
+                        text: '',
+                        onPressed: () => _selectDate(context),
+                      ),
+                    ]),
                 const SizedBox(height: 20),
                 LargeButton(
                     text: "buscar", large: false, onPressed: _fetchTravels),
               ],
             ),
           ),
-          
+
           // Expanded(
           //  child:
         ]),
@@ -169,18 +228,13 @@ class _SearchTravelsState extends State<SearchTravels> {
                                   itemCount: travelsList.length,
                                   itemBuilder: (context, index) {
                                     return TravelCard(
-                                        travel: travelsList[index], pastTravel: false,);
+                                      travel: travelsList[index],
+                                      pastTravel: false,
+                                    );
                                   })));
                 })
             : Center(
-              
-                child: Text(
-                "",
-                style: Theme.of(context)
-                    .textTheme
-                    .titleMedium
-                    
-              ))
+                child: Text("", style: Theme.of(context).textTheme.titleMedium))
       ],
     ));
   }

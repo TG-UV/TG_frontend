@@ -8,14 +8,14 @@ class InputField extends StatelessWidget {
       required this.controller,
       required this.textInput,
       required this.textInputType,
-      required this.icon,
+      this.icon,
       required this.obscure});
 
   final TextEditingController controller;
   final String textInput;
   final TextInputType textInputType;
   final bool obscure;
-  final Icon icon;
+  final Icon? icon;
 
   @override
   Widget build(BuildContext context) {

@@ -5,6 +5,7 @@ import 'package:tg_frontend/screens/loginAndRegister/splash.dart';
 //import 'package:tg_frontend/screens/welcome.dart';
 import 'package:tg_frontend/device/environment.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:tg_frontend/screens/theme.dart';
 import 'package:tg_frontend/screens/travelScreens/available_travels.dart';
 import 'package:tg_frontend/screens/travelScreens/new_travel.dart';
 import 'package:tg_frontend/screens/travelScreens/search_travels.dart';
@@ -36,9 +37,9 @@ class MyApp extends StatelessWidget {
   }
 
   final ThemeData myTheme = ThemeData.light().copyWith(
-    primaryColor: Color.fromARGB(255, 238, 238, 238), // Color primario
+    primaryColor: ColorManager.thirdColor, // Color primario
     colorScheme: const ColorScheme.light().copyWith(
-      primary: Color.fromARGB(255, 238, 238, 238), // Color primario
+      primary:  ColorManager.thirdColor,// Color primario
       secondary: const Color(0x4E504333), // Color secundario
       error: const Color(0xFFDD3D32), // Color terciario (error)
     ),

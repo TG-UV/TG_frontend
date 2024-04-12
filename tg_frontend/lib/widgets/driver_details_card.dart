@@ -10,7 +10,6 @@ import 'package:tg_frontend/device/environment.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
 
-
 class DriverDetailsCard extends StatefulWidget {
   const DriverDetailsCard({
     super.key,
@@ -37,13 +36,13 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
   }
 
   Future<void> _loadPassengers() async {
-    List<Passenger> passengersList =
-        await travelDatasourceImpl.getPassangersRemote(travelId: widget.travel.id);
+    List<Passenger> passengersList = await travelDatasourceImpl
+        .getPassangersRemote(travelId: widget.travel.id);
     setState(() {
       confirmedPassengersList =
-        passengersList.where((element) => element.isConfirmed == 1).toList();
-    pendingPassengersList =
-        passengersList.where((element) => element.isConfirmed == 0).toList();
+          passengersList.where((element) => element.isConfirmed == 1).toList();
+      pendingPassengersList =
+          passengersList.where((element) => element.isConfirmed == 0).toList();
     });
   }
 
@@ -51,14 +50,23 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
       int passengerTripId, bool valueConfirmed) async {
     int updatePassengers = await travelDatasourceImpl.updatePassengerRemote(
         passengerTripId: passengerTripId, valueConfirmed: valueConfirmed);
-     if(updatePassengers != 0){
-       _loadPassengers();
-     }   
-      else {
-          await EasyLoading.showInfo("Error");
-          return;
-      }
-   
+    if (updatePassengers != 0) {
+      _loadPassengers();
+    } else {
+      await EasyLoading.showInfo("Error");
+      return;
+    }
+  }
+  void _cancelTravel(int passengerId) async {
+    int sendResponse = await travelDatasourceImpl.deletePassengerRemote(
+        passengerId: passengerId);
+    if (sendResponse == 1) {
+      await EasyLoading.showInfo("reserva cancelada");
+      Navigator.of(context).pop();
+    } else {
+      await EasyLoading.showInfo("Error al cancelar");
+      return;
+    }
   }
 
   Card buildPassengerInfo(Passenger myPassenger) {
@@ -133,48 +141,34 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                 Text(
-                    DateFormat('EEEE').format(DateTime.parse(widget.travel.date)),
-                    //travel.date,
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                 
-                
-                const SizedBox(width: 10),
-                
-                  Text(
-                    widget.travel.hour,
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleLarge!
-                        .copyWith(fontSize: 25.0),
-                    overflow: TextOverflow.ellipsis,
-                  ),]),
-                  
-                
-                const SizedBox(height: 20),
-                Text(
-                      'Desde: ${widget.travel.startingPoint}',
-                      style: Theme.of(context).textTheme.titleSmall,
-                    ),
-                    Text(
-                      'Hacia: ${widget.travel.arrivalPoint}',
-                      style: Theme.of(context).textTheme.titleSmall,
-                    ),
-                      // Text(
-                      //   'Partida:  ${widget.travel.startingPoint}',
-                      //   style: Theme.of(context).textTheme.titleSmall,
-                      // ),
-                      // Text(
-                      //   'Destino:   ${widget.travel.arrivalPoint}',
-                      //   style: Theme.of(context).textTheme.titleSmall,
-                      // ),
-                      // Text(
-                      //   'Fecha: ${widget.travel.date},  ${widget.travel.hour}',
-                      //   style: Theme.of(context).textTheme.titleSmall,
-                      // ),
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: <Widget>[
+                            Text(
+                              DateFormat('EEEE')
+                                  .format(DateTime.parse(widget.travel.date)),
+                              //travel.date,
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
+                            const SizedBox(width: 10),
+                            Text(
+                              widget.travel.hour,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleLarge!
+                                  .copyWith(fontSize: 25.0),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ]),
+
+                      const SizedBox(height: 20),
+                      Text(
+                        'Desde: ${widget.travel.startingPoint}',
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                      Text(
+                        'Hacia: ${widget.travel.arrivalPoint}',
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
                       Text(
                         '${widget.travel.seats} cupos disponibles ',
                         style: Theme.of(context)
@@ -183,7 +177,7 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                             .copyWith(fontWeight: FontWeight.normal),
                       ),
                       Text(
-                        '${widget.travel.price} ',
+                        '\$ ${widget.travel.price} ',
                         style: Theme.of(context)
                             .textTheme
                             .titleSmall!
@@ -211,11 +205,11 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                             return buildPassengerInfo(
                                 confirmedPassengersList[index]);
                           }),
-                          
+
                       const SizedBox(
                         height: 40,
                       ),
-                     
+
                       Text(
                         'Pasajeros pendientes',
                         style: Theme.of(context)
@@ -223,29 +217,37 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                             .titleMedium!
                             .copyWith(fontWeight: FontWeight.w800),
                       ),
-                       Expanded(
+                      Expanded(
                         child: Container(
-                      
-                        alignment: Alignment.topLeft,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: pendingPassengersList.length,
-                          itemBuilder: (context, index) {
-                            return
-                            pendingPassengersList.isNotEmpty?
-                             buildPassengerCard(
-                                pendingPassengersList[index])
-                                :Text(
-                        'No tienes pasajeros pendientes',
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleSmall!
-                            .copyWith(fontWeight: FontWeight.normal),
-                      );
-                          },
+                          alignment: Alignment.topLeft,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: pendingPassengersList.length,
+                            itemBuilder: (context, index) {
+                              return pendingPassengersList.isNotEmpty
+                                  ? buildPassengerCard(
+                                      pendingPassengersList[index])
+                                  : Text(
+                                      'No tienes pasajeros pendientes',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall!
+                                          .copyWith(
+                                              fontWeight: FontWeight.normal),
+                                    );
+                            },
+                          ),
                         ),
-                      ),)
-                      
-                    ]))));
+                      ),const SizedBox(height: 50),
+                            LargeButton(
+                              large: false,
+                              text: "cancelar",
+                              onPressed: () {
+                                _cancelTravel(user.idUser);
+                              },
+                            ),
+
+                    ]))
+                    ));
   }
 }

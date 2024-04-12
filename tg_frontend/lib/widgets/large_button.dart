@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tg_frontend/screens/theme.dart';
 
 class LargeButton extends StatelessWidget {
   const LargeButton({
@@ -25,7 +26,8 @@ class LargeButton extends StatelessWidget {
         (text == 'Buscar') ? Colors.grey : Theme.of(context).colorScheme.error;
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-          elevation: 1,
+          elevation: 4,
+          shadowColor: ColorManager.secondaryColor,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
           backgroundColor: myBackgroundColor,

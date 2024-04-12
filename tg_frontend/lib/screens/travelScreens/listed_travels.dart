@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:tg_frontend/datasource/endPoints/end_point.dart';
 import 'package:tg_frontend/models/travel_model.dart';
 import 'package:tg_frontend/screens/home.dart';
+import 'package:tg_frontend/screens/theme.dart';
 import 'package:tg_frontend/widgets/travel_card.dart';
 import 'package:http/http.dart' as http;
 import 'package:tg_frontend/models/user_model.dart';
@@ -67,13 +68,14 @@ class _ListedTravelsState extends State<ListedTravels> {
       children: [
       Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         const SizedBox(
-          height: 50,
+          height: 90,
         ),
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: widget.pastTravel
               ? Text(
                   "Historial de viajes",
+                  textAlign: TextAlign.center,
                   style: Theme.of(context)
                       .textTheme
                       .titleLarge!
@@ -81,6 +83,7 @@ class _ListedTravelsState extends State<ListedTravels> {
                 )
               : Text(
                   "Tus próximos viajes",
+                  textAlign: TextAlign.center,
                   style: Theme.of(context)
                       .textTheme
                       .titleLarge!
@@ -101,9 +104,9 @@ class _ListedTravelsState extends State<ListedTravels> {
                   0.75, // 3 cuartos de la pantalla
               height: MediaQuery.of(context).size.height *
                   0.75, // 3 cuartos de la pantalla
-              decoration: const BoxDecoration(
-                color: Color.fromARGB(255, 255, 58, 58),
-                borderRadius: BorderRadius.only(
+              decoration:  BoxDecoration(
+                color: ColorManager.fourthColor,
+                borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(50.0),
                   topRight: Radius.circular(50.0),
                 ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tg_frontend/models/travel_model.dart';
+import 'package:tg_frontend/screens/theme.dart';
 import 'package:tg_frontend/widgets/passenger_associated_details_card.dart';
 import 'package:tg_frontend/widgets/passenger_global_details_card.dart';
 import 'package:tg_frontend/widgets/driver_details_card.dart';
@@ -28,7 +29,7 @@ class _TravelDetailsState extends State<TravelDetails> {
     return Stack(children: [
       Scaffold(
           body: Container(
-              color: const Color(0xFFDD3D32),
+              color: ColorManager.fourthColor,
               padding: const EdgeInsets.symmetric(horizontal: 15.0),
               alignment: Alignment.topCenter,
               child: Column(
@@ -41,7 +42,8 @@ class _TravelDetailsState extends State<TravelDetails> {
                           color: const Color.fromARGB(255, 231, 231, 231)),
                     ),
                     const SizedBox(height: 20),
-                  ]))),
+                  ])
+                  )),
       Positioned(
           bottom: 0,
           left: 0,
@@ -76,7 +78,15 @@ class _TravelDetailsState extends State<TravelDetails> {
                                     travel: widget.selectedTravel)
                                 : GlobalDetailsCard(
                                     travel: widget.selectedTravel))
-                  ]))))
+                  ])))),
+                  Positioned(
+                  top: 30.0,
+                  left: 5.0,
+                  child: IconButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon:  Icon(Icons.arrow_back, color: ColorManager.thirdColor,)))
     ]);
   }
 }

@@ -30,9 +30,9 @@ class _LoginState extends State<Login> {
   late Future<String> user;
 
   @override
-  void initState() async {
+  void initState()  {
     databaseProvider = DatabaseProvider.db;
-    await databaseProvider.cleanDatabase();
+     databaseProvider.cleanDatabase();
     Environment.sl.unregister<User>();
 
     super.initState();
@@ -103,15 +103,15 @@ class _LoginState extends State<Login> {
                           textInput: 'Correo electrónico',
                           textInputType: TextInputType.text,
                           obscure: false,
-                          icon: const Icon(Icons.key),
+                          
                         ),
                         const SizedBox(height: 15),
                         InputField(
                           controller: passwordLoginController,
                           textInput: 'Contraseña',
                           textInputType: TextInputType.text,
-                          obscure: false,
-                          icon: const Icon(null),
+                          obscure: true,
+                          icon: const Icon(Icons.key),
                         ),
                         const SizedBox(height: 50),
                         LargeButton(

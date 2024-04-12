@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:get/get.dart';
 import 'package:tg_frontend/screens/home.dart';
+import 'package:tg_frontend/screens/theme.dart';
 import 'package:tg_frontend/widgets/large_button.dart';
 import 'package:tg_frontend/widgets/square_button.dart';
 import 'package:tg_frontend/widgets/input_field.dart';
@@ -23,6 +24,7 @@ class _NewTravelState extends State<NewTravel> {
   TravelDatasourceMethods travelDatasourceMethods =
       Environment.sl.get<TravelDatasourceMethods>();
   int _selectedTimeButtonIndex = -1;
+  int _selectedSeatsButtonIndex = -1;
   DateTime _selectedDate = DateTime.now();
   TimeOfDay _selectedTime = TimeOfDay.now();
 
@@ -36,10 +38,9 @@ class _NewTravelState extends State<NewTravel> {
   final TextEditingController seatsController = TextEditingController();
 
   void submitForm(BuildContext context) async {
-    DateTime now = DateTime.now();
-
-    String formattedTime = DateFormat('yyyy-MM-dd').format(now);
-    dateController.text = formattedTime;
+    // DateTime now = DateTime.now();
+    //String formattedTime = DateFormat('yyyy-MM-dd').format(now);
+    //dateController.text = formattedTime;
     if (_formKey.currentState!.validate()) {
       //List<Travel> travelList = [];
       Travel travel = Travel(
@@ -75,9 +76,16 @@ class _NewTravelState extends State<NewTravel> {
     }
   }
 
+  DateTime _parseTimeString(String timeString) {
+    List<String> parts = timeString.split(':');
+    int hour = int.parse(parts[0]);
+    int minute = int.parse(parts[1]);
+    return DateTime(1, 1, 1, hour, minute);
+  }
+
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
-        context: context, firstDate: DateTime(1950), lastDate: DateTime(2010));
+        context: context, firstDate: DateTime.now(), lastDate: DateTime(2025));
     if (pickedDate != null && pickedDate != _selectedDate) {
       setState(() {
         _selectedDate = pickedDate;
@@ -94,6 +102,8 @@ class _NewTravelState extends State<NewTravel> {
     if (pickedTime != null && pickedTime != _selectedTime) {
       setState(() {
         _selectedTime = pickedTime;
+        timeController.text =DateFormat('hh:mm a')
+                            .format(_parseTimeString(_selectedDate.toString()));
         _selectedTime.format(context);
       });
     }
@@ -139,7 +149,7 @@ class _NewTravelState extends State<NewTravel> {
                       textInput: 'Universidad del Valle',
                       textInputType: TextInputType.text,
                       obscure: false,
-                      icon: const Icon(Icons.edit),
+                      //icon: const Icon(Icons.edit),
                     ),
                     const SizedBox(height: 7),
                     Align(
@@ -154,7 +164,7 @@ class _NewTravelState extends State<NewTravel> {
                       textInput: 'Home',
                       textInputType: TextInputType.text,
                       obscure: false,
-                      icon: const Icon(Icons.edit),
+                      //icon: const Icon(Icons.edit),
                     ),
                     const SizedBox(height: 50),
 
@@ -184,7 +194,7 @@ class _NewTravelState extends State<NewTravel> {
                                 });
                               }),
                           SquareButton(
-                              text: '30 min',
+                              text: '30',
                               isSelected: _selectedTimeButtonIndex == 1,
                               onPressed: () {
                                 setState(() {
@@ -199,7 +209,7 @@ class _NewTravelState extends State<NewTravel> {
                                 });
                               }),
                           SquareButton(
-                              text: '1 hora',
+                              text: '60',
                               isSelected: _selectedTimeButtonIndex == 2,
                               onPressed: () {
                                 setState(() {
@@ -219,12 +229,17 @@ class _NewTravelState extends State<NewTravel> {
                             onPressed: () => _selectDate(context),
                           ),
                         ]),
-                    Text(
-                      'Fecha y hora: ${dateController.text}, ${timeController.text}',
+                        Row(children: [
+                          Text(
+                      '  Fecha y hora: ',
                       style: Theme.of(context).textTheme.titleSmall,
+                    ),Text(
+                      '${_selectedDate.toString().substring(0, 10)},  ${timeController.text}',
+                      //' ${DateFormat('HH:mm:ss').format(_selectedDate.toString().substring(0, 10))}',
+                      style: Theme.of(context).textTheme.titleSmall!.copyWith(fontWeight: FontWeight.bold),
                     ),
+                        ],),
                     const SizedBox(height: 15),
-
                     Align(
                         alignment: Alignment.topLeft,
                         child: Text(
@@ -232,28 +247,49 @@ class _NewTravelState extends State<NewTravel> {
                           style: Theme.of(context).textTheme.titleSmall,
                           textAlign: TextAlign.left,
                         )),
-                    // Row(
-                    //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    //     children: [
-                    //       //BotonPersonalizado('Botón 1'),
-                    //       SquareButton(
-                    //           text: '1',
-                    //           onPressed: () {
-                    //             seatsController.text = '1';
-                    //           }),
-                    //       SquareButton(
-                    //           text: '2',
-                    //           onPressed: () {
-                    //             seatsController.text = '2';
-                    //           }),
-                    //       SquareButton(
-                    //           text: '3',
-                    //           onPressed: () {
-                    //             seatsController.text = '3';
-                    //           }),
-                    //       SquareButton(
-                    //           text: '', onPressed: () {}, myIcon: Icons.edit),
-                    //     ]),
+                    Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          SquareButton(
+                              text: '1',
+                              isSelected: _selectedSeatsButtonIndex == 0,
+                              onPressed: () {
+                                setState(() {
+                                  seatsController.text = '1';
+                                _selectedSeatsButtonIndex =0;
+                                });
+                              }),
+                          SquareButton(
+                              text: '2',
+                              isSelected: _selectedSeatsButtonIndex == 1,
+                              onPressed: () {
+                                setState(() {
+                                  seatsController.text = '2';
+                                _selectedSeatsButtonIndex =1;
+                                });
+                              }),
+                          SquareButton(
+                              text: '3',
+                              isSelected: _selectedSeatsButtonIndex == 2,
+                              onPressed: () {
+                                setState(() {
+                                  seatsController.text = '3';
+                                _selectedSeatsButtonIndex =2;
+                                });
+                              }),
+                          SquareButton(
+                              text: '4',
+                              isSelected: _selectedSeatsButtonIndex == 3,
+                               onPressed: () {
+                                  setState(() {
+                                    seatsController.text = '4';
+                                _selectedSeatsButtonIndex =3;
+                                  });
+                               }, 
+                               //myIcon: Icons.edit
+                               )
+                               
+                        ]),
                     const SizedBox(height: 40),
                     Align(
                         alignment: Alignment.topLeft,
