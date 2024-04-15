@@ -9,10 +9,12 @@ import 'package:tg_frontend/models/user_model.dart';
 import 'package:flutter_dropdown/flutter_dropdown.dart';
 import 'package:tg_frontend/datasource/user_data.dart';
 import 'package:tg_frontend/device/environment.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class VehicleRegister extends StatefulWidget {
-  const VehicleRegister({super.key, required this.user});
+  const VehicleRegister({super.key, required this.user, required this.parent});
   final User user;
+  final String parent;
 
   @override
   State<VehicleRegister> createState() => _VehicleRegisterState();
@@ -65,17 +67,25 @@ class _VehicleRegisterState extends State<VehicleRegister> {
     if (_formKey.currentState!.validate()) {
       //List<Travel> travelList = [];
       vehicle = Vehicle(
-          idVehicle: 0,
-          licensePlate: licensePlateController.text,
-          vehicleBrand: _selectedBrand!,
-          vehicleColor: _selectedColor!,
-          vehicleModel: _selectedModel!,
-          vehicleType: _selectedType!,
-         // owner: widget.user.idUser
-         );
+        idVehicle: 0,
+        licensePlate: licensePlateController.text,
+        vehicleBrand: _selectedBrand!,
+        vehicleColor: _selectedColor!,
+        vehicleModel: _selectedModel!,
+        vehicleType: _selectedType!,
+        // owner: widget.user.idUser
+      );
       //userDatasourceImpl.insertUserRemote(user: user);
       //Get.to(() => const Home());
-      Get.to(() => PasswordRegister(user: widget.user, vehicle: vehicle));
+      if (widget.parent == "menu") {
+        int response =
+            await userDatasourceImpl.insertVehicleRemote(vehicle: vehicle);
+        response != 0
+            ? await EasyLoading.showInfo("vehículo añadido")
+            : await EasyLoading.showInfo("Intentelo mas tarde");
+      } else {
+        Get.to(() => PasswordRegister(user: widget.user, vehicle: vehicle));
+      }
     } else {
       AlertDialog(
           title: const Text("Error"),
@@ -95,141 +105,143 @@ class _VehicleRegisterState extends State<VehicleRegister> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
         body: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             alignment: Alignment.center,
-            child:
-     FutureBuilder<Map<String, dynamic>>(
-        future: fetchOptions(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(
-                child: Text(
-                    'Error al cargar future de vehicle options: ${snapshot.error}'));
-          } else {
-            options = snapshot.data!;
-            return SingleChildScrollView(
-                padding: const EdgeInsets.all(16.0),
-                child: Form(
-                    key: _formKey,
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          InputField(
-                            controller: licensePlateController,
-                            textInput: 'Placa',
-                            textInputType: TextInputType.text,
-                            obscure: false,
-                            icon: const Icon(null),
-                          ),
-                          const SizedBox(height: 16.0),
-                          DropdownButtonFormField<int>(
-                            value: _selectedType,
-                            onChanged: (value) {
-                              setState(() {
-                                _selectedType = value;
-                              });
-                            },
-                            items: (options['types'] as List<dynamic>)
-                                .map<DropdownMenuItem<int>>((type) {
-                              return DropdownMenuItem<int>(
-                                value: type['id_vehicle_type'],
-                                child: Text(type['name']),
-                              );
-                            }).toList(),
-                            decoration: InputDecoration(labelText: 'Tipo'),
-                            validator: (value) {
-                              if (value == null) {
-                                return 'Por favor seleccione el tipo';
-                              }
-                              return null;
-                            },
-                          ),
-                          SizedBox(height: 16.0),
-                          DropdownButtonFormField<int>(
-                            value: _selectedBrand,
-                            onChanged: (value) {
-                              setState(() {
-                                _selectedBrand = value;
-                              });
-                            },
-                            items: (options['brands'] as List<dynamic>)
-                                .map<DropdownMenuItem<int>>((brand) {
-                              return DropdownMenuItem<int>(
-                                value: brand['id_vehicle_brand'],
-                                child: Text(brand['name']),
-                              );
-                            }).toList(),
-                            decoration: InputDecoration(labelText: 'Marca'),
-                            validator: (value) {
-                              if (value == null) {
-                                return 'Por favor seleccione la marca';
-                              }
-                              return null;
-                            },
-                          ),
-                          SizedBox(height: 16.0),
-                          DropdownButtonFormField<int>(
-                            value: _selectedModel,
-                            onChanged: (value) {
-                              setState(() {
-                                _selectedModel = value;
-                              });
-                            },
-                            items: (options['models'] as List<dynamic>)
-                                .map<DropdownMenuItem<int>>((model) {
-                              return DropdownMenuItem<int>(
-                                value: model['id_vehicle_model'],
-                                child: Text(model['name']),
-                              );
-                            }).toList(),
-                            decoration: InputDecoration(labelText: 'Modelo'),
-                            validator: (value) {
-                              if (value == null) {
-                                return 'Por favor seleccione el modelo';
-                              }
-                              return null;
-                            },
-                          ),
-                          SizedBox(height: 16.0),
-                          DropdownButtonFormField<int>(
-                            value: _selectedColor,
-                            onChanged: (value) {
-                              setState(() {
-                                _selectedColor = value;
-                              });
-                            },
-                            items: (options['colors'] as List<dynamic>)
-                                .map<DropdownMenuItem<int>>((color) {
-                              return DropdownMenuItem<int>(
-                                value: color['id_vehicle_color'],
-                                child: Text(color['name']),
-                              );
-                            }).toList(),
-                            decoration: InputDecoration(labelText: 'Color'),
-                            validator: (value) {
-                              if (value == null) {
-                                return 'Por favor seleccione el color';
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: 80),
-                          Container(
-                              alignment: Alignment.center,
-                              child: LargeButton(
-                                  text: 'Continuar',
-                                  large: true,
-                                  onPressed: () {
-                                    submitForm(context);
-                                  })),
-                        ])));
-          }
-        })));
+            child: FutureBuilder<Map<String, dynamic>>(
+                future: fetchOptions(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(
+                        child: Text(
+                            'Error al cargar future de vehicle options: ${snapshot.error}'));
+                  } else {
+                    options = snapshot.data!;
+                    return SingleChildScrollView(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Form(
+                            key: _formKey,
+                            child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  InputField(
+                                    controller: licensePlateController,
+                                    textInput: 'Placa',
+                                    textInputType: TextInputType.text,
+                                    obscure: false,
+                                    icon: const Icon(null),
+                                  ),
+                                  const SizedBox(height: 16.0),
+                                  DropdownButtonFormField<int>(
+                                    value: _selectedType,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _selectedType = value;
+                                      });
+                                    },
+                                    items: (options['types'] as List<dynamic>)
+                                        .map<DropdownMenuItem<int>>((type) {
+                                      return DropdownMenuItem<int>(
+                                        value: type['id_vehicle_type'],
+                                        child: Text(type['name']),
+                                      );
+                                    }).toList(),
+                                    decoration:
+                                        InputDecoration(labelText: 'Tipo'),
+                                    validator: (value) {
+                                      if (value == null) {
+                                        return 'Por favor seleccione el tipo';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                  SizedBox(height: 16.0),
+                                  DropdownButtonFormField<int>(
+                                    value: _selectedBrand,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _selectedBrand = value;
+                                      });
+                                    },
+                                    items: (options['brands'] as List<dynamic>)
+                                        .map<DropdownMenuItem<int>>((brand) {
+                                      return DropdownMenuItem<int>(
+                                        value: brand['id_vehicle_brand'],
+                                        child: Text(brand['name']),
+                                      );
+                                    }).toList(),
+                                    decoration:
+                                        InputDecoration(labelText: 'Marca'),
+                                    validator: (value) {
+                                      if (value == null) {
+                                        return 'Por favor seleccione la marca';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                  SizedBox(height: 16.0),
+                                  DropdownButtonFormField<int>(
+                                    value: _selectedModel,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _selectedModel = value;
+                                      });
+                                    },
+                                    items: (options['models'] as List<dynamic>)
+                                        .map<DropdownMenuItem<int>>((model) {
+                                      return DropdownMenuItem<int>(
+                                        value: model['id_vehicle_model'],
+                                        child: Text(model['name']),
+                                      );
+                                    }).toList(),
+                                    decoration:
+                                        InputDecoration(labelText: 'Modelo'),
+                                    validator: (value) {
+                                      if (value == null) {
+                                        return 'Por favor seleccione el modelo';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                  SizedBox(height: 16.0),
+                                  DropdownButtonFormField<int>(
+                                    value: _selectedColor,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _selectedColor = value;
+                                      });
+                                    },
+                                    items: (options['colors'] as List<dynamic>)
+                                        .map<DropdownMenuItem<int>>((color) {
+                                      return DropdownMenuItem<int>(
+                                        value: color['id_vehicle_color'],
+                                        child: Text(color['name']),
+                                      );
+                                    }).toList(),
+                                    decoration:
+                                        InputDecoration(labelText: 'Color'),
+                                    validator: (value) {
+                                      if (value == null) {
+                                        return 'Por favor seleccione el color';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                  const SizedBox(height: 80),
+                                  Container(
+                                      alignment: Alignment.center,
+                                      child: LargeButton(
+                                          text: 'Continuar',
+                                          large: true,
+                                          onPressed: () {
+                                            submitForm(context);
+                                          })),
+                                ])));
+                  }
+                })));
     // return Scaffold(
     //     body: Container(
     //         padding: const EdgeInsets.symmetric(horizontal: 16.0),

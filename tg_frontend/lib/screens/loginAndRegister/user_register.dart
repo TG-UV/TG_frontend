@@ -7,8 +7,6 @@ import 'package:tg_frontend/widgets/large_button.dart';
 import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/datasource/user_data.dart';
 import 'package:tg_frontend/device/environment.dart';
-//import 'package:flutter_datetime_picker/flutter_datetime_picker.dart' show  DatePicker;
-//import 'package:flutter_datetime_picker/flutter_datetime_picker.dart' as dt_picker;
 import 'package:intl/intl.dart';
 
 class UserRegister extends StatefulWidget {
@@ -25,7 +23,7 @@ class _UserRegisterState extends State<UserRegister> {
   late User user;
   late List<dynamic>? cities;
   int? _selectedCity;
-  DateTime? _selectedDate;
+  String? _selectedDate;
 
   final TextEditingController nameController = TextEditingController();
   final TextEditingController identifactionController = TextEditingController();
@@ -42,10 +40,14 @@ class _UserRegisterState extends State<UserRegister> {
   }
 
   Future<void> _selectDate(BuildContext context) async {
-    final DateTime? selectedTime = await showDatePicker(
-        context: context, firstDate: DateTime(1950), lastDate: DateTime(2010));
-    if (selectedTime != null) {
-      _selectedDate = selectedTime;
+    final DateTime? pickedDate = await showDatePicker(
+        context: context, firstDate: DateTime.now(), lastDate: DateTime(2025));
+    if (pickedDate != null) {
+      setState(() {
+        _selectedDate = DateFormat('yyyy-MM-dd').format(pickedDate);
+        dateController.text =
+            DateFormat('d MMMM y', 'es_ES').format(pickedDate);
+      });
     }
   }
 
@@ -61,14 +63,14 @@ class _UserRegisterState extends State<UserRegister> {
   }
 
   void submitForm(BuildContext context) async {
-    if (_formKey.currentState!.validate()) {
+    if (_formKey.currentState!.validate() && dateController.text.isNotEmpty) {
       user = User(
         idUser: 0,
         identityDocument: identifactionController.text,
         phoneNumber: phoneController.text,
         firstName: nameController.text,
         lastName: lastNameController.text,
-        birthDate: dateController.text,
+        birthDate: _selectedDate,
         residenceCity: _selectedCity.toString(),
         type: widget.userType,
         email: emailController.text,
@@ -76,7 +78,10 @@ class _UserRegisterState extends State<UserRegister> {
         isActive: 1,
       );
       widget.userType == 2
-          ? Get.to(() => VehicleRegister(user: user))
+          ? Get.to(() => VehicleRegister(
+                user: user,
+                parent: "register",
+              ))
           : Get.to(() => PasswordRegister(user: user));
     } else {
       AlertDialog(
@@ -111,7 +116,8 @@ class _UserRegisterState extends State<UserRegister> {
                 return SingleChildScrollView(
                     padding: const EdgeInsets.all(16.0),
                     child: Form(
-                        key: _formKey, // Aquí se usa la clave _formKey
+                        key: _formKey,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
                         child: Stack(
                           children: [
                             Column(
@@ -152,24 +158,19 @@ class _UserRegisterState extends State<UserRegister> {
                                   icon: const Icon(Icons.insert_drive_file),
                                 ),
                                 const SizedBox(height: 15),
-                                GestureDetector(
-                                  onTap: () async {
-                                    await _selectDate(context);
-                                    if (_selectedDate != null) {
-                                      dateController.text =
-                                          DateFormat('yyyy-MM-dd')
-                                              .format(_selectedDate!);
-                                    }
-                                  },
-                                  child: InputField(
+                                Row(children: [
+                                  InputField(
                                     textInput: 'Fecha de Nacimiento',
                                     textInputType: TextInputType.datetime,
                                     controller: dateController,
                                     obscure: false,
                                     icon: const Icon(Icons.calendar_month),
                                   ),
-                                ),
-
+                                  IconButton(
+                                      onPressed: () => _selectDate(context),
+                                      icon: const Icon(
+                                          Icons.calendar_month_outlined)),
+                                ]),
                                 const SizedBox(height: 15),
                                 InputField(
                                   controller: phoneController,
@@ -187,29 +188,31 @@ class _UserRegisterState extends State<UserRegister> {
                                   icon: const Icon(Icons.mail),
                                 ),
                                 const SizedBox(height: 15),
-                                DropdownButtonFormField<int>(
-                                  value: _selectedCity,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _selectedCity = value;
-                                    });
-                                  },
-                                  items: cities!
-                                      .map<DropdownMenuItem<int>>((city) {
-                                    return DropdownMenuItem<int>(
-                                      value: city['id_city'] as int,
-                                      child: Text(city['name'] as String),
-                                    );
-                                  }).toList(),
-                                  decoration: const InputDecoration(
-                                      labelText: 'Ciudad'),
-                                  validator: (value) {
-                                    if (value == null) {
-                                      return 'Por favor seleccione la ciudad';
-                                    }
-                                    return null;
-                                  },
-                                ),
+                                Container(
+                                    width: double.infinity,
+                                    child: DropdownButtonFormField<int>(
+                                      value: _selectedCity,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _selectedCity = value;
+                                        });
+                                      },
+                                      items: cities!
+                                          .map<DropdownMenuItem<int>>((city) {
+                                        return DropdownMenuItem<int>(
+                                          value: city['id_city'] as int,
+                                          child: Text(city['name'] as String),
+                                        );
+                                      }).toList(),
+                                      decoration: const InputDecoration(
+                                          labelText: 'Ciudad'),
+                                      validator: (value) {
+                                        if (value == null) {
+                                          return 'Por favor seleccione la ciudad';
+                                        }
+                                        return null;
+                                      },
+                                    )),
                                 const SizedBox(height: 100),
                                 Container(
                                   alignment: Alignment.center,

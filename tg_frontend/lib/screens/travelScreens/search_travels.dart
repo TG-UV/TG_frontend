@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:tg_frontend/widgets/large_button.dart';
 import 'package:tg_frontend/widgets/square_button.dart';
 import 'package:tg_frontend/widgets/input_field.dart';
@@ -70,9 +69,6 @@ class _SearchTravelsState extends State<SearchTravels> {
     if (pickedTime != null && pickedTime != _selectedTime) {
       setState(() {
         _selectedTime = pickedTime;
-        // timeController.text = DateFormat('hh:mm a')
-        //     .format(_parseTimeString(_selectedDate.toString()));
-        _selectedTime.format(context);
       });
     }
   }

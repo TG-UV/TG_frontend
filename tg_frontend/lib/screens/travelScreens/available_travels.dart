@@ -12,13 +12,14 @@ import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/device/environment.dart';
 
 class AvailableTravels extends StatefulWidget {
+  final Key? key;
+
   const AvailableTravels({
-    super.key,
-  });
-  
+    this.key,
+  }) : super(key: key);
+
   @override
   State<AvailableTravels> createState() => _ListedTravelsState();
-  
 }
 
 class _ListedTravelsState extends State<AvailableTravels> {
@@ -27,9 +28,10 @@ class _ListedTravelsState extends State<AvailableTravels> {
   User user = Environment.sl.get<User>();
   List<Travel> travelsList = [];
   final EndPoints _endPoints = EndPoints();
-  
+
   @override
   void initState() {
+    print('widget keyyyyy--------------------: ${widget.key}');
     super.initState();
     //_cargarViajes();
   }
@@ -46,38 +48,38 @@ class _ListedTravelsState extends State<AvailableTravels> {
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
-    Column(
-                //mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const SizedBox(height: 50),
-                  Row(children: [
-                    IconButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        icon: const Icon(Icons.arrow_back)),
-                    const SizedBox(width: 5),
-                    Text(
-                      "Busca un viaje",
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleLarge!
-                          .copyWith(fontSize: 26),
-                    )
-                  ]),
-                  const SizedBox(height: 40),
-                  LargeButton(
-                    text: 'Buscar',
-                    large: false,
-                    onPressed: () {
-                      Get.to(() => const SearchTravels());
-                    },
-                  ),
-                  const SizedBox(height: 30),
-                  Text("!Viajes próximos a salir!",
-                      style: Theme.of(context).textTheme.titleMedium),
-                ]),
-                  Positioned(
+      Column(
+          //mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const SizedBox(height: 50),
+            Row(children: [
+              IconButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: const Icon(Icons.arrow_back)),
+              const SizedBox(width: 5),
+              Text(
+                "Busca un viaje",
+                style: Theme.of(context)
+                    .textTheme
+                    .titleLarge!
+                    .copyWith(fontSize: 26),
+              )
+            ]),
+            const SizedBox(height: 40),
+            LargeButton(
+              text: 'Buscar',
+              large: false,
+              onPressed: () {
+                Get.to(() => const SearchTravels());
+              },
+            ),
+            const SizedBox(height: 30),
+            Text("!Viajes próximos a salir!",
+                style: Theme.of(context).textTheme.titleMedium),
+          ]),
+      Positioned(
           bottom: 0,
           left: 5,
           right: 5,
@@ -90,7 +92,7 @@ class _ListedTravelsState extends State<AvailableTravels> {
                   0.75, // 3 cuartos de la pantalla
               height: MediaQuery.of(context).size.height *
                   0.65, // 3 cuartos de la pantalla
-              decoration:  BoxDecoration(
+              decoration: BoxDecoration(
                 color: ColorManager.fourthColor,
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(30.0),
@@ -122,33 +124,49 @@ class _ListedTravelsState extends State<AvailableTravels> {
                                       Text('No tiene viajes por el momento...'),
                                 );
                               } else {
-                  return Flex(direction: Axis.vertical, children: [
-                    Align(
-                      alignment: Alignment.topLeft,
-                      child: Text(
-                        "  Ahora",
-                        style: Theme.of(context).textTheme.titleSmall!.copyWith(color: Colors.white),
-                        textAlign: TextAlign.left,
-                      )),
-                  //TravelCard(travel: perfectTravel),
-                  TravelCard(travel: travelsList[0], pastTravel: false,),
-                  const SizedBox(height: 30),
-                  Align(
-                      alignment: Alignment.topLeft,
-                      child: Text(
-                        "Mas tarde",
-                        style: Theme.of(context).textTheme.titleSmall!.copyWith(color: Colors.white),
-                        textAlign: TextAlign.left,
-                      )),
-                  Expanded(
-                      child: ListView.builder(
-                          itemCount: travelsList.length,
-                          itemBuilder: (context, index) {
-                            return TravelCard(travel: travelsList[index], pastTravel: false,);
-                          }))
-                  ],);
-                  
-  }}})))
-                ))]);
+                                return Flex(
+                                  direction: Axis.vertical,
+                                  children: [
+                                    Align(
+                                        alignment: Alignment.topLeft,
+                                        child: Text(
+                                          "  Ahora",
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleSmall!
+                                              .copyWith(color: Colors.white),
+                                          textAlign: TextAlign.left,
+                                        )),
+                                    //TravelCard(travel: perfectTravel),
+                                    TravelCard(
+                                      travel: travelsList[0],
+                                      pastTravel: false,
+                                    ),
+                                    const SizedBox(height: 30),
+                                    Align(
+                                        alignment: Alignment.topLeft,
+                                        child: Text(
+                                          "Mas tarde",
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleSmall!
+                                              .copyWith(color: Colors.white),
+                                          textAlign: TextAlign.left,
+                                        )),
+                                    Expanded(
+                                        child: ListView.builder(
+                                            itemCount: travelsList.length,
+                                            itemBuilder: (context, index) {
+                                              return TravelCard(
+                                                travel: travelsList[index],
+                                                pastTravel: false,
+                                              );
+                                            }))
+                                  ],
+                                );
+                              }
+                            }
+                          })))))
+    ]);
   }
 }

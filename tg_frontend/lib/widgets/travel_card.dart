@@ -3,6 +3,7 @@ import 'package:tg_frontend/models/travel_model.dart';
 import 'package:tg_frontend/screens/travelScreens/travel_details.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 class TravelCard extends StatelessWidget {
   const TravelCard({
@@ -23,8 +24,13 @@ class TravelCard extends StatelessWidget {
     return DateTime(1, 1, 1, hour, minute);
   }
 
+  void initializeDateFormat() {
+    initializeDateFormatting('es_ES', null);
+  }
+
   @override
   Widget build(BuildContext context) {
+    initializeDateFormat();
     return Card(
         color: const Color.fromARGB(255, 252, 252, 252),
         child: Padding(
@@ -38,7 +44,8 @@ class TravelCard extends StatelessWidget {
                   children: <Widget>[
                     TextButton(
                       child: Text(
-                        DateFormat('EEEE').format(DateTime.parse(travel.date)),
+                        DateFormat('EEEE', 'es_ES')
+                            .format(DateTime.parse(travel.date)),
                         //travel.date,
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
@@ -54,7 +61,7 @@ class TravelCard extends StatelessWidget {
                         style: Theme.of(context)
                             .textTheme
                             .titleLarge!
-                            .copyWith(fontSize: 25.0),
+                            .copyWith(fontSize: 22.0),
                         overflow: TextOverflow.ellipsis,
                       ),
                       onPressed: () {

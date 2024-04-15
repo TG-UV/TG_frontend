@@ -133,33 +133,28 @@ class TravelDatasourceMethods implements TravelDatasource {
         response = await dio.get(_endPoints.baseUrl + finalEndPoint
             //queryParameters: parameters,
             );
-        
+
         // for (var data in response.data) {
         //   Travel travel = Travel.fromJson(data);
         //   travelList.add(travel);
         // }
-        if(finalEndPoint == _endPoints.getGeneralTravels){
+        if (finalEndPoint == _endPoints.getGeneralTravels) {
           for (var data in response.data) {
-          Travel travel = Travel.fromJson(data);
-          travelList.add(travel);
-        }
-        }else{
+            Travel travel = Travel.fromJson(data);
+            travelList.add(travel);
+          }
+        } else {
           for (var data in response.data["results"]) {
-          Travel travel = Travel.fromJson(data);
-          travelList.add(travel);
+            Travel travel = Travel.fromJson(data);
+            travelList.add(travel);
+          }
         }
-        }
-        
 
         // travel = Travel.fromJson(response.data);
         // travelList.add(travel);
         //insertTravelsLocal(travels: travelList);
       } catch (error) {
-       
-  
-         print('Error al realizar la solicitud viaje remoto: $error');
-
-        
+        print('Error al realizar la solicitud viaje remoto: $error');
       }
     } else {
       print('No se encontró ningún token.');

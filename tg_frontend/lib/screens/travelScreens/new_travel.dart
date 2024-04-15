@@ -25,8 +25,8 @@ class _NewTravelState extends State<NewTravel> {
       Environment.sl.get<TravelDatasourceMethods>();
   int _selectedTimeButtonIndex = -1;
   int _selectedSeatsButtonIndex = -1;
-  DateTime _selectedDate = DateTime.now();
-  TimeOfDay _selectedTime = TimeOfDay.now();
+  String _selectedDate = DateTime.now().toString();
+  String _selectedTime = TimeOfDay.now().toString();
 
   final _formKey = GlobalKey<FormState>();
 
@@ -38,11 +38,10 @@ class _NewTravelState extends State<NewTravel> {
   final TextEditingController seatsController = TextEditingController();
 
   void submitForm(BuildContext context) async {
-    // DateTime now = DateTime.now();
-    //String formattedTime = DateFormat('yyyy-MM-dd').format(now);
-    //dateController.text = formattedTime;
-    if (_formKey.currentState!.validate()) {
-      //List<Travel> travelList = [];
+    if (_formKey.currentState!.validate() &&
+        dateController.text.isNotEmpty &&
+        timeController.text.isNotEmpty &&
+        seatsController.text.isNotEmpty) {
       Travel travel = Travel(
           id: 100,
           arrivalPoint: arrivalPointController.text,
@@ -50,29 +49,34 @@ class _NewTravelState extends State<NewTravel> {
           driver: user.idUser,
           price: int.parse(priceController.text),
           seats: int.parse(seatsController.text),
-          date: dateController.text,
-          hour: timeController.text,
+          date: _selectedDate,
+          hour: _selectedTime,
           // date: DateFormat('yyyy-MM-dd').parse(dateController.text),
           // hour: DateFormat('HH:mm').parse(dateController.text),
           currentTrip: 0);
-      //travelList.add(travel);
 
-      travelDatasourceMethods.insertTravelRemote(travel: travel);
-      Get.to(() => const Home());
+      //travelDatasourceMethods.insertTravelRemote(travel: travel);
+      //Get.to(() => const Home());
+      print("form correcto.........$travel");
     } else {
-      AlertDialog(
-          title: const Text("Error"),
-          content: const SingleChildScrollView(
-              child: ListBody(
-            children: <Widget>[
-              Text("Faltan campos por llenar."),
-            ],
-          )),
-          actions: [
-            ElevatedButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text("Aceptar"))
-          ]);
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+                title: const Text("Error"),
+                content: const SingleChildScrollView(
+                  child: ListBody(
+                    children: <Widget>[
+                      Text("Faltan campos por llenar."),
+                    ],
+                  ),
+                ),
+                actions: [
+                  ElevatedButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: const Text("Aceptar"))
+                ]);
+          });
     }
   }
 
@@ -86,26 +90,37 @@ class _NewTravelState extends State<NewTravel> {
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
         context: context, firstDate: DateTime.now(), lastDate: DateTime(2025));
-    if (pickedDate != null && pickedDate != _selectedDate) {
+    if (pickedDate != null) {
       setState(() {
-        _selectedDate = pickedDate;
-        dateController.text = _selectedDate.toString().substring(0, 10);
+        _selectedDate = DateFormat('yyyy-MM-dd').format(pickedDate);
+        dateController.text =
+            DateFormat('EEEE, d MMMM', 'es_ES').format(pickedDate);
       });
+      _selectTime();
     }
-    _selectTime();
   }
 
-  Future<void> _selectTime() async {
-    final TimeOfDay? pickedTime =
-        await showTimePicker(context: context, initialTime: TimeOfDay.now());
-
-    if (pickedTime != null && pickedTime != _selectedTime) {
+  Future<void> _selectTime({DateTime? dateTime}) async {
+    if (dateTime != null) {
       setState(() {
-        _selectedTime = pickedTime;
-        timeController.text =DateFormat('hh:mm a')
-                            .format(_parseTimeString(_selectedDate.toString()));
-        _selectedTime.format(context);
+        _selectedTime = DateFormat('hh:mm:ss').format(dateTime);
+        _selectedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+        timeController.text =
+            DateFormat('hh:mm a').format(_parseTimeString(_selectedTime));
+        dateController.text =
+            DateFormat('EEEE, d MMMM', 'es_ES').format(DateTime.now());
       });
+    } else {
+      final TimeOfDay? pickedTime =
+          await showTimePicker(context: context, initialTime: TimeOfDay.now());
+
+      if (pickedTime != null) {
+        setState(() {
+          _selectedTime = pickedTime.toString();
+          timeController.text =
+              DateFormat('hh:mm a').format(_parseTimeString(_selectedTime));
+        });
+      }
     }
   }
 
@@ -116,6 +131,7 @@ class _NewTravelState extends State<NewTravel> {
         body: SingleChildScrollView(
             child: Form(
                 key: _formKey,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   alignment: Alignment.center,
@@ -167,14 +183,37 @@ class _NewTravelState extends State<NewTravel> {
                       //icon: const Icon(Icons.edit),
                     ),
                     const SizedBox(height: 50),
-
                     Align(
-                        alignment: Alignment.topLeft,
-                        child: Text(
-                          "Cuando",
-                          style: Theme.of(context).textTheme.titleSmall,
-                          //textAlign: TextAlign.left,
-                        )),
+                      alignment: Alignment.topLeft,
+                      child: Row(
+                        children: [
+                          Text(
+                            'Cuándo',
+                            style: Theme.of(context).textTheme.titleSmall,
+                          ),
+                          Spacer(),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                timeController.text,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleSmall!
+                                    .copyWith(fontWeight: FontWeight.bold),
+                              ),
+                              Text(
+                                dateController.text,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleSmall!
+                                    .copyWith(fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
                     Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
@@ -188,9 +227,7 @@ class _NewTravelState extends State<NewTravel> {
                                   DateTime now = DateTime.now();
                                   DateTime newTime =
                                       now.add(const Duration(minutes: 10));
-                                  String formattedTime =
-                                      DateFormat('HH:mm:ss').format(newTime);
-                                  timeController.text = formattedTime;
+                                  _selectTime(dateTime: newTime);
                                 });
                               }),
                           SquareButton(
@@ -202,9 +239,7 @@ class _NewTravelState extends State<NewTravel> {
                                   DateTime now = DateTime.now();
                                   DateTime newTime =
                                       now.add(const Duration(minutes: 30));
-                                  String formattedTime =
-                                      DateFormat('HH:mm:ss').format(newTime);
-                                  timeController.text = formattedTime;
+                                  _selectTime(dateTime: newTime);
                                   //dateController.text = "$newTime";
                                 });
                               }),
@@ -217,9 +252,7 @@ class _NewTravelState extends State<NewTravel> {
                                   DateTime now = DateTime.now();
                                   DateTime newTime =
                                       now.add(const Duration(minutes: 60));
-                                  String formattedTime =
-                                      DateFormat('HH:mm:ss').format(newTime);
-                                  timeController.text = formattedTime;
+                                  _selectTime(dateTime: newTime);
                                 });
                               }),
                           SquareButton(
@@ -229,16 +262,6 @@ class _NewTravelState extends State<NewTravel> {
                             onPressed: () => _selectDate(context),
                           ),
                         ]),
-                        Row(children: [
-                          Text(
-                      '  Fecha y hora: ',
-                      style: Theme.of(context).textTheme.titleSmall,
-                    ),Text(
-                      '${_selectedDate.toString().substring(0, 10)},  ${timeController.text}',
-                      //' ${DateFormat('HH:mm:ss').format(_selectedDate.toString().substring(0, 10))}',
-                      style: Theme.of(context).textTheme.titleSmall!.copyWith(fontWeight: FontWeight.bold),
-                    ),
-                        ],),
                     const SizedBox(height: 15),
                     Align(
                         alignment: Alignment.topLeft,
@@ -256,7 +279,7 @@ class _NewTravelState extends State<NewTravel> {
                               onPressed: () {
                                 setState(() {
                                   seatsController.text = '1';
-                                _selectedSeatsButtonIndex =0;
+                                  _selectedSeatsButtonIndex = 0;
                                 });
                               }),
                           SquareButton(
@@ -265,7 +288,7 @@ class _NewTravelState extends State<NewTravel> {
                               onPressed: () {
                                 setState(() {
                                   seatsController.text = '2';
-                                _selectedSeatsButtonIndex =1;
+                                  _selectedSeatsButtonIndex = 1;
                                 });
                               }),
                           SquareButton(
@@ -274,21 +297,20 @@ class _NewTravelState extends State<NewTravel> {
                               onPressed: () {
                                 setState(() {
                                   seatsController.text = '3';
-                                _selectedSeatsButtonIndex =2;
+                                  _selectedSeatsButtonIndex = 2;
                                 });
                               }),
                           SquareButton(
-                              text: '4',
-                              isSelected: _selectedSeatsButtonIndex == 3,
-                               onPressed: () {
-                                  setState(() {
-                                    seatsController.text = '4';
-                                _selectedSeatsButtonIndex =3;
-                                  });
-                               }, 
-                               //myIcon: Icons.edit
-                               )
-                               
+                            text: '4',
+                            isSelected: _selectedSeatsButtonIndex == 3,
+                            onPressed: () {
+                              setState(() {
+                                seatsController.text = '4';
+                                _selectedSeatsButtonIndex = 3;
+                              });
+                            },
+                            //myIcon: Icons.edit
+                          )
                         ]),
                     const SizedBox(height: 40),
                     Align(
@@ -300,7 +322,7 @@ class _NewTravelState extends State<NewTravel> {
                         )),
                     InputField(
                       controller: priceController,
-                      textInput: '3.000',
+                      textInput: '2000',
                       textInputType: TextInputType.text,
                       obscure: false,
                       icon: const Icon(Icons.edit),
@@ -311,17 +333,9 @@ class _NewTravelState extends State<NewTravel> {
                         large: false,
                         onPressed: () {
                           submitForm(context);
-                        })
+                        }),
+                    SizedBox(height: MediaQuery.of(context).viewInsets.bottom)
                   ]),
-                  /*
-              Positioned(
-                  top: 30.0,
-                  left: 5.0,
-                  child: IconButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      icon: const Icon(Icons.arrow_back)))*/
                 ))));
   }
 }

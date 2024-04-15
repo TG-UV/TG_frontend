@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:tg_frontend/device/environment.dart';
 import 'package:tg_frontend/screens/loginAndRegister/login.dart';
+import 'package:tg_frontend/screens/loginAndRegister/vehicle_register.dart';
 import 'package:tg_frontend/screens/travelScreens/available_travels.dart';
 import 'package:tg_frontend/screens/travelScreens/new_travel.dart';
 import 'package:tg_frontend/screens/travelScreens/search_travels.dart';
@@ -66,7 +66,6 @@ class _MapScreenState extends State<MapScreen> {
             ),
             TextButton(
               onPressed: () {
-                
                 AuthStorage().removeValues();
                 Get.to(() => const Login());
               },
@@ -85,7 +84,7 @@ class _MapScreenState extends State<MapScreen> {
           width: MediaQuery.of(context).size.width / 1.4,
           shadowColor: Colors.black,
           backgroundColor: const Color.fromARGB(255, 239, 239, 239),
-          shape: Border(right: BorderSide(color: Colors.red, width: 3)),
+          shape: const Border(right: BorderSide(color: Colors.red, width: 3)),
           child: ListView(
             children: <Widget>[
               SizedBox(
@@ -112,18 +111,20 @@ class _MapScreenState extends State<MapScreen> {
                       ])),
               if (user.type == 2)
                 ListTile(
-                  leading: Icon(Icons.motorcycle_outlined),
-                  title: Text('Añadir vehículo'),
-                  onTap: () {},
+                  leading: const Icon(Icons.motorcycle_outlined),
+                  title: const Text('Añadir vehículo'),
+                  onTap: () {
+                    Get.to(() => VehicleRegister(user: user, parent: "menu",));
+                  },
                 ),
               ListTile(
-                leading: Icon(Icons.settings),
-                title: Text('Configuración'),
+                leading: const Icon(Icons.settings),
+                title: const Text('Configuración'),
                 onTap: () {},
               ),
               ListTile(
-                leading: Icon(Icons.support_agent_outlined),
-                title: Text('Soporte'),
+                leading: const Icon(Icons.support_agent_outlined),
+                title: const Text('Soporte'),
                 onTap: () {},
               ),
               const AboutListTile(
@@ -154,8 +155,8 @@ class _MapScreenState extends State<MapScreen> {
                 child: Text('Sobre Nosotros'),
               ),
               ListTile(
-                leading: Icon(Icons.login_outlined),
-                title: Text('Cerrar sesión'),
+                leading: const Icon(Icons.login_outlined),
+                title: const Text('Cerrar sesión'),
                 onTap: () {
                   _showConfirmationDialog(context);
                 },
@@ -241,7 +242,7 @@ class _MapScreenState extends State<MapScreen> {
               onPressed: () {
                 user.type == 2
                     ? Get.to(() => const NewTravel())
-                    : Get.to(() => const SearchTravels());
+                    : Get.to(() => const AvailableTravels());
               },
               large: true,
             ),

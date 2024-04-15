@@ -26,7 +26,6 @@ class _ListedTravelsState extends State<ListedTravels> {
   EndPoints endPoints = EndPoints();
   late String currentEndPoint;
   late List<Travel> travelsList;
- 
 
   @override
   void initState() {
@@ -63,9 +62,7 @@ class _ListedTravelsState extends State<ListedTravels> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      
-      children: [
+    return Stack(children: [
       Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         const SizedBox(
           height: 90,
@@ -93,8 +90,8 @@ class _ListedTravelsState extends State<ListedTravels> {
       ]),
       Positioned(
           bottom: 0,
-          left: 0,
-          right: 0,
+          left: 10,
+          right: 10,
           child: Container(
               padding:
                   const EdgeInsets.symmetric(horizontal: 14.0, vertical: 8.0),
@@ -104,8 +101,10 @@ class _ListedTravelsState extends State<ListedTravels> {
                   0.75, // 3 cuartos de la pantalla
               height: MediaQuery.of(context).size.height *
                   0.75, // 3 cuartos de la pantalla
-              decoration:  BoxDecoration(
-                color: ColorManager.fourthColor,
+              decoration: BoxDecoration(
+                color: widget.pastTravel
+                    ? ColorManager.fourthColor.withOpacity(0.5)
+                    : ColorManager.fourthColor,
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(50.0),
                   topRight: Radius.circular(50.0),
@@ -144,7 +143,9 @@ class _ListedTravelsState extends State<ListedTravels> {
                                           padding: const EdgeInsets.only(
                                               bottom: 16.0),
                                           child: TravelCard(
-                                              travel: travelsList[index], pastTravel: widget.pastTravel,));
+                                            travel: travelsList[index],
+                                            pastTravel: true,
+                                          ));
                                     });
                               }
                             }

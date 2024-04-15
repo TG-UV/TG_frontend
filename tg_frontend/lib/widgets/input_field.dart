@@ -20,47 +20,44 @@ class InputField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-        inputFormatters: [LengthLimitingTextInputFormatter(50)],
-        controller: controller,
-        keyboardType: textInputType,
-        obscureText: obscure,
-        style: TextStyle(color: ColorManager.primaryColor),
-        //autofocus: true,
-        decoration: InputDecoration(
-            contentPadding:
-                const EdgeInsets.symmetric(vertical: 9.0, horizontal: 7.0),
-            hintText: textInput,
-            hintStyle: const TextStyle(
-                color: Color.fromARGB(255, 71, 71, 71), fontSize: 12),
-            filled: true,
-            suffixIcon: icon,
-            //fillColor: Colors.grey.shade200,
-            fillColor: ColorManager.thirdColor,
-            border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(15.0),
-                borderSide: const BorderSide(
-                  width: 0,
-                  style: BorderStyle.none,
-                )),
-            labelStyle: const TextStyle(
-                color: Color.fromARGB(255, 32, 32, 32), fontSize: 18),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.0),
+      inputFormatters: [LengthLimitingTextInputFormatter(50)],
+      controller: controller,
+      keyboardType: textInputType,
+      obscureText: obscure,
+      style: TextStyle(color: ColorManager.primaryColor),
+      //autofocus: true,
+      decoration: InputDecoration(
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 9.0, horizontal: 7.0),
+          hintText: textInput,
+          hintStyle: const TextStyle(
+              color: Color.fromARGB(255, 71, 71, 71), fontSize: 12),
+          filled: true,
+          suffixIcon: icon,
+          //fillColor: Colors.grey.shade200,
+          fillColor: ColorManager.thirdColor,
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(15.0),
               borderSide: const BorderSide(
-                color: Color.fromARGB(255, 24, 24, 24),
-                width: 2.0,
-              ),
-              /*
-      validator: (text) {
-        if (text == null || text.isEmpty) {
-          return 'El campo no puede estar vacio';
+                width: 0,
+                style: BorderStyle.none,
+              )),
+          labelStyle: const TextStyle(
+              color: Color.fromARGB(255, 32, 32, 32), fontSize: 18),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: const BorderSide(
+              color: Color.fromARGB(255, 24, 24, 24),
+              width: 2.0,
+            ),
+          )),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Este campo no puede estar vacio';
         }
-
-        if (text.length < 2 || text.length > 49) {
-          return 'Por favor ingrese un dato valido';
-        }
-        
-      },*/
-            )));
+        return null;
+      },
+      
+    );
   }
 }

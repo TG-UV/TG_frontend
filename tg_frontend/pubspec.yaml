@@ -36,6 +36,7 @@ dependencies:
   convex_bottom_bar: ^3.2.0
   flutter_dropdown: ^1.0.1
   flutter_easyloading: ^3.0.5
+  url_launcher: ^6.0.6
   #flutter_datetime_picker: ^1.5.1
   
   get: ^4.6.6

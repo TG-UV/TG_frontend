@@ -9,6 +9,7 @@ import 'package:tg_frontend/datasource/travel_data.dart';
 import 'package:tg_frontend/device/environment.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DriverDetailsCard extends StatefulWidget {
   const DriverDetailsCard({
@@ -28,10 +29,17 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
   User user = Environment.sl.get<User>();
   List<Passenger> confirmedPassengersList = [];
   List<Passenger> pendingPassengersList = [];
+  bool _hasCallSupport = false;
+  Future<void>? _launched;
 
   @override
   void initState() {
     super.initState();
+    canLaunchUrl(Uri(scheme: 'tel', path: '123')).then((bool result) {
+      setState(() {
+        _hasCallSupport = result;
+      });
+    });
     _loadPassengers();
   }
 
@@ -57,6 +65,7 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
       return;
     }
   }
+
   void _cancelTravel(int passengerId) async {
     int sendResponse = await travelDatasourceImpl.deletePassengerRemote(
         passengerId: passengerId);
@@ -67,6 +76,22 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
       await EasyLoading.showInfo("Error al cancelar");
       return;
     }
+  }
+
+  // _launchCaller(String phoneNumber) async {
+  // Uri url = 'tel:$phoneNumber';
+  // if (await canLaunchUrl(url)) {
+  //   await launchUrl(url);
+  // } else {
+  //   throw 'No se pudo realizar la llamada: $url';
+  // }
+  // }
+  Future<void> _makePhoneCall(String phoneNumber) async {
+    final Uri launchUri = Uri(
+      scheme: 'tel',
+      path: phoneNumber,
+    );
+    await launchUrl(launchUri);
   }
 
   Card buildPassengerInfo(Passenger myPassenger) {
@@ -83,7 +108,14 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                 ),
                 IconButton(
                   icon: const Icon(Icons.phone),
-                  onPressed: () {},
+                  onPressed: _hasCallSupport
+                      ? () => setState(() {
+                            _launched = _makePhoneCall(myPassenger.phoneNumber);
+                          })
+                      : null,
+                  // child: _hasCallSupport
+                  //     ? const Text('Make phone call')
+                  //     : const Text('Calling not supported'),
                 ),
               ])
         ]));
@@ -159,7 +191,6 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                               overflow: TextOverflow.ellipsis,
                             ),
                           ]),
-
                       const SizedBox(height: 20),
                       Text(
                         'Desde: ${widget.travel.startingPoint}',
@@ -205,11 +236,9 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                             return buildPassengerInfo(
                                 confirmedPassengersList[index]);
                           }),
-
                       const SizedBox(
                         height: 40,
                       ),
-
                       Text(
                         'Pasajeros pendientes',
                         style: Theme.of(context)
@@ -238,16 +267,15 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                             },
                           ),
                         ),
-                      ),const SizedBox(height: 50),
-                            LargeButton(
-                              large: false,
-                              text: "cancelar",
-                              onPressed: () {
-                                _cancelTravel(user.idUser);
-                              },
-                            ),
-
-                    ]))
-                    ));
+                      ),
+                      const SizedBox(height: 50),
+                      LargeButton(
+                        large: false,
+                        text: "cancelar",
+                        onPressed: () {
+                          _cancelTravel(user.idUser);
+                        },
+                      ),
+                    ]))));
   }
 }
