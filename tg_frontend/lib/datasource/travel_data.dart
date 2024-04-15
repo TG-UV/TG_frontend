@@ -8,8 +8,11 @@ import 'package:tg_frontend/datasource/local_database_provider.dart';
 import 'package:tg_frontend/datasource/endPoints/end_point.dart';
 import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/device/environment.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 abstract class TravelDatasource {
+  Future<List<String>> getMapSuggestions({required String address});
   Future<void> insertTravelsLocal({required List<Travel> travels});
   Future<void> insertTravelRemote({required Travel travel});
   Future<void> getTravelLocal({required int travelId, String filter});
@@ -46,6 +49,25 @@ class TravelDatasourceMethods implements TravelDatasource {
   Future<void> initDatabase() async {
     database = await databaseProvider.database;
     token = await AuthStorage().getToken();
+  }
+
+  @override
+  Future<List<String>> getMapSuggestions({required String address}) async {
+    String apiKey = 'pk.eyJ1Ijoic2FybWFyaWUiLCJhIjoiY2xwYm15eTRrMGZyYjJtcGJ1bnJ0Y3hpciJ9.v5mHXrC66zG4x-dgZDdLSA';
+    String url = 'https://api.mapbox.com/geocoding/v5/mapbox.places/$address.json?access_token=$apiKey';
+    List<String> suggestions = [];
+
+    var response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> data = jsonDecode(response.body);
+      List<dynamic> features = data['features'];
+      suggestions = features.map((feature) => feature['place_name'] as String).toList();
+      
+    } else {
+      throw Exception('Error al obtener sugerencias de búsqueda');
+    }
+    return suggestions;
   }
 
   @override
@@ -312,4 +334,5 @@ class TravelDatasourceMethods implements TravelDatasource {
 
     return response;
   }
+
 }
