@@ -1,13 +1,17 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:tg_frontend/screens/loginAndRegister/password_register.dart';
 import 'package:tg_frontend/screens/loginAndRegister/vehicle_register.dart';
+import 'package:tg_frontend/screens/theme.dart';
 import 'package:tg_frontend/widgets/input_field.dart';
 import 'package:tg_frontend/widgets/large_button.dart';
 import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/datasource/user_data.dart';
 import 'package:tg_frontend/device/environment.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter/services.dart';
 
 class UserRegister extends StatefulWidget {
   const UserRegister({super.key, required this.userType});
@@ -103,6 +107,7 @@ class _UserRegisterState extends State<UserRegister> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         body: FutureBuilder<List<dynamic>?>(
             future: _fetchCities(),
             builder: (context, snapshot) {
@@ -110,7 +115,7 @@ class _UserRegisterState extends State<UserRegister> {
                 return const Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
                 return Center(
-                    child: Text('Error al cargar ciudades: ${snapshot.error}'));
+                    child: Text('Error al cargar información: ${snapshot.error}'));
               } else {
                 cities = snapshot.data!;
                 return SingleChildScrollView(
@@ -118,22 +123,28 @@ class _UserRegisterState extends State<UserRegister> {
                     child: Form(
                         key: _formKey,
                         autovalidateMode: AutovalidateMode.onUserInteraction,
-                        child: Stack(
-                          children: [
-                            Column(
+                        child: 
+                          Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const SizedBox(height: 100),
-                                Container(
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                    "Regístrate",
-                                    style:
-                                        Theme.of(context).textTheme.titleLarge,
-                                  ),
-                                ),
+                                 SizedBox(height: MediaQuery.of(context).size.height / 16),
+                                Row(children: [
+                      IconButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          icon: const Icon(Icons.arrow_back)),
+                      const SizedBox(width: 5),
+                      Text(
+                        " Regístrate",
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleLarge!
+                            .copyWith(fontSize: 26),
+                      )
+                    ]),
 
-                                const SizedBox(height: 50),
+                                const SizedBox(height: 30),
                                 InputField(
                                   controller: nameController,
                                   textInput: 'Nombre',
@@ -158,19 +169,54 @@ class _UserRegisterState extends State<UserRegister> {
                                   icon: const Icon(Icons.insert_drive_file),
                                 ),
                                 const SizedBox(height: 15),
-                                Row(children: [
-                                  InputField(
-                                    textInput: 'Fecha de Nacimiento',
-                                    textInputType: TextInputType.datetime,
-                                    controller: dateController,
-                                    obscure: false,
-                                    icon: const Icon(Icons.calendar_month),
-                                  ),
-                                  IconButton(
-                                      onPressed: () => _selectDate(context),
-                                      icon: const Icon(
-                                          Icons.calendar_month_outlined)),
-                                ]),
+                                TextFormField(
+                                  inputFormatters: [
+                                    LengthLimitingTextInputFormatter(20)
+                                  ],
+                                  controller: dateController,
+                                  keyboardType: TextInputType.datetime,
+                                  obscureText: false,
+                                  style: TextStyle(
+                                      color: ColorManager.primaryColor),
+                                  //autofocus: true,
+                                  decoration: InputDecoration(
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                              vertical: 9.0, horizontal: 7.0),
+                                      hintText: 'Fecha de Nacimiento',
+                                      hintStyle: const TextStyle(
+                                          color:
+                                              Color.fromARGB(255, 71, 71, 71),
+                                          fontSize: 12),
+                                      filled: true,
+                                      suffixIcon: IconButton(
+                                          onPressed: () => _selectDate(context),
+                                          icon: const Icon(
+                                            Icons.calendar_month_outlined,
+                                            size: 20,
+                                          )),
+                                      fillColor: ColorManager.thirdColor,
+                                      border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(15.0),
+                                          borderSide: const BorderSide(
+                                            width: 0,
+                                            style: BorderStyle.none,
+                                          )),
+                                      labelStyle: const TextStyle(
+                                          color:
+                                              Color.fromARGB(255, 32, 32, 32),
+                                          fontSize: 18),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                        borderSide: BorderSide(
+                                          color: ColorManager.primaryColor,
+                                          width: 2.0,
+                                        ),
+                                      )),
+                                ),
+
                                 const SizedBox(height: 15),
                                 InputField(
                                   controller: phoneController,
@@ -188,9 +234,8 @@ class _UserRegisterState extends State<UserRegister> {
                                   icon: const Icon(Icons.mail),
                                 ),
                                 const SizedBox(height: 15),
-                                Container(
-                                    width: double.infinity,
-                                    child: DropdownButtonFormField<int>(
+                                
+                                     DropdownButtonFormField<int>(
                                       value: _selectedCity,
                                       onChanged: (value) {
                                         setState(() {
@@ -201,7 +246,9 @@ class _UserRegisterState extends State<UserRegister> {
                                           .map<DropdownMenuItem<int>>((city) {
                                         return DropdownMenuItem<int>(
                                           value: city['id_city'] as int,
-                                          child: Text(city['name'] as String),
+                                          child: Text(city['name'] as String, style: Theme.of(context)
+                            .textTheme
+                            .titleSmall,),
                                         );
                                       }).toList(),
                                       decoration: const InputDecoration(
@@ -212,8 +259,8 @@ class _UserRegisterState extends State<UserRegister> {
                                         }
                                         return null;
                                       },
-                                    )),
-                                const SizedBox(height: 100),
+                                    ),
+                                const SizedBox(height: 60),
                                 Container(
                                   alignment: Alignment.center,
                                   child: LargeButton(
@@ -223,19 +270,9 @@ class _UserRegisterState extends State<UserRegister> {
                                         submitForm(context);
                                       }),
                                 ),
-                                // child: const GlobalButton(text: 'Iniciar sesión'),
-                              ],
-                            ),
-                            Positioned(
-                                top: 30.0,
-                                left: 5.0,
-                                child: IconButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                    icon: const Icon(Icons.arrow_back)))
-                          ],
-                        )));
+                              ]),
+                          
+                        ));
               }
             }));
   }

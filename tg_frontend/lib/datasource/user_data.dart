@@ -38,7 +38,6 @@ class UserDatasourceMethods implements UserDatasource {
     database = await databaseProvider.database;
 
     token = await AuthStorage().getToken();
-    print('token: --------------- $token');
     //token = "0e82ae3cb06e3e4611ee2b3986951a2720659243";
   }
 
@@ -147,9 +146,8 @@ class UserDatasourceMethods implements UserDatasource {
   Future<Map<String, dynamic>?> getVehicleOptionsRemote() async {
     Map<String, dynamic>? options;
 
-    if (token != null) {
+    
       try {
-        //dio.options.headers['Authorization'] = 'Token $token';
         Response response =
             await dio.get(_endPoints.baseUrl + _endPoints.getVehicleOptions);
         if (response.data is Map<String, dynamic>) {
@@ -159,9 +157,8 @@ class UserDatasourceMethods implements UserDatasource {
       } catch (error) {
         print('Error al realizar la solicitud vehiclesOptions: $error');
       }
-    } else {
-      print('No se encontró ningún token.');
-    }
+    
+    
     return options;
   }
 

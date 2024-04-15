@@ -136,7 +136,7 @@ class _NewTravelState extends State<NewTravel> {
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   alignment: Alignment.center,
                   child: Column(children: [
-                    const SizedBox(height: 80),
+                     SizedBox(height: MediaQuery.of(context).size.height / 16),
                     Row(children: [
                       IconButton(
                           onPressed: () {

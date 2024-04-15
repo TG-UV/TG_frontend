@@ -115,7 +115,7 @@ class _LoginState extends State<Login> {
                         ),
                         const SizedBox(height: 50),
                         LargeButton(
-                            text: 'Iniciar sesion',
+                            text: 'Iniciar sesión',
                             large: true,
                             onPressed: () {
                               loginUser(mailLoginController.text,

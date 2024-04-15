@@ -4,35 +4,42 @@ import 'package:tg_frontend/screens/theme.dart';
 class LargeButton extends StatelessWidget {
   const LargeButton({
     super.key,
-    // required this.controller,
     required this.text,
     required this.large,
     required this.onPressed,
     this.myIcon,
-
-    //required this.child
   });
 
-  // final TextEditingController controller;
+
 
   final VoidCallback? onPressed;
   final String text;
   final bool large;
   final IconData? myIcon;
-  //final Widget child;
+
+  
+
   @override
   Widget build(BuildContext context) {
+    double largeWidth = MediaQuery.of(context).size.width / 2;
+    double largeHeigth = MediaQuery.of(context).size.width / 6;
+    double shortWidth = MediaQuery.of(context).size.width / 3;
+    double shortHeigth = MediaQuery.of(context).size.width / 9;
+
     Color myBackgroundColor =
-        (text == 'Buscar') ? Colors.grey : Theme.of(context).colorScheme.error;
-    return ElevatedButton(
+        (text == 'Buscar') ? ColorManager.primaryColor: Theme.of(context).colorScheme.error;
+    return SizedBox(
+            width: large? largeWidth : shortWidth, 
+            height: large? largeHeigth : shortHeigth,
+            child:
+    ElevatedButton(
       style: ElevatedButton.styleFrom(
           elevation: 4,
           shadowColor: ColorManager.secondaryColor,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-          backgroundColor: myBackgroundColor,
-          maximumSize: large ? const Size(300, 77) : const Size(150, 85),
-          minimumSize: large ? const Size(300, 77) : const Size(140, 40)),
+          backgroundColor: myBackgroundColor,),
+        
       onPressed: onPressed,
       child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
         if (!large)
@@ -45,12 +52,12 @@ class LargeButton extends StatelessWidget {
         Text(
           text,
           style: const TextStyle(
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w400,
               fontSize: 18,
               color: Colors.white,
               fontFamily: 'Jost,'),
         )
       ]),
-    );
+    ));
   }
 }

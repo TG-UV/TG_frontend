@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:tg_frontend/models/vehicleOptions_model.dart';
 import 'package:tg_frontend/models/vehicle_model.dart';
 import 'package:tg_frontend/screens/loginAndRegister/password_register.dart';
+import 'package:tg_frontend/screens/theme.dart';
 import 'package:tg_frontend/widgets/input_field.dart';
 import 'package:tg_frontend/widgets/large_button.dart';
 import 'package:tg_frontend/models/user_model.dart';
@@ -62,6 +64,35 @@ class _VehicleRegisterState extends State<VehicleRegister> {
           'Error al llamar la opciones de vehiculo, intente de nuevo');
     }
   }
+
+  InputDecoration myInputDecoration = 
+  // InputDecoration(
+  //                 enabledBorder: OutlineInputBorder(
+  //                   borderSide: BorderSide(color: Colors.blue, width: 2),
+  //                   borderRadius: BorderRadius.circular(20),
+  //                 ),
+  //                 border: OutlineInputBorder(
+  //                   borderSide: BorderSide(color: Colors.blue, width: 2),
+  //                   borderRadius: BorderRadius.circular(20),
+  //                 ),
+  //                 filled: true,
+  //                 fillColor: Color.fromARGB(255, 38, 159, 80),
+  //               );
+  InputDecoration(
+    
+    enabledBorder: OutlineInputBorder(
+      borderSide: BorderSide(color: ColorManager.secondaryColor, width: 2),
+      borderRadius: BorderRadius.circular(10),
+    ),
+    border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(5),
+        borderSide: const BorderSide(
+          width: 0,
+          style: BorderStyle.none,
+        )), 
+    filled: true,
+    fillColor: ColorManager.secondaryColor,
+  );
 
   void submitForm(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
@@ -127,6 +158,14 @@ class _VehicleRegisterState extends State<VehicleRegister> {
                             child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
+                                  Text(
+                                    "Registra tu vehículo",
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleLarge!
+                                        .copyWith(fontSize: 26),
+                                  ),
+                                  const SizedBox(height: 30.0),
                                   InputField(
                                     controller: licensePlateController,
                                     textInput: 'Placa',
@@ -135,101 +174,113 @@ class _VehicleRegisterState extends State<VehicleRegister> {
                                     icon: const Icon(null),
                                   ),
                                   const SizedBox(height: 16.0),
-                                  DropdownButtonFormField<int>(
-                                    value: _selectedType,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        _selectedType = value;
-                                      });
-                                    },
-                                    items: (options['types'] as List<dynamic>)
-                                        .map<DropdownMenuItem<int>>((type) {
-                                      return DropdownMenuItem<int>(
-                                        value: type['id_vehicle_type'],
-                                        child: Text(type['name']),
-                                      );
-                                    }).toList(),
-                                    decoration:
-                                        InputDecoration(labelText: 'Tipo'),
-                                    validator: (value) {
-                                      if (value == null) {
-                                        return 'Por favor seleccione el tipo';
-                                      }
-                                      return null;
-                                    },
-                                  ),
+                                  SizedBox(
+                                      height: 50,
+                                      child: DropdownButtonFormField<int>(
+                                        value: _selectedType,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            _selectedType = value;
+                                          });
+                                        },
+                                        //dropdownColor: ColorManager.secondaryColor,
+                                        items: (options['types']
+                                                as List<dynamic>)
+                                            .map<DropdownMenuItem<int>>((type) {
+                                          return DropdownMenuItem<int>(
+                                            value: type['id_vehicle_type'],
+                                            child: Text(type['name'], style: Theme.of(context).textTheme.titleSmall ),
+                                          );
+                                        }).toList(),
+                                        decoration: myInputDecoration,
+                                        validator: (value) {
+                                          if (value == null) {
+                                            return 'Por favor seleccione el tipo';
+                                          }
+                                          return null;
+                                        },
+                                      )),
                                   SizedBox(height: 16.0),
-                                  DropdownButtonFormField<int>(
-                                    value: _selectedBrand,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        _selectedBrand = value;
-                                      });
-                                    },
-                                    items: (options['brands'] as List<dynamic>)
-                                        .map<DropdownMenuItem<int>>((brand) {
-                                      return DropdownMenuItem<int>(
-                                        value: brand['id_vehicle_brand'],
-                                        child: Text(brand['name']),
-                                      );
-                                    }).toList(),
-                                    decoration:
-                                        InputDecoration(labelText: 'Marca'),
-                                    validator: (value) {
-                                      if (value == null) {
-                                        return 'Por favor seleccione la marca';
-                                      }
-                                      return null;
-                                    },
-                                  ),
+                                  SizedBox(
+                                      height: 50,
+                                      child: DropdownButtonFormField<int>(
+                                        value: _selectedBrand,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            _selectedBrand = value;
+                                          });
+                                        },
+                                        items:
+                                            (options['brands'] as List<dynamic>)
+                                                .map<DropdownMenuItem<int>>(
+                                                    (brand) {
+                                          return DropdownMenuItem<int>(
+                                            value: brand['id_vehicle_brand'],
+                                            child: Text(brand['name'], style: Theme.of(context).textTheme.titleSmall),
+                                          );
+                                        }).toList(),
+                                        decoration: myInputDecoration,
+                                        validator: (value) {
+                                          if (value == null) {
+                                            return 'Por favor seleccione la marca';
+                                          }
+                                          return null;
+                                        },
+                                      )),
                                   SizedBox(height: 16.0),
-                                  DropdownButtonFormField<int>(
-                                    value: _selectedModel,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        _selectedModel = value;
-                                      });
-                                    },
-                                    items: (options['models'] as List<dynamic>)
-                                        .map<DropdownMenuItem<int>>((model) {
-                                      return DropdownMenuItem<int>(
-                                        value: model['id_vehicle_model'],
-                                        child: Text(model['name']),
-                                      );
-                                    }).toList(),
-                                    decoration:
-                                        InputDecoration(labelText: 'Modelo'),
-                                    validator: (value) {
-                                      if (value == null) {
-                                        return 'Por favor seleccione el modelo';
-                                      }
-                                      return null;
-                                    },
-                                  ),
+                                  SizedBox(
+                                      height: 50,
+                                      child: DropdownButtonFormField<int>(
+                                        value: _selectedModel,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            _selectedModel = value;
+                                          });
+                                        },
+                                        items:
+                                            (options['models'] as List<dynamic>)
+                                                .map<DropdownMenuItem<int>>(
+                                                    (model) {
+                                          return DropdownMenuItem<int>(
+                                            value: model['id_vehicle_model'],
+                                            child: Text(model['name'], style: Theme.of(context).textTheme.titleSmall),
+                                          );
+                                        }).toList(),
+                                        decoration: myInputDecoration,
+                                        validator: (value) {
+                                          if (value == null) {
+                                            return 'Por favor seleccione el modelo';
+                                          }
+                                          return null;
+                                        },
+                                      )),
                                   SizedBox(height: 16.0),
-                                  DropdownButtonFormField<int>(
-                                    value: _selectedColor,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        _selectedColor = value;
-                                      });
-                                    },
-                                    items: (options['colors'] as List<dynamic>)
-                                        .map<DropdownMenuItem<int>>((color) {
-                                      return DropdownMenuItem<int>(
-                                        value: color['id_vehicle_color'],
-                                        child: Text(color['name']),
-                                      );
-                                    }).toList(),
-                                    decoration:
-                                        InputDecoration(labelText: 'Color'),
-                                    validator: (value) {
-                                      if (value == null) {
-                                        return 'Por favor seleccione el color';
-                                      }
-                                      return null;
-                                    },
-                                  ),
+                                  SizedBox(
+                                      height: 50,
+                                      child: DropdownButtonFormField<int>(
+                                        value: _selectedColor,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            _selectedColor = value;
+                                          });
+                                        },
+                                        items:
+                                            (options['colors'] as List<dynamic>)
+                                                .map<DropdownMenuItem<int>>(
+                                                    (color) {
+                                          return DropdownMenuItem<int>(
+                                            value: color['id_vehicle_color'],
+                                            child: Text(color['name'], style: Theme.of(context).textTheme.titleSmall),
+                                          );
+                                        }).toList(),
+                                        decoration: myInputDecoration,
+                                        validator: (value) {
+                                          if (value == null) {
+                                            return 'Por favor seleccione el color';
+                                          }
+                                          return null;
+                                        },
+                                      )),
                                   const SizedBox(height: 80),
                                   Container(
                                       alignment: Alignment.center,

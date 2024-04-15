@@ -20,7 +20,7 @@ class InputField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      inputFormatters: [LengthLimitingTextInputFormatter(50)],
+      inputFormatters: [LengthLimitingTextInputFormatter(40)],
       controller: controller,
       keyboardType: textInputType,
       obscureText: obscure,
