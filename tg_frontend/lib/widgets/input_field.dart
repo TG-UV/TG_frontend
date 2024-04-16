@@ -9,6 +9,7 @@ class InputField extends StatelessWidget {
       required this.textInput,
       required this.textInputType,
       this.icon,
+      this.onChange,
       required this.obscure});
 
   final TextEditingController controller;
@@ -16,6 +17,7 @@ class InputField extends StatelessWidget {
   final TextInputType textInputType;
   final bool obscure;
   final Icon? icon;
+  final Function(String)? onChange; 
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +26,7 @@ class InputField extends StatelessWidget {
       controller: controller,
       keyboardType: textInputType,
       obscureText: obscure,
+      onChanged: onChange,
       style: TextStyle(color: ColorManager.primaryColor),
       //autofocus: true,
       decoration: InputDecoration(

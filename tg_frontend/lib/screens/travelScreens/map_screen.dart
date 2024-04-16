@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:tg_frontend/device/environment.dart';
 import 'package:tg_frontend/screens/loginAndRegister/login.dart';
 import 'package:tg_frontend/screens/loginAndRegister/vehicle_register.dart';
+import 'package:tg_frontend/screens/theme.dart';
 import 'package:tg_frontend/screens/travelScreens/available_travels.dart';
 import 'package:tg_frontend/screens/travelScreens/new_travel.dart';
-import 'package:tg_frontend/screens/travelScreens/search_travels.dart';
 import 'package:tg_frontend/services/auth_services.dart';
 import 'package:tg_frontend/widgets/large_button.dart';
 import 'package:get/get.dart';
@@ -14,6 +15,8 @@ import 'package:location/location.dart' as loc;
 import 'package:logger/logger.dart';
 import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/datasource/user_data.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:geolocator/geolocator.dart';
 
 final logger = Logger();
 
@@ -30,25 +33,34 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   late loc.LocationData currentLocation;
   User user = Environment.sl.get<User>();
-  UserDatasourceMethods userDatasourceImpl =
-      Environment.sl.get<UserDatasourceMethods>();
+  UserDatasourceMethods userDatasourceImpl = Environment.sl.get<UserDatasourceMethods>();
+  LatLng? myPosition;
+  LatLng universityPosition = const LatLng(3.3765821, -76.5334617);
 
   @override
   void initState() {
     super.initState();
+    _requestLocationPermission();
   }
 
-  Future<void> getLocation() async {
-    final location = loc.Location();
-    try {
-      final myCurrentLocation = await location.getLocation();
-      setState(() {
-        currentLocation = myCurrentLocation;
-      });
-    } catch (e) {
-      logger.e('Error getting location: $e');
+  Future<void> _requestLocationPermission() async {
+    if (await Permission.locationWhenInUse.request().isGranted) {
+      _getLocation();
+    } else {
+     await EasyLoading.showInfo("permiso denegado");
     }
   }
+
+  Future<void> _getLocation() async {
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+        setState(() {
+          myPosition = LatLng(position.latitude, position.longitude);
+        });
+    print(' position:  $position');
+  }
+
+ 
 
   _showConfirmationDialog(BuildContext context) {
     showDialog(
@@ -88,7 +100,7 @@ class _MapScreenState extends State<MapScreen> {
           child: ListView(
             children: <Widget>[
               SizedBox(
-                  height: 130, // Cambia la altura aquí
+                  height: 130, 
                   child: UserAccountsDrawerHeader(
                       decoration: const BoxDecoration(
                           border: Border(
@@ -166,8 +178,8 @@ class _MapScreenState extends State<MapScreen> {
         ),
         body: Stack(children: [
           FlutterMap(
-            options: const MapOptions(
-                initialCenter: LatLng(3.43722, -76.5225),
+            options:  MapOptions(
+                initialCenter: myPosition?? universityPosition,
                 minZoom: 5,
                 maxZoom: 25,
                 initialZoom: 18),
@@ -177,10 +189,17 @@ class _MapScreenState extends State<MapScreen> {
                     'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}',
                 additionalOptions: const {
                   'accessToken': mapboxAccessToken,
-                  'id':
-                      'mapbox/streets-v11', // Puedes cambiar el estilo según tus necesidades
+                  'id': 'mapbox/streets-v11',
                 },
               ),
+              if(myPosition != null)
+              MarkerLayer(markers: [Marker(point: myPosition!, child: Icon(
+                            Icons.location_on_sharp,
+                            color: ColorManager.fourthColor,
+                            size: 40,
+                          ),)]),
+                        
+                      
               /*
           MarkerLayer(markers: [
             Marker(
@@ -191,20 +210,6 @@ class _MapScreenState extends State<MapScreen> {
           */
             ],
           ),
-
-          /*
-          MapboxMap(
-            accessToken: 'TU_TOKEN_DE_ACCESO_AQUI',
-            styleString: 'mapbox://styles/mapbox/streets-v11',
-            onMapCreated: (MapboxMapController controller) {
-              // Puedes agregar marcadores u otras configuraciones aquí
-            },
-            initialCameraPosition: const CameraPosition(
-              target: LatLng(37.7749, -122.4194), // Coordenadas de San Francisco, puedes ajustar esto
-              zoom: 12.0,
-            ),
-          ),
-          */
 
           Positioned(
               top: 100.0,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:get/get.dart';
 import 'package:tg_frontend/screens/home.dart';
@@ -27,6 +28,7 @@ class _NewTravelState extends State<NewTravel> {
   int _selectedSeatsButtonIndex = -1;
   String _selectedDate = DateTime.now().toString();
   String _selectedTime = TimeOfDay.now().toString();
+  List<String> _suggestions = [];
 
   final _formKey = GlobalKey<FormState>();
 
@@ -124,6 +126,15 @@ class _NewTravelState extends State<NewTravel> {
     }
   }
 
+  Future<void> _getSuggestion(String value) async {
+    var response = await travelDatasourceMethods.getMapSuggestions(address: value);
+    setState(() {
+      _suggestions = response;
+    });
+  }
+
+  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -165,8 +176,27 @@ class _NewTravelState extends State<NewTravel> {
                       textInput: 'Universidad del Valle',
                       textInputType: TextInputType.text,
                       obscure: false,
+                      onChange: (value){
+                        _getSuggestion(value);
+                      }
                       //icon: const Icon(Icons.edit),
                     ),
+                    SizedBox(
+                      height:100,
+              child: ListView.builder(
+                itemCount: _suggestions.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(_suggestions[index]),
+                    onTap: () {
+                      // Aquí puedes manejar la selección de la sugerencia
+                      startingPointController.text = _suggestions[index];
+                      // También puedes enviar la dirección seleccionada para obtener las coordenadas
+                    },
+                  );
+                },
+              ),
+            ),
                     const SizedBox(height: 7),
                     Align(
                         alignment: Alignment.topLeft,
