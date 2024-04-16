@@ -61,7 +61,7 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
     if (updatePassengers != 0) {
       _loadPassengers();
     } else {
-      await EasyLoading.showInfo("Error");
+      await EasyLoading.showInfo("Hubo un error");
       return;
     }
   }
@@ -70,10 +70,10 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
     int sendResponse = await travelDatasourceImpl.deletePassengerRemote(
         passengerId: passengerId);
     if (sendResponse == 1) {
-      await EasyLoading.showInfo("reserva cancelada");
+      await EasyLoading.showInfo("viaje cancelado");
       Navigator.of(context).pop();
     } else {
-      await EasyLoading.showInfo("Error al cancelar");
+      await EasyLoading.showInfo("Intenta más tarde");
       return;
     }
   }
@@ -113,15 +113,12 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                             _launched = _makePhoneCall(myPassenger.phoneNumber);
                           })
                       : null,
-                  // child: _hasCallSupport
-                  //     ? const Text('Make phone call')
-                  //     : const Text('Calling not supported'),
                 ),
               ])
         ]));
   }
 
-  Card buildPassengerCard(Passenger myPassenger) {
+  Card buildPassengerCard(Passenger myPassenger, Function onDelete) {
     return Card(
       color: Colors.white54,
       child: Column(
@@ -129,7 +126,7 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
         children: <Widget>[
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
+            children: [
               Text(
                 ' ${myPassenger.firstName} ${myPassenger.lastName}',
                 style: Theme.of(context).textTheme.titleSmall,
@@ -138,8 +135,10 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                 icon: const Icon(
                   Icons.close,
                   color: Colors.red,
+                  size: 40,
                 ),
                 onPressed: () {
+                  onDelete();
                   _updatePassengers(myPassenger.idPassenger, false);
                 },
               ),
@@ -255,7 +254,13 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                             itemBuilder: (context, index) {
                               return pendingPassengersList.isNotEmpty
                                   ? buildPassengerCard(
-                                      pendingPassengersList[index])
+                                      pendingPassengersList[index],
+                                      () => setState(() {
+                                            confirmedPassengersList.add(
+                                                pendingPassengersList[index]);
+                                            pendingPassengersList
+                                                .removeAt(index);
+                                          }))
                                   : Text(
                                       'No tienes pasajeros pendientes',
                                       style: Theme.of(context)
