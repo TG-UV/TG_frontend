@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
-import 'package:get/get.dart';
-import 'package:tg_frontend/screens/home.dart';
-import 'package:tg_frontend/screens/theme.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:tg_frontend/widgets/large_button.dart';
 import 'package:tg_frontend/widgets/square_button.dart';
 import 'package:tg_frontend/widgets/input_field.dart';
@@ -29,9 +26,17 @@ class _NewTravelState extends State<NewTravel> {
   String _selectedDate = DateTime.now().toString();
   String _selectedTime = TimeOfDay.now().toString();
   List<String> _suggestions = [];
+  String inputAddress = "Universidad del valle";
+  late LatLng latLngArrivalPoint;
+  late LatLng latLngStartingPoint;
+
 
   final _formKey = GlobalKey<FormState>();
-
+  
+  final FocusNode _focusNodeArrivalPoint = FocusNode();
+  final FocusNode _focusNodeStartingPoint = FocusNode();
+  late FocusNode _currentFoco;
+  
   final TextEditingController startingPointController = TextEditingController();
   final TextEditingController arrivalPointController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
@@ -127,13 +132,24 @@ class _NewTravelState extends State<NewTravel> {
   }
 
   Future<void> _getSuggestion(String value) async {
-    var response = await travelDatasourceMethods.getMapSuggestions(address: value);
+    var response =
+        await travelDatasourceMethods.getMapSuggestions(address: value);
     setState(() {
       _suggestions = response;
     });
   }
 
-  
+  Future<void> _getMapCoordinates(String value, FocusNode foco) async {
+    var response =
+        await travelDatasourceMethods.getMapCoordinates(address: value);
+    setState(() {
+      foco == _focusNodeArrivalPoint?
+      latLngArrivalPoint=response
+      :latLngStartingPoint=response;
+    });
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -147,7 +163,7 @@ class _NewTravelState extends State<NewTravel> {
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   alignment: Alignment.center,
                   child: Column(children: [
-                     SizedBox(height: MediaQuery.of(context).size.height / 16),
+                    SizedBox(height: MediaQuery.of(context).size.height / 16),
                     Row(children: [
                       IconButton(
                           onPressed: () {
@@ -172,31 +188,54 @@ class _NewTravelState extends State<NewTravel> {
                           textAlign: TextAlign.left,
                         )),
                     InputField(
-                      controller: startingPointController,
-                      textInput: 'Universidad del Valle',
-                      textInputType: TextInputType.text,
-                      obscure: false,
-                      onChange: (value){
-                        _getSuggestion(value);
-                      }
-                      //icon: const Icon(Icons.edit),
-                    ),
-                    SizedBox(
-                      height:100,
-              child: ListView.builder(
-                itemCount: _suggestions.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(_suggestions[index]),
-                    onTap: () {
-                      // Aquí puedes manejar la selección de la sugerencia
-                      startingPointController.text = _suggestions[index];
-                      // También puedes enviar la dirección seleccionada para obtener las coordenadas
-                    },
-                  );
-                },
-              ),
-            ),
+                        foco: _focusNodeStartingPoint,
+                        controller: startingPointController,
+                        textInput: 'Universidad del Valle',
+                        textInputType: TextInputType.text,
+                        obscure: false,
+                        onChange: (value) {
+                          _currentFoco = _focusNodeStartingPoint;
+                          _getSuggestion(value);
+                        },
+                        icon: const Icon(Icons.edit),
+                        ),
+      
+
+                    if (_suggestions.isNotEmpty && _currentFoco == _focusNodeStartingPoint )
+                      Positioned(
+                        top: 50.0,
+                        left: 0.0,
+                        right: 0.0,
+                        child: Container(
+                          height: 200.0,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 1,
+                                blurRadius: 3,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: ListView.builder(
+                            itemCount: _suggestions.length,
+                            itemBuilder: (context, index) {
+                              return ListTile(
+                                title: Text(_suggestions[index]),
+                                onTap: () {
+                                  startingPointController.text =
+                                      _suggestions[index];
+                                      _getMapCoordinates(_suggestions[index], _focusNodeStartingPoint);
+                                  _suggestions.clear();
+                                  _focusNodeStartingPoint.unfocus();
+                                },
+                              );
+                            },
+                          ),
+                        ),
+                      ),
                     const SizedBox(height: 7),
                     Align(
                         alignment: Alignment.topLeft,
@@ -206,13 +245,55 @@ class _NewTravelState extends State<NewTravel> {
                           textAlign: TextAlign.left,
                         )),
                     InputField(
+                      foco: _focusNodeStartingPoint,
                       controller: arrivalPointController,
                       textInput: 'Home',
                       textInputType: TextInputType.text,
                       obscure: false,
-                      //icon: const Icon(Icons.edit),
+                      onChange: (value) {
+                          _currentFoco = _focusNodeArrivalPoint;
+                          _getSuggestion(value);
+                        },
+                      icon: const Icon(Icons.edit),
                     ),
-                    const SizedBox(height: 50),
+                    if (_suggestions.isNotEmpty &&
+                        _currentFoco == _focusNodeArrivalPoint)
+                      Positioned(
+                        top: 100.0,
+                        left: 0.0,
+                        right: 0.0,
+                        child: Container(
+                          height: 200.0,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 1,
+                                blurRadius: 3,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: ListView.builder(
+                            itemCount: _suggestions.length,
+                            itemBuilder: (context, index) {
+                              return ListTile(
+                                title: Text(_suggestions[index]),
+                                onTap: () {
+                                  arrivalPointController.text =
+                                      _suggestions[index];
+                                       _getMapCoordinates(_suggestions[index], _focusNodeArrivalPoint);
+                                  _suggestions.clear();
+                                  _focusNodeArrivalPoint.unfocus();
+                                },
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+
+                    const SizedBox(height: 40),
                     Align(
                       alignment: Alignment.topLeft,
                       child: Row(
@@ -221,7 +302,7 @@ class _NewTravelState extends State<NewTravel> {
                             'Cuándo',
                             style: Theme.of(context).textTheme.titleSmall,
                           ),
-                          Spacer(),
+                          const Spacer(),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
@@ -247,7 +328,6 @@ class _NewTravelState extends State<NewTravel> {
                     Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          //BotonPersonalizado('Botón 1'),
                           SquareButton(
                               text: '10',
                               isSelected: _selectedTimeButtonIndex == 0,

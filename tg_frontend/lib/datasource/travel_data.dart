@@ -1,3 +1,4 @@
+import 'package:latlong2/latlong.dart';
 import 'package:tg_frontend/device/local_tables.dart';
 import 'package:tg_frontend/models/passenger_model.dart';
 import 'package:tg_frontend/models/travel_model.dart';
@@ -13,6 +14,7 @@ import 'dart:convert';
 
 abstract class TravelDatasource {
   Future<List<String>> getMapSuggestions({required String address});
+  Future<LatLng> getMapCoordinates({required String address});
   Future<void> insertTravelsLocal({required List<Travel> travels});
   Future<void> insertTravelRemote({required Travel travel});
   Future<void> getTravelLocal({required int travelId, String filter});
@@ -41,6 +43,8 @@ class TravelDatasourceMethods implements TravelDatasource {
   final _endPoints = EndPoints();
   String? token;
   late User user = Environment.sl.get<User>();
+  String apiKey =
+      'pk.eyJ1Ijoic2FybWFyaWUiLCJhIjoiY2xwYm15eTRrMGZyYjJtcGJ1bnJ0Y3hpciJ9.v5mHXrC66zG4x-dgZDdLSA';
 
   TravelDatasourceMethods() {
     initDatabase();
@@ -53,8 +57,8 @@ class TravelDatasourceMethods implements TravelDatasource {
 
   @override
   Future<List<String>> getMapSuggestions({required String address}) async {
-    String apiKey = 'pk.eyJ1Ijoic2FybWFyaWUiLCJhIjoiY2xwYm15eTRrMGZyYjJtcGJ1bnJ0Y3hpciJ9.v5mHXrC66zG4x-dgZDdLSA';
-    String url = 'https://api.mapbox.com/geocoding/v5/mapbox.places/$address.json?access_token=$apiKey';
+    String url =
+        'https://api.mapbox.com/geocoding/v5/mapbox.places/$address.json?access_token=$apiKey';
     List<String> suggestions = [];
 
     var response = await http.get(Uri.parse(url));
@@ -62,12 +66,34 @@ class TravelDatasourceMethods implements TravelDatasource {
     if (response.statusCode == 200) {
       Map<String, dynamic> data = jsonDecode(response.body);
       List<dynamic> features = data['features'];
-      suggestions = features.map((feature) => feature['place_name'] as String).toList();
-      
+      suggestions =
+          features.map((feature) => feature['place_name'] as String).toList();
     } else {
       throw Exception('Error al obtener sugerencias de búsqueda');
     }
     return suggestions;
+  }
+
+  @override
+  Future<LatLng> getMapCoordinates(
+      {required String address}) async {
+    String url =
+        "https://api.mapbox.com/geocoding/v5/mapbox.places/$address.json?access_token=$apiKey";
+
+    //List<String> suggestions = [];
+
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> data = json.decode(response.body);
+      List<double> coordinatesValues = List<double>.from(data['features'][0]['geometry']['coordinates']); 
+      //print('response coor: ${json.decode(response.body)}');
+      LatLng coordinates = LatLng(coordinatesValues[1], coordinatesValues[0]);
+      print('coordinates: $coordinates');
+      return coordinates;
+    } else {
+      throw Exception('Falló al obtener las coordenadas en Mapbox');
+    }
   }
 
   @override
@@ -334,5 +360,4 @@ class TravelDatasourceMethods implements TravelDatasource {
 
     return response;
   }
-
 }

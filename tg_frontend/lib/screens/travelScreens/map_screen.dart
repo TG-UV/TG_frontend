@@ -60,6 +60,14 @@ class _MapScreenState extends State<MapScreen> {
     print(' position:  $position');
   }
 
+  LatLng _getCenterPosition(){
+    _getLocation();
+    if(myPosition!= null){
+      return myPosition!;
+    }
+    else {return universityPosition;}
+  }
+
  
 
   _showConfirmationDialog(BuildContext context) {
@@ -179,10 +187,10 @@ class _MapScreenState extends State<MapScreen> {
         body: Stack(children: [
           FlutterMap(
             options:  MapOptions(
-                initialCenter: myPosition?? universityPosition,
+                initialCenter: _getCenterPosition(),
                 minZoom: 5,
                 maxZoom: 25,
-                initialZoom: 18),
+                initialZoom: 17),
             children: [
               TileLayer(
                 urlTemplate:
@@ -199,15 +207,6 @@ class _MapScreenState extends State<MapScreen> {
                             size: 40,
                           ),)]),
                         
-                      
-              /*
-          MarkerLayer(markers: [
-            Marker(
-                point: LatLng(
-                    currentLocation.latitude!, currentLocation.latitude!),
-                child: const Icon(Icons.location_on_rounded))
-          ])
-          */
             ],
           ),
 

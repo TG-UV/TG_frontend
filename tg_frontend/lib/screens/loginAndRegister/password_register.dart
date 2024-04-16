@@ -68,7 +68,7 @@ class _PasswordRegisterState extends State<PasswordRegister> {
     final token = await userDatasourceImpl.getUserAuth(
         username: username, password: password);
     if (token != null) {
-      await AuthStorage().saveToken(token!);
+      await AuthStorage().saveToken(token);
       await AuthStorage().saveNickname(username);
       await AuthStorage().savePassword(password);
 

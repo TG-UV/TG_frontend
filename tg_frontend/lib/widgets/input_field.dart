@@ -10,6 +10,7 @@ class InputField extends StatelessWidget {
       required this.textInputType,
       this.icon,
       this.onChange,
+      this.foco,
       required this.obscure});
 
   final TextEditingController controller;
@@ -18,6 +19,7 @@ class InputField extends StatelessWidget {
   final bool obscure;
   final Icon? icon;
   final Function(String)? onChange; 
+  final FocusNode? foco;
 
   @override
   Widget build(BuildContext context) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:tg_frontend/datasource/endPoints/end_point.dart';
 import 'package:tg_frontend/datasource/local_database_provider.dart';
@@ -20,6 +21,7 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  final _formKey = GlobalKey<FormState>();
   final TextEditingController mailLoginController = TextEditingController();
   final TextEditingController passwordLoginController = TextEditingController();
   UserDatasourceMethods userDatasourceImpl =
@@ -39,11 +41,13 @@ class _LoginState extends State<Login> {
   }
 
   Future<void> loginUser(String username, String password) async {
-    final token = await userDatasourceImpl.getUserAuth(
+    if (_formKey.currentState!.validate()){
+      final token = await userDatasourceImpl.getUserAuth(
         username: username, password: password);
     token != null
         ? saveAuthInformation(token, username, password)
         : showErrorMessage('El usuario no existe, intente de nuevo');
+    }
   }
 
   void saveAuthInformation(token, username, password) async {
@@ -57,18 +61,19 @@ class _LoginState extends State<Login> {
     Get.to(() => const Home());
   }
 
-  Widget showErrorMessage(errorMessage) {
-    return AlertDialog(
-        title: const Text("Error"),
-        content: Text(errorMessage),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: const Text("Cerrar"),
-          )
-        ]);
+  Future<void> showErrorMessage(String errorMessage) {
+    return EasyLoading.showInfo(errorMessage);
+    // return AlertDialog(
+    //     title: const Text("Error"),
+    //     content: Text(errorMessage),
+    //     actions: [
+    //       TextButton(
+    //         onPressed: () {
+    //           Navigator.of(context).pop();
+    //         },
+    //         child: const Text("Cerrar"),
+    //       )
+    //     ]);
   }
 
   @override
@@ -79,7 +84,10 @@ class _LoginState extends State<Login> {
             child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 alignment: Alignment.center,
-                child: Stack(children: [
+                child: Form(
+                        key: _formKey,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        child: Stack(children: [
                   Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -158,14 +166,7 @@ class _LoginState extends State<Login> {
                         )
                       ]),
 
-                  // Positioned(
-                  //     top: 30.0,
-                  //     left: 5.0,
-                  //     child: IconButton(
-                  //         onPressed: () {
-                  //           Navigator.pop(context);
-                  //         },
-                  //         icon: const Icon(Icons.arrow_back)))
-                ]))));
+                 
+                ])))));
   }
 }
