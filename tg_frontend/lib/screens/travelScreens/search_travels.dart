@@ -10,6 +10,8 @@ import 'package:tg_frontend/datasource/travel_data.dart';
 import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/device/environment.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:intl/intl.dart';
+
 
 class SearchTravels extends StatefulWidget {
   const SearchTravels({super.key});
@@ -25,8 +27,8 @@ class _SearchTravelsState extends State<SearchTravels> {
   EndPoints endPoint = EndPoints();
 
   int _selectedTimeButtonIndex = -1;
-  DateTime _selectedDate = DateTime.now();
-  TimeOfDay _selectedTime = TimeOfDay.now();
+  String _selectedDate = DateTime.now().toString();
+  String _selectedTime = TimeOfDay.now().toString();
 
   final TextEditingController dateController = TextEditingController();
   final TextEditingController timeController = TextEditingController();
@@ -50,7 +52,27 @@ class _SearchTravelsState extends State<SearchTravels> {
     super.initState();
   }
 
-  Future<void> _fetchTravels() async {
+  void _submitForm(BuildContext context) async {
+    if (_formKey.currentState!.validate() &&
+        dateController.text.isNotEmpty &&
+        timeController.text.isNotEmpty
+        ) {
+
+     Map<String, dynamic> requestData = {
+      'arrival_point': arrivalPointController.text,
+      'starting_point':  startingPointController.text,
+      'start_time': _selectedTime,
+      'start_date': _selectedDate,
+    };
+  
+      _fetchTravels(requestData);
+      //print("form correcto.........$data");
+    } else {
+      
+    }
+  }
+
+  Future<void> _fetchTravels(Map<String, dynamic> requestData) async {
     List<Travel> value = await travelDatasourceMethods.getTravelsRemote(
         finalEndPoint: endPoint.getGeneralTravels);
     if (value.isNotEmpty) {
@@ -60,26 +82,48 @@ class _SearchTravelsState extends State<SearchTravels> {
     }
   }
 
+  DateTime _parseTimeString(String timeString) {
+    List<String> parts = timeString.split(':');
+    int hour = int.parse(parts[0]);
+    int minute = int.parse(parts[1]);
+    return DateTime(1, 1, 1, hour, minute);
+  }
+
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
         context: context, firstDate: DateTime.now(), lastDate: DateTime(2025));
-    if (pickedDate != null && pickedDate != _selectedDate) {
-      setState(() {
-        _selectedDate = pickedDate;
-        dateController.text = _selectedDate.toString().substring(0, 10);
+    if (pickedDate != null ) {
+       setState(() {
+        _selectedDate = DateFormat('yyyy-MM-dd').format(pickedDate);
+        dateController.text =
+            DateFormat('EEEE, d MMMM', 'es_ES').format(pickedDate);
       });
+      _selectTime();
     }
-    _selectTime();
+    
   }
 
-  Future<void> _selectTime() async {
-    final TimeOfDay? pickedTime =
-        await showTimePicker(context: context, initialTime: TimeOfDay.now());
-
-    if (pickedTime != null && pickedTime != _selectedTime) {
+  Future<void> _selectTime({DateTime? dateTime}) async {
+    if (dateTime != null) {
       setState(() {
-        _selectedTime = pickedTime;
+        _selectedTime = DateFormat('hh:mm:ss').format(dateTime);
+        _selectedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+        timeController.text =
+            DateFormat('hh:mm a').format(_parseTimeString(_selectedTime));
+        dateController.text =
+            DateFormat('EEEE, d MMMM', 'es_ES').format(DateTime.now());
       });
+    } else {
+      final TimeOfDay? pickedTime =
+          await showTimePicker(context: context, initialTime: TimeOfDay.now());
+
+      if (pickedTime != null) {
+        setState(() {
+          _selectedTime = pickedTime.toString();
+          timeController.text =
+              DateFormat('hh:mm a').format(_parseTimeString(_selectedTime));
+        });
+      }
     }
   }
 
@@ -91,13 +135,14 @@ class _SearchTravelsState extends State<SearchTravels> {
     });
   }
 
-  Future<void> _getMapCoordinates(String value, FocusNode foco) async {
+  Future<void> _getMapCoordinates(String value, LatLng latLngPoint) async {
     var response =
         await travelDatasourceMethods.getMapCoordinates(address: value);
     setState(() {
-      foco == _focusNodeArrivalPoint
-          ? latLngArrivalPoint = response
-          : latLngStartingPoint = response;
+      latLngPoint = response;
+      // foco == _focusNodeArrivalPoint
+      //     ? latLngArrivalPoint = response
+      //     : latLngStartingPoint = response;
     });
   }
 
@@ -181,7 +226,7 @@ class _SearchTravelsState extends State<SearchTravels> {
                                         startingPointController.text =
                                             _suggestions[index];
                                         _getMapCoordinates(_suggestions[index],
-                                            _focusNodeStartingPoint);
+                                            latLngStartingPoint);
                                         _suggestions.clear();
                                         _focusNodeStartingPoint.unfocus();
                                       },
@@ -238,7 +283,7 @@ class _SearchTravelsState extends State<SearchTravels> {
                                         arrivalPointController.text =
                                             _suggestions[index];
                                         _getMapCoordinates(_suggestions[index],
-                                            _focusNodeArrivalPoint);
+                                            latLngArrivalPoint);
                                         _suggestions.clear();
                                         _focusNodeArrivalPoint.unfocus();
                                       },
@@ -297,7 +342,9 @@ class _SearchTravelsState extends State<SearchTravels> {
                           LargeButton(
                               text: "buscar",
                               large: false,
-                              onPressed: _fetchTravels),
+                              onPressed: () =>
+                              _submitForm(context)
+                              ),
                         ],
                       ),
                     ),

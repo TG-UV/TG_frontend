@@ -144,7 +144,7 @@ class _ListedTravelsState extends State<ListedTravels> {
                                               bottom: 16.0),
                                           child: TravelCard(
                                             travel: travelsList[index],
-                                            pastTravel: true,
+                                            pastTravel: widget.pastTravel,//true
                                           ));
                                     });
                               }

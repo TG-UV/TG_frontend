@@ -140,7 +140,7 @@ class _ListedTravelsState extends State<AvailableTravels> {
                                     //TravelCard(travel: perfectTravel),
                                     TravelCard(
                                       travel: travelsList[0],
-                                      pastTravel: false,
+                                      
                                     ),
                                     const SizedBox(height: 30),
                                     Align(

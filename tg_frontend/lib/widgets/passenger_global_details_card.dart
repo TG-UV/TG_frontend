@@ -10,6 +10,8 @@ import 'package:tg_frontend/device/environment.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:latlong2/latlong.dart';
 
 class GlobalDetailsCard extends StatefulWidget {
   const GlobalDetailsCard({
@@ -30,9 +32,15 @@ class _DetailsCardState extends State<GlobalDetailsCard> {
 
   late Map<String, dynamic>? detailsList;
   final EndPoints _endPoints = EndPoints();
+  final _formKey = GlobalKey<FormState>();
 
-  final TextEditingController locationController = TextEditingController();
+  final TextEditingController startingPointController = TextEditingController();
   var _seats = 1;
+
+  final FocusNode _focusNodeStartingPoint = FocusNode();
+  late FocusNode _currentFoco;
+  List<String> _suggestions = [];
+  late LatLng latLngStartingPoint;
 
   void _seatsIncrement(int value) async {
     int newValue = _seats;
@@ -41,8 +49,20 @@ class _DetailsCardState extends State<GlobalDetailsCard> {
     } else if (value == 0 && _seats > 1) {
       newValue--;
     }
-    _seats = newValue;
-    setState(() {});
+    setState(() {
+      _seats = newValue;
+    });
+  }
+
+  void initializeDateFormat() {
+    initializeDateFormatting('es_ES', null);
+  }
+
+  DateTime _parseTimeString(String timeString) {
+    List<String> parts = timeString.split(':');
+    int hour = int.parse(parts[0]);
+    int minute = int.parse(parts[1]);
+    return DateTime(1, 1, 1, hour, minute);
   }
 
   Future<Map<String, dynamic>?> _loadTravelDetails() async {
@@ -56,10 +76,10 @@ class _DetailsCardState extends State<GlobalDetailsCard> {
     return value;
   }
 
-  void _reserveSpot() async {
+  void reserveSpot() async {
     Passenger passenger = Passenger(
         idPassenger: user.idUser,
-        pickupPoint: "akii",
+        pickupPoint: startingPointController.text,
         seats: _seats,
         isConfirmed: 0,
         trip: widget.travel.id,
@@ -79,11 +99,29 @@ class _DetailsCardState extends State<GlobalDetailsCard> {
     }
   }
 
+  Future<void> _getSuggestion(String value) async {
+    var response = await travelDatasourceImpl.getMapSuggestions(address: value);
+    setState(() {
+      _suggestions = response;
+    });
+  }
+
+  Future<void> _getMapCoordinates(String value, FocusNode foco) async {
+    var response = await travelDatasourceImpl.getMapCoordinates(address: value);
+    setState(() {
+      latLngStartingPoint = response;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
         color: Colors.grey.shade200,
-        child: Padding(
+        child: SingleChildScrollView(
+            child: Form(
+                key: _formKey,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                child:Padding(
           padding: const EdgeInsets.all(12.0),
           child: FutureBuilder<Map<String, dynamic>?>(
               future: _loadTravelDetails(),
@@ -109,7 +147,7 @@ class _DetailsCardState extends State<GlobalDetailsCard> {
                                       MainAxisAlignment.spaceEvenly,
                                   children: <Widget>[
                                     Text(
-                                      DateFormat('EEEE').format(
+                                      DateFormat('EEEE', 'es_ES').format(
                                           DateTime.parse(widget.travel.date)),
                                       style: Theme.of(context)
                                           .textTheme
@@ -117,7 +155,8 @@ class _DetailsCardState extends State<GlobalDetailsCard> {
                                     ),
                                     const SizedBox(width: 10),
                                     Text(
-                                      widget.travel.hour,
+                                      DateFormat('hh:mm a').format(
+                                          _parseTimeString(widget.travel.hour)),
                                       style: Theme.of(context)
                                           .textTheme
                                           .titleLarge!
@@ -176,6 +215,7 @@ class _DetailsCardState extends State<GlobalDetailsCard> {
                                     .titleSmall!
                                     .copyWith(fontWeight: FontWeight.normal),
                               ),
+                              const Spacer(),
                               Row(
                                 children: [
                                   Text(
@@ -185,50 +225,92 @@ class _DetailsCardState extends State<GlobalDetailsCard> {
                                         .titleSmall!
                                         .copyWith(fontWeight: FontWeight.bold),
                                   ),
-                                  TextButton.icon(
-                                      label: const Text(''),
-                                      onPressed: () => _seatsIncrement(0),
-                                      icon: const Icon(
-                                        Icons.exposure_minus_1_rounded,
-                                        color: Colors.black,
-                                      )),
+                                  const SizedBox(width: 30),
+                                  IconButton(
+                                    icon: const Icon(
+                                        Icons.arrow_drop_up_outlined),
+                                    color: Colors.black,
+                                    iconSize: 40,
+                                    onPressed: () => _seatsIncrement(1),
+                                  ),
                                   Text(
                                     '$_seats',
                                     style:
                                         Theme.of(context).textTheme.titleSmall,
                                   ),
-                                  TextButton.icon(
-                                      label: const Text(''),
-                                      onPressed: () => _seatsIncrement(1),
-                                      icon: const Icon(
-                                        Icons.plus_one_outlined,
-                                        color: Colors.black,
-                                      )),
+                                  IconButton(
+                                    icon: const Icon(
+                                        Icons.arrow_drop_down_outlined),
+                                    color: Colors.black,
+                                    iconSize: 40,
+                                    onPressed: () => _seatsIncrement(0),
+                                  )
                                 ],
                               ),
 
                               const SizedBox(height: 10),
                               InputField(
-                                  controller: locationController,
+                                  foco: _focusNodeStartingPoint,
+                                  controller: startingPointController,
                                   textInput: "Punto de recogida",
                                   textInputType: TextInputType.text,
                                   icon: const Icon(Icons.location_history),
+                                  onChange: (value) {
+                                    _currentFoco = _focusNodeStartingPoint;
+                                    _getSuggestion(value);
+                                  },
                                   obscure: false),
-                              const SizedBox(height: 10),
+                              if (_suggestions.isNotEmpty &&
+                                  _currentFoco == _focusNodeStartingPoint)
+                                Positioned(
+                                  top: 50.0,
+                                  left: 0.0,
+                                  right: 0.0,
+                                  child: Container(
+                                    height: 200.0,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.grey.withOpacity(0.5),
+                                          spreadRadius: 1,
+                                          blurRadius: 3,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
+                                    ),
+                                    child: ListView.builder(
+                                      itemCount: _suggestions.length,
+                                      itemBuilder: (context, index) {
+                                        return ListTile(
+                                          title: Text(_suggestions[index]),
+                                          onTap: () {
+                                            startingPointController.text =
+                                                _suggestions[index];
+                                            _getMapCoordinates(
+                                                _suggestions[index],
+                                                _focusNodeStartingPoint);
+                                            _suggestions.clear();
+                                            _focusNodeStartingPoint.unfocus();
+                                          },
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ),
                               LargeButton(
                                 large: false,
                                 text: "reserva",
                                 onPressed: () {
-                                  _reserveSpot();
+                                  reserveSpot();
                                 },
                               ),
-                              //const SizedBox(width: 8),
 
                               const SizedBox(height: 15),
                             ]));
                   }
                 }
               }),
-        ));
+        ))));
   }
 }

@@ -8,7 +8,6 @@ import 'package:tg_frontend/models/travel_model.dart';
 import 'package:tg_frontend/datasource/travel_data.dart';
 import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/device/environment.dart';
-import 'package:intl/intl.dart';
 
 class NewTravel extends StatefulWidget {
   const NewTravel({super.key});

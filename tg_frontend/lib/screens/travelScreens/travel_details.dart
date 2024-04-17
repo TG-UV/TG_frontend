@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:tg_frontend/models/travel_model.dart';
 import 'package:tg_frontend/screens/theme.dart';
+import 'package:tg_frontend/widgets/input_field.dart';
 import 'package:tg_frontend/widgets/passenger_associated_details_card.dart';
 import 'package:tg_frontend/widgets/passenger_global_details_card.dart';
 import 'package:tg_frontend/widgets/driver_details_card.dart';
 import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/device/environment.dart';
+import 'package:get/get.dart';
+import "package:get_it/get_it.dart";
+
 
 class TravelDetails extends StatefulWidget {
   const TravelDetails({
     super.key,
     required this.selectedTravel,
-    required this.pastTravel,
+    this.pastTravel,
   });
 
-  final bool pastTravel;
+  final bool? pastTravel;
   final Travel selectedTravel;
 
   @override
@@ -22,7 +26,24 @@ class TravelDetails extends StatefulWidget {
 }
 
 class _TravelDetailsState extends State<TravelDetails> {
+  final TextEditingController locationController = TextEditingController();
   User user = Environment.sl.get<User>();
+  
+
+  Widget _detailsCardHandle() {
+    // GlobalDetailsCard globalDetailsCard = GlobalDetailsCard(travel: widget.selectedTravel);
+    // Environment.sl.registerSingleton<GlobalDetailsCard>(globalDetailsCard);
+
+    if (widget.pastTravel == null) {
+      //Environment.sl.get<GlobalDetailsCard>().reserveSpot();
+      //return GlobalDetailsCard(travel: widget.selectedTravel);
+      return Environment.sl.get<GlobalDetailsCard>();
+    } else {
+      return user.type == 2
+          ? DriverDetailsCard(travel: widget.selectedTravel)
+          : AssociatesDetailsCard(travel: widget.selectedTravel);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,8 +63,13 @@ class _TravelDetailsState extends State<TravelDetails> {
                           color: const Color.fromARGB(255, 231, 231, 231)),
                     ),
                     const SizedBox(height: 20),
-                  ])
-                  )),
+                    // InputField(
+                    //     controller: locationController,
+                    //     textInput: "Punto de recogida",
+                    //     textInputType: TextInputType.text,
+                    //     icon: const Icon(Icons.location_history),
+                    //     obscure: false),
+                  ]))),
       Positioned(
           bottom: 0,
           left: 0,
@@ -56,14 +82,10 @@ class _TravelDetailsState extends State<TravelDetails> {
               width: MediaQuery.of(context).size.width *
                   0.75, // 3 cuartos de la pantalla
               height: MediaQuery.of(context).size.height *
-                  0.75, // 3 cuartos de la pantalla
+                  0.75, // 3 cuartos de la pantallaS
               decoration: const BoxDecoration(
-                color: Color.fromARGB(255, 235, 235, 235),
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(50.0),
-                  topRight: Radius.circular(50.0),
-                ),
-              ),
+                  color: Color.fromARGB(255, 235, 235, 235),
+                  borderRadius: BorderRadius.all(Radius.elliptical(50, 30))),
               child: ClipRRect(
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(50.0),
@@ -71,22 +93,38 @@ class _TravelDetailsState extends State<TravelDetails> {
                   ),
                   child: Column(children: [
                     Flexible(
-                        child: user.type == 2
-                            ? DriverDetailsCard(travel: widget.selectedTravel)
-                            : widget.pastTravel
-                                ? AssociatesDetailsCard(
-                                    travel: widget.selectedTravel)
-                                : GlobalDetailsCard(
-                                    travel: widget.selectedTravel))
+                      child: _detailsCardHandle(),
+                    )
                   ])))),
-                  Positioned(
-                  top: 30.0,
-                  left: 5.0,
-                  child: IconButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      icon:  Icon(Icons.arrow_back, color: ColorManager.thirdColor,)))
+      // Positioned(
+      //     //top: 0,
+      //     bottom: 40,
+      //     left: 0,
+      //     right: 0,
+      //     child: Container(
+      //         padding:
+      //             const EdgeInsets.symmetric(horizontal: 14.0, vertical: 8.0),
+
+      //         //color: const Color.fromARGB(255, 255, 58, 58),
+      //         width: MediaQuery.of(context).size.width *
+      //             0.75, // 3 cuartos de la pantalla
+      //         height: MediaQuery.of(context).size.height *
+      //             0.20, // 3 cuartos de la pantalla
+      //         decoration: const BoxDecoration(
+      //             color: Color.fromARGB(255, 235, 235, 235),
+      //             borderRadius: BorderRadius.all(Radius.elliptical(30, 20))),
+      //         child: Text("Reservar"))),
+      Positioned(
+          top: 30.0,
+          left: 5.0,
+          child: IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: Icon(
+                Icons.arrow_back,
+                color: ColorManager.thirdColor,
+              ))),
     ]);
   }
 }

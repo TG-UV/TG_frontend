@@ -12,8 +12,8 @@ import 'dart:convert';
 
 abstract class UserDatasource {
   Future<int> insertUserLocal({required User user});
-  Future<int> insertUserRemote({required User user});
-  Future<int> insertVehicleRemote({required Vehicle vehicle});
+  Future<dynamic> insertUserRemote({required User user});
+  Future<dynamic> insertVehicleRemote({required Vehicle vehicle});
   Future<void> getUserRemote();
   Future<Map<String, dynamic>?> getVehicleOptionsRemote();
   Future<String?> getUserAuth(
@@ -42,26 +42,24 @@ class UserDatasourceMethods implements UserDatasource {
   }
 
   @override
-  Future<int> insertUserRemote({required User user}) async {
+  Future<dynamic> insertUserRemote({required User user}) async {
     Response? response;
     User userResponse;
-    int sent = 0;
     try {
       Map<String, dynamic> jsonUser = user.toJson();
-      //dio.options.headers['Authorization'] = 'Token $token';
       response = await dio.post(_endPoints.baseUrl + _endPoints.getAndPostUser,
           data: jsonUser);
       userResponse = User.fromJson(response.data);
       insertUserLocal(user: userResponse);
-      sent++;
     } catch (e) {
-      rethrow;
+      return response!.statusMessage;
+      
     }
     return userResponse.idUser;
   }
 
   @override
-  Future<int> insertVehicleRemote({required Vehicle vehicle}) async {
+  Future<dynamic> insertVehicleRemote({required Vehicle vehicle}) async {
     Response? response;
     int sent = 0;
     try {
@@ -73,7 +71,7 @@ class UserDatasourceMethods implements UserDatasource {
       // insertUserLocal(user: userResponse);
       sent++;
     } catch (e) {
-      return sent;
+      return response!.statusMessage;
     }
     return sent;
   }

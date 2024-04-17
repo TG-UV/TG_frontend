@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:tg_frontend/models/vehicle_model.dart';
 import 'package:tg_frontend/screens/home.dart';
@@ -24,15 +25,18 @@ class _PasswordRegisterState extends State<PasswordRegister> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController passwordConfirmationController =
       TextEditingController();
-      int sent = 1;
+      
 
-  void submitForm(BuildContext context) async {
+  Future<dynamic> submitForm(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       widget.user.password = passwordConfirmationController.text;
-     int idUser= await userDatasourceImpl.insertUserRemote(user: widget.user);
-     if (idUser != 0) {
-      ///if (sent == 1) {
-        User newUser = await userDatasourceImpl.getUserLocal(21);
+     Response idUser= await userDatasourceImpl.insertUserRemote(user: widget.user);
+     if(idUser is int)
+    {
+      
+        User newUser = await userDatasourceImpl.getUserLocal(idUser as int);
+        saveAuthInformation(newUser, newUser.email, passwordConfirmationController.text);
+       
         if (widget.vehicle != null) {
           Vehicle newVehicle = Vehicle(
             idVehicle: widget.vehicle!.idVehicle,
@@ -43,17 +47,26 @@ class _PasswordRegisterState extends State<PasswordRegister> {
             vehicleType: widget.vehicle!.vehicleType,
             licensePlate: widget.vehicle!.licensePlate,
           );
-          await userDatasourceImpl.insertVehicleRemote(vehicle: newVehicle);
+          Response vehicleRegisterResponse = await userDatasourceImpl.insertVehicleRemote(vehicle: newVehicle);
+          if(vehicleRegisterResponse is int){
+            return EasyLoading.showInfo("registro exitoso");
+          }
+          else{
+            return EasyLoading.showInfo(vehicleRegisterResponse.toString());
+          }
         }
-        saveAuthInformation(newUser, newUser.email, passwordConfirmationController.text);
+       
+      }
+      else{
+        return EasyLoading.showInfo(idUser.toString());
       }
     } else {
-      AlertDialog(
+      return AlertDialog(
           title: const Text("Error"),
           content: const SingleChildScrollView(
               child: ListBody(
             children: <Widget>[
-              Text("Faltan campos por completar."),
+              Text("Error en alguno de los campos"),
             ],
           )),
           actions: [
@@ -87,6 +100,7 @@ class _PasswordRegisterState extends State<PasswordRegister> {
             alignment: Alignment.center,
             child: Form(
                 key: _formKey, 
+                autovalidateMode: AutovalidateMode.onUserInteraction,
                 child: Stack(children: [
                   Column(
                       mainAxisAlignment: MainAxisAlignment.center,

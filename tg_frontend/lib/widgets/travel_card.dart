@@ -10,13 +10,13 @@ class TravelCard extends StatelessWidget {
   const TravelCard({
     super.key,
     required this.travel,
-    required this.pastTravel,
+    this.pastTravel,
   });
 
   // final TextEditingController controller;
 
   final Travel travel;
-  final bool pastTravel;
+  final bool? pastTravel;
 
   DateTime _parseTimeString(String timeString) {
     List<String> parts = timeString.split(':');
@@ -29,10 +29,24 @@ class TravelCard extends StatelessWidget {
     initializeDateFormatting('es_ES', null);
   }
 
+   Future<dynamic>?_onTapHandle(){
+    print("llega a on tap");
+    if(pastTravel != null){
+      if(!pastTravel!){
+          return Get.to(() => TravelDetails(selectedTravel: travel, pastTravel: pastTravel,));
+      }
+    }
+    else{
+       return Get.to(() => TravelDetails(selectedTravel: travel));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     initializeDateFormat();
-    return Card(
+    return InkWell(
+      onTap: _onTapHandle,
+      child: Card(
         color: const Color.fromARGB(255, 252, 252, 252),
         elevation: 8,
         shadowColor: ColorManager.secondaryColor,
@@ -45,41 +59,24 @@ class TravelCard extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
-                    TextButton(
-                      child: Text(
+                    Text(
                         DateFormat('EEEE', 'es_ES')
                             .format(DateTime.parse(travel.date)),
                         //travel.date,
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
-                      onPressed: () {
-                        Get.to(() => TravelDetails(
-                            selectedTravel: travel, pastTravel: pastTravel));
-                      },
-                    ),
-                    TextButton(
-                      child: Text(
-                        DateFormat('hh:mm a')
-                            .format(_parseTimeString(travel.hour)),
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleLarge!
-                            .copyWith(fontSize: 22.0),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      onPressed: () {
-                        Get.to(() => TravelDetails(
-                              selectedTravel: travel,
-                              pastTravel: pastTravel,
-                            ));
-                      },
-                    ),
+                      Text(
+                          DateFormat('hh:mm a')
+                              .format(_parseTimeString(travel.hour)),
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleLarge!
+                              .copyWith(fontSize: 22.0),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+              ]),
                     const SizedBox(width: 8),
-                  ],
-                ),
-                // Align(
-                //     alignment: Alignment.centerLeft,
-                //  child:
+                  
 
                 Text(
                   'Desde: ${travel.startingPoint}',
@@ -88,8 +85,10 @@ class TravelCard extends StatelessWidget {
                 Text(
                   'Hacia: ${travel.arrivalPoint}',
                   style: Theme.of(context).textTheme.titleSmall,
-                ),
-              ],
+                ),])
+              
             )));
+    
+
   }
 }
