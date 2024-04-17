@@ -33,7 +33,8 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   late loc.LocationData currentLocation;
   User user = Environment.sl.get<User>();
-  UserDatasourceMethods userDatasourceImpl = Environment.sl.get<UserDatasourceMethods>();
+  UserDatasourceMethods userDatasourceImpl =
+      Environment.sl.get<UserDatasourceMethods>();
   LatLng? myPosition;
   LatLng universityPosition = const LatLng(3.3765821, -76.5334617);
 
@@ -47,28 +48,26 @@ class _MapScreenState extends State<MapScreen> {
     if (await Permission.locationWhenInUse.request().isGranted) {
       _getLocation();
     } else {
-     await EasyLoading.showInfo("permiso denegado");
+      await EasyLoading.showInfo("permiso denegado");
     }
   }
 
   Future<void> _getLocation() async {
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
-        setState(() {
-          myPosition = LatLng(position.latitude, position.longitude);
-        });
-    print(' position:  $position');
+    setState(() {
+      myPosition = LatLng(position.latitude, position.longitude);
+    });
   }
 
-  LatLng _getCenterPosition(){
+  LatLng _getCenterPosition() {
     _getLocation();
-    if(myPosition!= null){
+    if (myPosition != null) {
       return myPosition!;
+    } else {
+      return universityPosition;
     }
-    else {return universityPosition;}
   }
-
- 
 
   _showConfirmationDialog(BuildContext context) {
     showDialog(
@@ -108,7 +107,7 @@ class _MapScreenState extends State<MapScreen> {
           child: ListView(
             children: <Widget>[
               SizedBox(
-                  height: 130, 
+                  height: 130,
                   child: UserAccountsDrawerHeader(
                       decoration: const BoxDecoration(
                           border: Border(
@@ -134,7 +133,10 @@ class _MapScreenState extends State<MapScreen> {
                   leading: const Icon(Icons.motorcycle_outlined),
                   title: const Text('Añadir vehículo'),
                   onTap: () {
-                    Get.to(() => VehicleRegister(user: user, parent: "menu",));
+                    Get.to(() => VehicleRegister(
+                          user: user,
+                          parent: "menu",
+                        ));
                   },
                 ),
               ListTile(
@@ -186,11 +188,11 @@ class _MapScreenState extends State<MapScreen> {
         ),
         body: Stack(children: [
           FlutterMap(
-            options:  MapOptions(
+            options: MapOptions(
                 initialCenter: _getCenterPosition(),
                 minZoom: 5,
                 maxZoom: 25,
-                initialZoom: 17),
+                initialZoom: 15),
             children: [
               TileLayer(
                 urlTemplate:
@@ -200,16 +202,19 @@ class _MapScreenState extends State<MapScreen> {
                   'id': 'mapbox/streets-v11',
                 },
               ),
-              if(myPosition != null)
-              MarkerLayer(markers: [Marker(point: myPosition!, child: Icon(
-                            Icons.location_on_sharp,
-                            color: ColorManager.fourthColor,
-                            size: 40,
-                          ),)]),
-                        
+              if (myPosition != null)
+                MarkerLayer(markers: [
+                  Marker(
+                    point: myPosition!,
+                    child: Icon(
+                      Icons.location_on_sharp,
+                      color: ColorManager.fourthColor,
+                      size: 40,
+                    ),
+                  )
+                ]),
             ],
           ),
-
           Positioned(
               top: 100.0,
               left: 50,

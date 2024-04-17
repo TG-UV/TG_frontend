@@ -35,7 +35,6 @@ class _DetailsCardState extends State<GlobalDetailsCard> {
   var _seats = 1;
 
   void _seatsIncrement(int value) async {
-    //int value = 0;
     int newValue = _seats;
     if (value == 1 && _seats < widget.travel.seats) {
       newValue++;
@@ -60,7 +59,7 @@ class _DetailsCardState extends State<GlobalDetailsCard> {
   void _reserveSpot() async {
     Passenger passenger = Passenger(
         idPassenger: user.idUser,
-        pickupPoint: locationController.text,
+        pickupPoint: "akii",
         seats: _seats,
         isConfirmed: 0,
         trip: widget.travel.id,
@@ -112,7 +111,6 @@ class _DetailsCardState extends State<GlobalDetailsCard> {
                                     Text(
                                       DateFormat('EEEE').format(
                                           DateTime.parse(widget.travel.date)),
-                                      //travel.date,
                                       style: Theme.of(context)
                                           .textTheme
                                           .titleLarge,
@@ -216,10 +214,10 @@ class _DetailsCardState extends State<GlobalDetailsCard> {
                                   textInputType: TextInputType.text,
                                   icon: const Icon(Icons.location_history),
                                   obscure: false),
-                                  const SizedBox(height: 10),
+                              const SizedBox(height: 10),
                               LargeButton(
                                 large: false,
-                                text: "reservar",
+                                text: "reserva",
                                 onPressed: () {
                                   _reserveSpot();
                                 },

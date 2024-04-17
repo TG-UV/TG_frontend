@@ -8,6 +8,7 @@ import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/device/environment.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AssociatesDetailsCard extends StatefulWidget {
   const AssociatesDetailsCard({
@@ -27,6 +28,18 @@ class _DetailsCardState extends State<AssociatesDetailsCard> {
   User user = Environment.sl.get<User>();
   late Map<String, dynamic>? detailsList;
   final EndPoints _endPoints = EndPoints();
+  bool _hasCallSupport = false;
+  Future<void>? _launched;
+
+  @override
+  void initState() {
+    super.initState();
+    canLaunchUrl(Uri(scheme: 'tel', path: '123')).then((bool result) {
+      setState(() {
+        _hasCallSupport = result;
+      });
+    });
+  }
 
   Stream<Map<String, dynamic>?> _loadTravelDetails() async* {
     Map<String, dynamic>? value;
@@ -39,9 +52,9 @@ class _DetailsCardState extends State<AssociatesDetailsCard> {
     yield value;
   }
 
-  void _cancelSpot(int passengerId) async {
+  void _cancelSpot(int idPassengerTrip) async {
     int sendResponse = await travelDatasourceImpl.deletePassengerRemote(
-        passengerId: passengerId);
+        passengerId: idPassengerTrip);
     if (sendResponse == 1) {
       await EasyLoading.showInfo("reserva cancelada");
       Navigator.of(context).pop();
@@ -49,6 +62,14 @@ class _DetailsCardState extends State<AssociatesDetailsCard> {
       await EasyLoading.showInfo("Error al cancelar");
       return;
     }
+  }
+
+  Future<void> _makePhoneCall(String phoneNumber) async {
+    final Uri launchUri = Uri(
+      scheme: 'tel',
+      path: phoneNumber,
+    );
+    await launchUrl(launchUri);
   }
 
   @override
@@ -141,15 +162,21 @@ class _DetailsCardState extends State<AssociatesDetailsCard> {
                                     ),
                                     IconButton(
                                       icon: const Icon(Icons.phone),
-                                      onPressed: () {},
+                                      onPressed: _hasCallSupport
+                                          ? () => setState(() {
+                                                _launched = _makePhoneCall(
+                                                    detailsList!["trip"]
+                                                            ["driver"]
+                                                        ["phone_number"]);
+                                              })
+                                          : null,
                                     ),
                                   ],
                                 ),
-                                
+
                                 const SizedBox(width: 20),
                                 Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.end,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
                                     children: [
                                       Row(
                                         mainAxisAlignment:
@@ -179,21 +206,18 @@ class _DetailsCardState extends State<AssociatesDetailsCard> {
                                             .titleSmall,
                                         softWrap: true,
                                       ),
-                                      
                                     ]),
 
                                 //const SizedBox(width: 8),
                               ],
                             ),
 
-                            
-
                             const SizedBox(height: 50),
                             LargeButton(
                               large: false,
                               text: "cancelar",
                               onPressed: () {
-                                _cancelSpot(user.idUser);
+                                _cancelSpot(detailsList!["id_passenger_trip"]);
                               },
                             ),
                             //const SizedBox(width: 8),

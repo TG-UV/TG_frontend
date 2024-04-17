@@ -2,6 +2,7 @@ import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:tg_frontend/datasource/travel_data.dart';
 import 'package:tg_frontend/datasource/user_data.dart';
 import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/screens/travelScreens/listed_notifications.dart';
@@ -12,8 +13,6 @@ import 'package:dio/dio.dart';
 import 'package:tg_frontend/datasource/local_database_provider.dart';
 import 'package:tg_frontend/device/environment.dart';
 import 'package:tg_frontend/services/auth_services.dart';
-
-
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -26,18 +25,21 @@ class _HomeState extends State<Home> {
   int _selectedIndex = 0;
 
   DatabaseProvider databaseProvider = DatabaseProvider.db;
-  late UserDatasourceMethods userDatasourceImpl;
+  UserDatasourceMethods userDatasourceImpl =
+      Environment.sl.get<UserDatasourceMethods>();
+  TravelDatasourceMethods travelDatasourceImpl =
+      Environment.sl.get<TravelDatasourceMethods>();
   late Database database;
   Dio dio = Dio();
   //User user = Environment.sl.get<User>();
 
-   final List<Widget> _pages = [
+  final List<Widget> _pages = [
     // Home (Index = 0)
-     MapScreen(),
+    MapScreen(),
 
     // Scheduled Travles (Future)
     const ListedTravels(
-      pastTravel: false, 
+      pastTravel: false,
     ),
     // History Travels (Past)
     const ListedTravels(
@@ -49,10 +51,12 @@ class _HomeState extends State<Home> {
 
   @override
   void initState() {
+    userDatasourceImpl.initDatabase();
+    travelDatasourceImpl.initDatabase();
     super.initState();
     // _initializePages();
     // setState(() {
-      
+
     // });
   }
 
@@ -96,7 +100,6 @@ class _HomeState extends State<Home> {
       );
     }
 
-   
     return Scaffold(
       body: _pages[_selectedIndex],
       //currentIndex: _selectedIndex,

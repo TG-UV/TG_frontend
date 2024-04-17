@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tg_frontend/models/travel_model.dart';
+import 'package:tg_frontend/screens/theme.dart';
 import 'package:tg_frontend/screens/travelScreens/travel_details.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -33,6 +34,8 @@ class TravelCard extends StatelessWidget {
     initializeDateFormat();
     return Card(
         color: const Color.fromARGB(255, 252, 252, 252),
+        elevation: 8,
+        shadowColor: ColorManager.secondaryColor,
         child: Padding(
             padding: const EdgeInsets.all(10),
             child: Column(

@@ -58,7 +58,7 @@ class TravelDatasourceMethods implements TravelDatasource {
   @override
   Future<List<String>> getMapSuggestions({required String address}) async {
     String url =
-        'https://api.mapbox.com/geocoding/v5/mapbox.places/$address.json?access_token=$apiKey';
+        'https://api.mapbox.com/geocoding/v5/mapbox.places/$address.json?access_token=$apiKey&country=CO&region=Valle%20del%20Cauca';
     List<String> suggestions = [];
 
     var response = await http.get(Uri.parse(url));
@@ -75,8 +75,7 @@ class TravelDatasourceMethods implements TravelDatasource {
   }
 
   @override
-  Future<LatLng> getMapCoordinates(
-      {required String address}) async {
+  Future<LatLng> getMapCoordinates({required String address}) async {
     String url =
         "https://api.mapbox.com/geocoding/v5/mapbox.places/$address.json?access_token=$apiKey";
 
@@ -86,7 +85,8 @@ class TravelDatasourceMethods implements TravelDatasource {
 
     if (response.statusCode == 200) {
       Map<String, dynamic> data = json.decode(response.body);
-      List<double> coordinatesValues = List<double>.from(data['features'][0]['geometry']['coordinates']); 
+      List<double> coordinatesValues =
+          List<double>.from(data['features'][0]['geometry']['coordinates']);
       //print('response coor: ${json.decode(response.body)}');
       LatLng coordinates = LatLng(coordinatesValues[1], coordinatesValues[0]);
       print('coordinates: $coordinates');
@@ -328,12 +328,14 @@ class TravelDatasourceMethods implements TravelDatasource {
   @override
   Future<int> deletePassengerRemote({required int passengerId}) async {
     Response? response;
+    String url = _endPoints.baseUrl +
+        _endPoints.patchPassengerTrip +
+        passengerId.toString();
     int sent = 0;
     try {
       dio.options.headers['Authorization'] = 'Token $token';
-      response = await dio.delete(
-        _endPoints.baseUrl + _endPoints.patchPassengerTrip,
-      );
+      response = await dio.delete(url);
+      print('response: --- $response');
       sent++;
     } catch (e) {
       return sent;
@@ -345,8 +347,6 @@ class TravelDatasourceMethods implements TravelDatasource {
   Future<Response<Map<String, dynamic>>?> getTravelDetails(
       {required int travelId, required String finalUrl}) async {
     Response<Map<String, dynamic>>? response;
-    String? token = await AuthStorage().getToken();
-
     try {
       dio.options.headers['Authorization'] = 'Token $token';
       String url = _endPoints.baseUrl + finalUrl + travelId.toString();

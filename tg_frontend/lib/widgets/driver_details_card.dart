@@ -15,7 +15,6 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
-
 const mapboxAccessToken =
     'pk.eyJ1Ijoic2FybWFyaWUiLCJhIjoiY2xwYm15eTRrMGZyYjJtcGJ1bnJ0Y3hpciJ9.v5mHXrC66zG4x-dgZDdLSA';
 
@@ -40,7 +39,6 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
   bool _hasCallSupport = false;
   Future<void>? _launched;
   //late GoogleMapController mapController;
-  
 
   @override
   void initState() {
@@ -104,36 +102,39 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
     await launchUrl(launchUri);
   }
 
-  Widget _mapDialog(LatLng coordinates){
+  Widget _mapDialog(LatLng coordinates) {
     return AlertDialog(
       title: const Text('Punto para recoger'),
       content: Container(
         width: double.maxFinite,
-        height: 300.0, 
+        height: 300.0,
         child: FlutterMap(
-            options:  MapOptions(
-                initialCenter: coordinates,
-                minZoom: 5,
-                maxZoom: 25,
-                initialZoom: 15),
-            children: [
-              TileLayer(
-                urlTemplate:
-                    'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}',
-                additionalOptions: const {
-                  'accessToken': mapboxAccessToken,
-                  'id': 'mapbox/streets-v11',
-                },
-              ),
-              
-              MarkerLayer(markers: [Marker(point: coordinates, child: Icon(
-                            Icons.location_on_sharp,
-                            color: ColorManager.fourthColor,
-                            size: 40,
-                          ),)]),
-                        
-            ],
-          ),
+          options: MapOptions(
+              initialCenter: coordinates,
+              minZoom: 5,
+              maxZoom: 25,
+              initialZoom: 15),
+          children: [
+            TileLayer(
+              urlTemplate:
+                  'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}',
+              additionalOptions: const {
+                'accessToken': mapboxAccessToken,
+                'id': 'mapbox/streets-v11',
+              },
+            ),
+            MarkerLayer(markers: [
+              Marker(
+                point: coordinates,
+                child: Icon(
+                  Icons.location_on_sharp,
+                  color: ColorManager.fourthColor,
+                  size: 40,
+                ),
+              )
+            ]),
+          ],
+        ),
       ),
       actions: <Widget>[
         TextButton(
@@ -145,7 +146,6 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
       ],
     );
   }
-
 
   Card buildPassengerInfo(Passenger myPassenger) {
     return Card(
@@ -160,15 +160,17 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
                 Spacer(),
-                IconButton(onPressed: () {
-                  // Mostrar el AlertDialog con el mapa
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return _mapDialog( LatLng(3.3765821, -76.5334617));
+                IconButton(
+                    onPressed: () {
+                      // Mostrar el AlertDialog con el mapa
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return _mapDialog(LatLng(3.3765821, -76.5334617));
+                        },
+                      );
                     },
-                  );
-                }, icon: const Icon(Icons.location_on_outlined)),
+                    icon: const Icon(Icons.location_on_outlined)),
                 const SizedBox(width: 2),
                 IconButton(
                   icon: const Icon(Icons.phone_enabled),
@@ -184,7 +186,9 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
 
   Card buildPassengerCard(Passenger myPassenger, Function onDelete) {
     return Card(
+      elevation: 0.5,
       color: Colors.white54,
+      shadowColor: ColorManager.secondaryColor,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
@@ -193,7 +197,10 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
             children: [
               Text(
                 ' ${myPassenger.firstName} ${myPassenger.lastName}',
-                style: Theme.of(context).textTheme.titleSmall,
+                style: Theme.of(context)
+                    .textTheme
+                    .titleSmall!
+                    .copyWith(fontWeight: FontWeight.bold),
               ),
               IconButton(
                 icon: const Icon(
