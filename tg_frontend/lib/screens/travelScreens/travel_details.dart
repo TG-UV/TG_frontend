@@ -10,7 +10,6 @@ import 'package:tg_frontend/device/environment.dart';
 import 'package:get/get.dart';
 import "package:get_it/get_it.dart";
 
-
 class TravelDetails extends StatefulWidget {
   const TravelDetails({
     super.key,
@@ -28,16 +27,10 @@ class TravelDetails extends StatefulWidget {
 class _TravelDetailsState extends State<TravelDetails> {
   final TextEditingController locationController = TextEditingController();
   User user = Environment.sl.get<User>();
-  
 
   Widget _detailsCardHandle() {
-    // GlobalDetailsCard globalDetailsCard = GlobalDetailsCard(travel: widget.selectedTravel);
-    // Environment.sl.registerSingleton<GlobalDetailsCard>(globalDetailsCard);
-
     if (widget.pastTravel == null) {
-      //Environment.sl.get<GlobalDetailsCard>().reserveSpot();
-      //return GlobalDetailsCard(travel: widget.selectedTravel);
-      return Environment.sl.get<GlobalDetailsCard>();
+      return GlobalDetailsCard(travel: widget.selectedTravel);
     } else {
       return user.type == 2
           ? DriverDetailsCard(travel: widget.selectedTravel)

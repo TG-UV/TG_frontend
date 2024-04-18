@@ -7,5 +7,5 @@ class ColorManager {
   static final thirdColor = Color.fromARGB(255, 238, 238, 238);
   static final fourthColor = Color(0xFFDD3D32);
   //static final fifthColor = Color(0xFF0ffff8);
-  static final staticColor = Color(0xFFFFFFFF);
+  static final staticColor = Color.fromARGB(255, 232, 232, 232);
 }

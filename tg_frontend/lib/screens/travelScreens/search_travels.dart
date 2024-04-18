@@ -11,7 +11,7 @@ import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/device/environment.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:intl/intl.dart';
-
+import 'package:intl/date_symbol_data_local.dart';
 
 class SearchTravels extends StatefulWidget {
   const SearchTravels({super.key});
@@ -50,26 +50,27 @@ class _SearchTravelsState extends State<SearchTravels> {
   @override
   void initState() {
     super.initState();
+    initializeDateFormat();
+  }
+
+  void initializeDateFormat() {
+    initializeDateFormatting('es_ES', null);
   }
 
   void _submitForm(BuildContext context) async {
     if (_formKey.currentState!.validate() &&
         dateController.text.isNotEmpty &&
-        timeController.text.isNotEmpty
-        ) {
+        timeController.text.isNotEmpty) {
+      Map<String, dynamic> requestData = {
+        'arrival_point': arrivalPointController.text,
+        'starting_point': startingPointController.text,
+        'start_time': _selectedTime,
+        'start_date': _selectedDate,
+      };
 
-     Map<String, dynamic> requestData = {
-      'arrival_point': arrivalPointController.text,
-      'starting_point':  startingPointController.text,
-      'start_time': _selectedTime,
-      'start_date': _selectedDate,
-    };
-  
       _fetchTravels(requestData);
       //print("form correcto.........$data");
-    } else {
-      
-    }
+    } else {}
   }
 
   Future<void> _fetchTravels(Map<String, dynamic> requestData) async {
@@ -92,15 +93,14 @@ class _SearchTravelsState extends State<SearchTravels> {
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
         context: context, firstDate: DateTime.now(), lastDate: DateTime(2025));
-    if (pickedDate != null ) {
-       setState(() {
+    if (pickedDate != null) {
+      setState(() {
         _selectedDate = DateFormat('yyyy-MM-dd').format(pickedDate);
         dateController.text =
             DateFormat('EEEE, d MMMM', 'es_ES').format(pickedDate);
       });
       _selectTime();
     }
-    
   }
 
   Future<void> _selectTime({DateTime? dateTime}) async {
@@ -342,9 +342,7 @@ class _SearchTravelsState extends State<SearchTravels> {
                           LargeButton(
                               text: "buscar",
                               large: false,
-                              onPressed: () =>
-                              _submitForm(context)
-                              ),
+                              onPressed: () => _submitForm(context)),
                         ],
                       ),
                     ),

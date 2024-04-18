@@ -8,6 +8,7 @@ import 'package:tg_frontend/models/travel_model.dart';
 import 'package:tg_frontend/datasource/travel_data.dart';
 import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/device/environment.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 class NewTravel extends StatefulWidget {
   const NewTravel({super.key});
@@ -29,13 +30,12 @@ class _NewTravelState extends State<NewTravel> {
   late LatLng latLngArrivalPoint;
   late LatLng latLngStartingPoint;
 
-
   final _formKey = GlobalKey<FormState>();
-  
+
   final FocusNode _focusNodeArrivalPoint = FocusNode();
   final FocusNode _focusNodeStartingPoint = FocusNode();
   late FocusNode _currentFoco;
-  
+
   final TextEditingController startingPointController = TextEditingController();
   final TextEditingController arrivalPointController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
@@ -84,6 +84,10 @@ class _NewTravelState extends State<NewTravel> {
                 ]);
           });
     }
+  }
+
+  void initializeDateFormat() {
+    initializeDateFormatting('es_ES', null);
   }
 
   DateTime _parseTimeString(String timeString) {
@@ -142,13 +146,11 @@ class _NewTravelState extends State<NewTravel> {
     var response =
         await travelDatasourceMethods.getMapCoordinates(address: value);
     setState(() {
-      foco == _focusNodeArrivalPoint?
-      latLngArrivalPoint=response
-      :latLngStartingPoint=response;
+      foco == _focusNodeArrivalPoint
+          ? latLngArrivalPoint = response
+          : latLngStartingPoint = response;
     });
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -187,20 +189,19 @@ class _NewTravelState extends State<NewTravel> {
                           textAlign: TextAlign.left,
                         )),
                     InputField(
-                        foco: _focusNodeStartingPoint,
-                        controller: startingPointController,
-                        textInput: 'Universidad del Valle',
-                        textInputType: TextInputType.text,
-                        obscure: false,
-                        onChange: (value) {
-                          _currentFoco = _focusNodeStartingPoint;
-                          _getSuggestion(value);
-                        },
-                        icon: const Icon(Icons.edit),
-                        ),
-      
-
-                    if (_suggestions.isNotEmpty && _currentFoco == _focusNodeStartingPoint )
+                      foco: _focusNodeStartingPoint,
+                      controller: startingPointController,
+                      textInput: 'Universidad del Valle',
+                      textInputType: TextInputType.text,
+                      obscure: false,
+                      onChange: (value) {
+                        _currentFoco = _focusNodeStartingPoint;
+                        _getSuggestion(value);
+                      },
+                      icon: const Icon(Icons.edit),
+                    ),
+                    if (_suggestions.isNotEmpty &&
+                        _currentFoco == _focusNodeStartingPoint)
                       Positioned(
                         top: 50.0,
                         left: 0.0,
@@ -226,7 +227,8 @@ class _NewTravelState extends State<NewTravel> {
                                 onTap: () {
                                   startingPointController.text =
                                       _suggestions[index];
-                                      _getMapCoordinates(_suggestions[index], _focusNodeStartingPoint);
+                                  _getMapCoordinates(_suggestions[index],
+                                      _focusNodeStartingPoint);
                                   _suggestions.clear();
                                   _focusNodeStartingPoint.unfocus();
                                 },
@@ -250,9 +252,9 @@ class _NewTravelState extends State<NewTravel> {
                       textInputType: TextInputType.text,
                       obscure: false,
                       onChange: (value) {
-                          _currentFoco = _focusNodeArrivalPoint;
-                          _getSuggestion(value);
-                        },
+                        _currentFoco = _focusNodeArrivalPoint;
+                        _getSuggestion(value);
+                      },
                       icon: const Icon(Icons.edit),
                     ),
                     if (_suggestions.isNotEmpty &&
@@ -282,7 +284,8 @@ class _NewTravelState extends State<NewTravel> {
                                 onTap: () {
                                   arrivalPointController.text =
                                       _suggestions[index];
-                                       _getMapCoordinates(_suggestions[index], _focusNodeArrivalPoint);
+                                  _getMapCoordinates(_suggestions[index],
+                                      _focusNodeArrivalPoint);
                                   _suggestions.clear();
                                   _focusNodeArrivalPoint.unfocus();
                                 },
@@ -291,7 +294,6 @@ class _NewTravelState extends State<NewTravel> {
                           ),
                         ),
                       ),
-
                     const SizedBox(height: 40),
                     Align(
                       alignment: Alignment.topLeft,

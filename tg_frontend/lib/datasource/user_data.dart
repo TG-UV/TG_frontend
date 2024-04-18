@@ -43,7 +43,7 @@ class UserDatasourceMethods implements UserDatasource {
 
   @override
   Future<dynamic> insertUserRemote({required User user}) async {
-    Response? response;
+    var response;
     User userResponse;
     try {
       Map<String, dynamic> jsonUser = user.toJson();
@@ -53,7 +53,6 @@ class UserDatasourceMethods implements UserDatasource {
       insertUserLocal(user: userResponse);
     } catch (e) {
       return response!.statusMessage;
-      
     }
     return userResponse.idUser;
   }
@@ -144,19 +143,17 @@ class UserDatasourceMethods implements UserDatasource {
   Future<Map<String, dynamic>?> getVehicleOptionsRemote() async {
     Map<String, dynamic>? options;
 
-    
-      try {
-        Response response =
-            await dio.get(_endPoints.baseUrl + _endPoints.getVehicleOptions);
-        if (response.data is Map<String, dynamic>) {
-          options = response.data;
-        }
-        print('response data $options');
-      } catch (error) {
-        print('Error al realizar la solicitud vehiclesOptions: $error');
+    try {
+      Response response =
+          await dio.get(_endPoints.baseUrl + _endPoints.getVehicleOptions);
+      if (response.data is Map<String, dynamic>) {
+        options = response.data;
       }
-    
-    
+      print('response data $options');
+    } catch (error) {
+      print('Error al realizar la solicitud vehiclesOptions: $error');
+    }
+
     return options;
   }
 
