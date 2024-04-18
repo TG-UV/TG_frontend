@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:tg_frontend/device/environment.dart';
 import 'package:tg_frontend/screens/loginAndRegister/login.dart';
+import 'package:tg_frontend/screens/loginAndRegister/vehicle_managment.dart';
 import 'package:tg_frontend/screens/loginAndRegister/vehicle_register.dart';
 import 'package:tg_frontend/screens/theme.dart';
 import 'package:tg_frontend/screens/travelScreens/available_travels.dart';
@@ -131,9 +132,9 @@ class _MapScreenState extends State<MapScreen> {
               if (user.type == 2)
                 ListTile(
                   leading: const Icon(Icons.motorcycle_outlined),
-                  title: const Text('Añadir vehículo'),
+                  title: const Text('Ver mis vehículos'),
                   onTap: () {
-                    Get.to(() => VehicleRegister(
+                    Get.to(() => VehicleManagment(
                           user: user,
                           parent: "menu",
                         ));

@@ -19,7 +19,7 @@ class LargeButton extends StatelessWidget {
   Widget build(BuildContext context) {
     double largeWidth = MediaQuery.of(context).size.width / 2;
     double largeHeigth = MediaQuery.of(context).size.width / 6;
-    double shortWidth = MediaQuery.of(context).size.width / 2.8;
+    double shortWidth = MediaQuery.of(context).size.width / 2.6;
     double shortHeigth = MediaQuery.of(context).size.width / 9;
 
     Color myBackgroundColor = (text == 'Buscar')

@@ -14,8 +14,10 @@ abstract class UserDatasource {
   Future<int> insertUserLocal({required User user});
   Future<dynamic> insertUserRemote({required User user});
   Future<dynamic> insertVehicleRemote({required Vehicle vehicle});
+  Future<dynamic> updateVehicelRemote({required int vehicleId,required Vehicle vehicle});
   Future<void> getUserRemote();
   Future<Map<String, dynamic>?> getVehicleOptionsRemote();
+  Future<List<Vehicle>?> getVehiclesDriver();
   Future<String?> getUserAuth(
       {required String username, required String password});
   Future<User> getUserLocal(int idUser);
@@ -65,6 +67,25 @@ class UserDatasourceMethods implements UserDatasource {
       Map<String, dynamic> jsonUser = vehicle.toJson();
       dio.options.headers['Authorization'] = 'Token $token';
       response = await dio.post(_endPoints.baseUrl + _endPoints.postVehicle,
+          data: jsonUser);
+      // User userResponse = User.fromJson(response.data);
+      // insertUserLocal(user: userResponse);
+      sent++;
+    } catch (e) {
+      return response!.statusMessage;
+    }
+    return sent;
+  }
+
+  @override
+  Future<dynamic> updateVehicelRemote({required int vehicleId, required Vehicle vehicle}) async {
+    Response? response;
+    int sent = 0;
+    try {
+      Map<String, dynamic> jsonUser = vehicle.toJson();
+      String url = _endPoints.baseUrl + _endPoints.postVehicle + vehicleId.toString();
+      dio.options.headers['Authorization'] = 'Token $token';
+      response = await dio.put(url,
           data: jsonUser);
       // User userResponse = User.fromJson(response.data);
       // insertUserLocal(user: userResponse);
@@ -155,6 +176,28 @@ class UserDatasourceMethods implements UserDatasource {
     }
 
     return options;
+  }
+
+  @override
+  Future<List<Vehicle>?> getVehiclesDriver() async {
+    List<Vehicle>? vehicles = [];
+
+    try {
+      dio.options.headers['Authorization'] = 'Token $token';
+      Response response =
+          await dio.get(_endPoints.baseUrl + _endPoints.getVehiclesDriver);
+      if (response.data != null ) {
+        for (var data in response.data) {
+            Vehicle vehicle = Vehicle.fromJson(data);
+            vehicles.add(vehicle);
+          }
+      }
+    
+    } catch (error) {
+      print('Error al realizar la solicitud vehiculos conductor: $error');
+    }
+
+    return vehicles;
   }
 
   @override

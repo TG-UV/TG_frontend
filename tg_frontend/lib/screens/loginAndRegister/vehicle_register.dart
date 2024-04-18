@@ -65,7 +65,7 @@ class _VehicleRegisterState extends State<VehicleRegister> {
     }
   }
 
-  InputDecoration myInputDecoration = 
+  
   // InputDecoration(
   //                 enabledBorder: OutlineInputBorder(
   //                   borderSide: BorderSide(color: Colors.blue, width: 2),
@@ -78,8 +78,9 @@ class _VehicleRegisterState extends State<VehicleRegister> {
   //                 filled: true,
   //                 fillColor: Color.fromARGB(255, 38, 159, 80),
   //               );
-  InputDecoration(
-    
+  InputDecoration myInputDecoration(String label){
+    return InputDecoration(
+      labelText: label,
     enabledBorder: OutlineInputBorder(
       borderSide: BorderSide(color: ColorManager.secondaryColor, width: 2),
       borderRadius: BorderRadius.circular(10),
@@ -89,10 +90,11 @@ class _VehicleRegisterState extends State<VehicleRegister> {
         borderSide: const BorderSide(
           width: 0,
           style: BorderStyle.none,
-        )), 
+        )),
     filled: true,
-    fillColor: ColorManager.secondaryColor,
+    fillColor: ColorManager.thirdColor,
   );
+  }  
 
   void submitForm(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
@@ -100,18 +102,16 @@ class _VehicleRegisterState extends State<VehicleRegister> {
       vehicle = Vehicle(
         idVehicle: 0,
         licensePlate: licensePlateController.text,
-        vehicleBrand: _selectedBrand!,
-        vehicleColor: _selectedColor!,
-        vehicleModel: _selectedModel!,
-        vehicleType: _selectedType!,
-        // owner: widget.user.idUser
+        vehicleBrand: _selectedBrand!.toString(),
+        vehicleColor: _selectedColor!.toString(),
+        vehicleModel: _selectedModel!.toString(),
+        vehicleType: _selectedType!.toString(),
       );
-      //userDatasourceImpl.insertUserRemote(user: user);
       //Get.to(() => const Home());
       if (widget.parent == "menu") {
-        int response =
+        var response =
             await userDatasourceImpl.insertVehicleRemote(vehicle: vehicle);
-        response != 0
+        response is int
             ? await EasyLoading.showInfo("vehículo añadido")
             : await EasyLoading.showInfo("Intentelo mas tarde");
       } else {
@@ -159,7 +159,7 @@ class _VehicleRegisterState extends State<VehicleRegister> {
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
                                   Text(
-                                    "Registra tu vehículo",
+                                    "Registra un vehículo",
                                     style: Theme.of(context)
                                         .textTheme
                                         .titleLarge!
@@ -192,7 +192,7 @@ class _VehicleRegisterState extends State<VehicleRegister> {
                                             child: Text(type['name'], style: Theme.of(context).textTheme.titleSmall ),
                                           );
                                         }).toList(),
-                                        decoration: myInputDecoration,
+                                        decoration: myInputDecoration("Tipo de vehículo"),
                                         validator: (value) {
                                           if (value == null) {
                                             return 'Por favor seleccione el tipo';
@@ -219,7 +219,7 @@ class _VehicleRegisterState extends State<VehicleRegister> {
                                             child: Text(brand['name'], style: Theme.of(context).textTheme.titleSmall),
                                           );
                                         }).toList(),
-                                        decoration: myInputDecoration,
+                                        decoration: myInputDecoration("Marca"),
                                         validator: (value) {
                                           if (value == null) {
                                             return 'Por favor seleccione la marca';
@@ -246,7 +246,7 @@ class _VehicleRegisterState extends State<VehicleRegister> {
                                             child: Text(model['name'], style: Theme.of(context).textTheme.titleSmall),
                                           );
                                         }).toList(),
-                                        decoration: myInputDecoration,
+                                        decoration: myInputDecoration("Modelo"),
                                         validator: (value) {
                                           if (value == null) {
                                             return 'Por favor seleccione el modelo';
@@ -273,7 +273,7 @@ class _VehicleRegisterState extends State<VehicleRegister> {
                                             child: Text(color['name'], style: Theme.of(context).textTheme.titleSmall),
                                           );
                                         }).toList(),
-                                        decoration: myInputDecoration,
+                                        decoration: myInputDecoration("Color"),
                                         validator: (value) {
                                           if (value == null) {
                                             return 'Por favor seleccione el color';
@@ -293,85 +293,6 @@ class _VehicleRegisterState extends State<VehicleRegister> {
                                 ])));
                   }
                 })));
-    // return Scaffold(
-    //     body: Container(
-    //         padding: const EdgeInsets.symmetric(horizontal: 16.0),
-    //         alignment: Alignment.center,
-    //         child: Stack(children: [
-    //           Column(
-    //             mainAxisAlignment: MainAxisAlignment.center,
-    //             children: [
-    //               const SizedBox(height: 150),
-    //               Container(
-    //                 alignment: Alignment.center,
-    //                 child: Text(
-    //                   "Añade los datos de tu Vehículo",
-    //                   textAlign: TextAlign.center,
-    //                   style: Theme.of(context).textTheme.titleLarge,
-    //                 ),
-    //               ),
-    //               const SizedBox(height: 35),
-    //               InputField(
-    //                 controller: vehicleTypeController,
-    //                 textInput: 'Tipo de vehículo',
-    //                 textInputType: TextInputType.text,
-    //                 obscure: false,
-    //                 icon: const Icon(Icons.motorcycle),
-    //               ),
-    //               const SizedBox(height: 15),
-    //               InputField(
-    //                 controller: colorController,
-    //                 textInput: 'Color',
-    //                 textInputType: TextInputType.text,
-    //                 obscure: false,
-    //                 icon: const Icon(null),
-    //               ),
-    //               const SizedBox(height: 15),
-    //               InputField(
-    //                 controller: licensePlateController,
-    //                 textInput: 'Placa',
-    //                 textInputType: TextInputType.text,
-    //                 obscure: false,
-    //                 icon: const Icon(null),
-    //               ),
-    //               const SizedBox(height: 15),
-    //               InputField(
-    //                 controller: brandController,
-    //                 textInput: 'Marca',
-    //                 textInputType: TextInputType.text,
-    //                 obscure: false,
-    //                 icon: const Icon(null),
-    //               ),
-    //               const SizedBox(height: 15),
-    //               InputField(
-    //                 controller: modelController,
-    //                 textInput: 'Modelo',
-    //                 textInputType: TextInputType.text,
-    //                 obscure: false,
-    //                 icon: const Icon(null),
-    //               ),
-
-    //               const SizedBox(height: 80),
-    //               Container(
-    //                   alignment: Alignment.center,
-    //                   child: LargeButton(
-    //                       text: 'Continuar',
-    //                       large: true,
-    //                       onPressed: () {
-    //                         Get.to(() => PasswordRegister(user: widget.user));
-    //                       })),
-
-    //               // child: const GlobalButton(text: 'Iniciar sesión'),
-    //             ],
-    //           ),
-    //           Positioned(
-    //               top: 30.0,
-    //               left: 5.0,
-    //               child: IconButton(
-    //                   onPressed: () {
-    //                     Navigator.pop(context);
-    //                   },
-    //                   icon: const Icon(Icons.arrow_back)))
-    //         ])));
+   
   }
 }

@@ -8,6 +8,8 @@ class EndPoints {
   final String postVehicle = "/driver/vehicle/add/";
   final String getCities = "/city/";
 
+  final String getVehiclesDriver = "/driver/vehicle/";
+  final String putVehicleUpdateDriver = "/driver/vehicle/update/";
   final String getTravel = "/driver/trip/";
   final String postTravel = "/driver/trip/add/";
   final String getTravelHistoryDriver = "/driver/trip/history/";

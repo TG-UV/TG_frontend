@@ -184,23 +184,25 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
         ]));
   }
 
-  Card buildPassengerCard(Passenger myPassenger, Function onDelete) {
-    return Card(
+  Container buildPassengerCard(Passenger myPassenger, Function onDelete) {
+    return  Container(height: 200, child:Card(
       elevation: 0.5,
       color: Colors.white54,
       shadowColor: ColorManager.secondaryColor,
       child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
+        //mainAxisSize: MainAxisSize.max,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 ' ${myPassenger.firstName} ${myPassenger.lastName}',
                 style: Theme.of(context)
                     .textTheme
                     .titleSmall!
-                    .copyWith(fontWeight: FontWeight.bold),
+                    .copyWith(fontSize: 15, fontWeight: FontWeight.bold),
               ),
               IconButton(
                 icon: const Icon(
@@ -216,18 +218,36 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
               const SizedBox(width: 8),
             ],
           ),
-          Text(
-            'recoger en: ${myPassenger.pickupPoint}',
-            style: Theme.of(context).textTheme.titleSmall,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Text(
+            'Recoger en: ${myPassenger.pickupPoint}',
+            style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15,),
           ),
-          LargeButton(
-              text: 'aceptar',
-              large: false,
-              onPressed: () {
-                _updatePassengers(myPassenger.idPassenger, true);
-              })
+              IconButton(
+                    onPressed: () {
+                      // Mostrar el AlertDialog con el mapa
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return _mapDialog(LatLng(3.3765821, -76.5334617));
+                        },
+                      );
+                    },
+                    icon: const Icon(Icons.location_on_outlined)),
+              const SizedBox(width: 8),
+            ],
+          ),
+          
+          // LargeButton(
+          //     text: 'aceptar',
+          //     large: false,
+          //     onPressed: () {
+          //       _updatePassengers(myPassenger.idPassenger, true);
+          //     })
         ],
-      ),
+      ),) 
     );
   }
 

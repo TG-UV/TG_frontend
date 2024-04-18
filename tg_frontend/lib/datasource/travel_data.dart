@@ -18,7 +18,7 @@ abstract class TravelDatasource {
   Future<void> insertTravelsLocal({required List<Travel> travels});
   Future<void> insertTravelRemote({required Travel travel});
   Future<void> getTravelLocal({required int travelId, String filter});
-  Future<void> getTravelsRemote({required String finalEndPoint});
+  Future<List<Travel>> getTravelsRemote({required String finalEndPoint});
   Future<Response<Map<String, dynamic>>?> getTravelDetails(
       {required int travelId, required String finalUrl});
   Future<int?> updateTravelLocal(
@@ -303,6 +303,7 @@ class TravelDatasourceMethods implements TravelDatasource {
       sent++;
     } catch (error) {
       print('Error al actualizar un pasajero : $error');
+      return sent;
     }
     return sent;
   }

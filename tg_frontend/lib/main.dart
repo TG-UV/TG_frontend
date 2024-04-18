@@ -49,18 +49,21 @@ class MyApp extends StatelessWidget {
         color: Color(0xFF333333),
         fontSize: 28.0,
         fontWeight: FontWeight.w800,
+        overflow: TextOverflow.ellipsis
       ),
       titleMedium: TextStyle(
         // Equivalente a bodyText2
         color: Color(0xFF333333),
         fontFamily: 'Jost',
         fontSize: 22.0,
+        overflow: TextOverflow.ellipsis
       ),
       titleSmall: TextStyle(
         fontFamily: 'Jost',
         fontSize: 17,
         fontWeight: FontWeight.w400,
         color: Colors.black,
+        overflow: TextOverflow.ellipsis
       ),
     ),
   );

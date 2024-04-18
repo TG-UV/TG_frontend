@@ -326,13 +326,17 @@ class _GlobalDetailsCardState extends State<GlobalDetailsCard> {
                                             ),
                                           ),
                                         ),
-                                      LargeButton(
+                                        Center(
+                                          child: LargeButton(
                                         large: false,
                                         text: "reserva",
                                         onPressed: () {
                                           reserveSpot();
                                         },
-                                      ),
+                                      )
+
+                                        ),
+                                      
                                       const SizedBox(height: 15),
                                     ]))))));
   }
