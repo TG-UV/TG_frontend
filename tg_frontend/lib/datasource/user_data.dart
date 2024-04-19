@@ -13,6 +13,7 @@ import 'dart:convert';
 abstract class UserDatasource {
   Future<int> insertUserLocal({required User user});
   Future<dynamic> insertUserRemote({required User user});
+  Future<void> postUserSendEmail();
   Future<dynamic> insertVehicleRemote({required Vehicle vehicle});
   Future<dynamic> updateVehicelRemote({required int vehicleId,required Vehicle vehicle});
   Future<void> getUserRemote();
@@ -57,6 +58,20 @@ class UserDatasourceMethods implements UserDatasource {
       return response!.statusMessage;
     }
     return userResponse.idUser;
+  }
+
+  @override
+  Future<void> postUserSendEmail() async {
+    var response;
+    
+    try {
+      dio.options.headers['Authorization'] = 'Token $token';
+      response = await dio.post(_endPoints.baseUrl + _endPoints.getAndPostUser,
+         );
+    } catch (e) {
+     print("error al reenviar el email de confirmación $response");
+    }
+   
   }
 
   @override

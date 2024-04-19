@@ -14,6 +14,7 @@ class PasswordRegister extends StatefulWidget {
   const PasswordRegister({super.key, required this.user, this.vehicle});
   final User user;
   final Vehicle? vehicle;
+  
   @override
   State<PasswordRegister> createState() => _PasswordRegisterState();
 }
@@ -25,6 +26,7 @@ class _PasswordRegisterState extends State<PasswordRegister> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController passwordConfirmationController =
       TextEditingController();
+  bool emailCheckAdvice = false;
       
 
   Future<dynamic> submitForm(BuildContext context) async {
@@ -49,7 +51,11 @@ class _PasswordRegisterState extends State<PasswordRegister> {
           );
           Response vehicleRegisterResponse = await userDatasourceImpl.insertVehicleRemote(vehicle: newVehicle);
           if(vehicleRegisterResponse is int){
+            setState(() {
+              emailCheckAdvice = true;
+            });
             return EasyLoading.showInfo("registro exitoso");
+            
           }
           else{
             return EasyLoading.showInfo(vehicleRegisterResponse.toString());
@@ -76,6 +82,11 @@ class _PasswordRegisterState extends State<PasswordRegister> {
           ]);
     }
   }
+
+Future<dynamic> reSendConfirmationEmail() async {
+  await userDatasourceImpl.postUserSendEmail();
+}
+  
 
   void saveAuthInformation(user, username, password) async {
     final token = await userDatasourceImpl.getUserAuth(
@@ -128,12 +139,53 @@ class _PasswordRegisterState extends State<PasswordRegister> {
                           icon: const Icon(null),
                         ),
                         const SizedBox(height: 200),
+                        
+                        
+                        Visibility(child: Row(
+                          children: <Widget>[
+                            const Expanded(
+                              child: Text(
+                                'Revisa tu correo para activar tu cuenta. ¿No te ha llegado?',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontFamily: 'Jost',
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: TextButton(
+                                onPressed: () {
+                                  //Get.to(() => const SignUp());
+                                 () => reSendConfirmationEmail();
+                                },
+                                child: const Text(
+                                  'Reenviar correo',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontFamily: 'Jost',
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        )
+                        ),
+
+                        Visibility(
+                          visible: !emailCheckAdvice,
+                          child: 
                         LargeButton(
                             text: 'Crear cuenta',
                             large: true,
                             onPressed: () {
                               submitForm(context);
-                            }),
+                            }),)
                       ]),
                   Positioned(
                       top: 30.0,
