@@ -141,7 +141,7 @@ class TravelDatasourceMethods implements TravelDatasource {
       //     values: [SINCRONIZADO.toString()]);
       sent++;
     } catch (e) {
-      rethrow;
+      return sent;
     }
     return sent;
   }
@@ -170,22 +170,15 @@ class TravelDatasourceMethods implements TravelDatasource {
   @override
   Future<List<Travel>> getTravelsRemote({required String finalEndPoint}) async {
     String? token = await AuthStorage().getToken();
-    Travel travel;
     List<Travel> travelList = [];
     Response<dynamic> response;
 
     if (token != null) {
       try {
-        //Map<String, dynamic> parameters = {"id_trip": travelId};
         dio.options.headers['Authorization'] = 'Token $token';
         response = await dio.get(_endPoints.baseUrl + finalEndPoint
             //queryParameters: parameters,
             );
-
-        // for (var data in response.data) {
-        //   Travel travel = Travel.fromJson(data);
-        //   travelList.add(travel);
-        // }
         if (finalEndPoint == _endPoints.getGeneralTravels) {
           for (var data in response.data) {
             Travel travel = Travel.fromJson(data);
@@ -243,7 +236,6 @@ class TravelDatasourceMethods implements TravelDatasource {
 
   @override
   Future<List<Passenger>> getPassangersRemote({required int travelId}) async {
-    Passenger passenger;
     List<Passenger> passengersList = [];
     Response<dynamic> response;
     String? token = await AuthStorage().getToken();
@@ -253,7 +245,6 @@ class TravelDatasourceMethods implements TravelDatasource {
       dio.options.headers['Authorization'] = 'Token $token';
       String url =
           _endPoints.baseUrl + _endPoints.getTravel + travelId.toString();
-      print(url);
       response = await dio.get(
         url,
         //  queryParameters: parameters,
@@ -293,13 +284,13 @@ class TravelDatasourceMethods implements TravelDatasource {
   Future<int> updatePassengerRemote(
       {required int passengerTripId, required bool valueConfirmed}) async {
     int sent = 0;
+    Map<String, dynamic> _data = {"is_confirmed": valueConfirmed};
+    String url =
+        "${_endPoints.baseUrl}${_endPoints.patchPassengerTrip}${passengerTripId.toString()}/";
     try {
-      Response response = await dio.patch(
-          _endPoints.baseUrl +
-              _endPoints.patchPassengerTrip +
-              passengerTripId.toString(),
-          //queryParameters: {"id_passenger_trip": passengerTripId},
-          data: {"is_confirmed": valueConfirmed});
+      dio.options.headers['Authorization'] = 'Token $token';
+      Response response = await dio.patch(url, data: _data);
+      print("$response");
       sent++;
     } catch (error) {
       print('Error al actualizar un pasajero : $error');
@@ -329,9 +320,8 @@ class TravelDatasourceMethods implements TravelDatasource {
   @override
   Future<int> deletePassengerRemote({required int passengerId}) async {
     Response? response;
-    String url = _endPoints.baseUrl +
-        _endPoints.patchPassengerTrip +
-        passengerId.toString();
+    String url =
+        "${_endPoints.baseUrl}${_endPoints.patchPassengerTrip}${passengerId.toString()}/";
     int sent = 0;
     try {
       dio.options.headers['Authorization'] = 'Token $token';
@@ -350,7 +340,7 @@ class TravelDatasourceMethods implements TravelDatasource {
     Response<Map<String, dynamic>>? response;
     try {
       dio.options.headers['Authorization'] = 'Token $token';
-      String url = _endPoints.baseUrl + finalUrl + travelId.toString();
+      String url = "${_endPoints.baseUrl}$finalUrl${travelId.toString()}/";
       print(url);
       response = await dio.get(
         url,

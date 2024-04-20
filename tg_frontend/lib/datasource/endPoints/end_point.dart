@@ -7,6 +7,7 @@ class EndPoints {
   final String getVehicleOptions = "/vehicle/registration/";
   final String postVehicle = "/driver/vehicle/add/";
   final String getCities = "/city/";
+  final String postUserActivation = "/users/activation/";
 
   final String getVehiclesDriver = "/driver/vehicle/";
   final String putVehicleUpdateDriver = "/driver/vehicle/update/";
@@ -14,16 +15,14 @@ class EndPoints {
   final String postTravel = "/driver/trip/add/";
   final String getTravelHistoryDriver = "/driver/trip/history/";
   final String getTravelPlannedDriver = "/driver/trip/planned/";
-  
-
 
   final String patchPassengerTrip = "/passenger-trip/";
   final String postPassengerTrip = "/passenger-trip/";
-  
+
   final String getTravelDetailsPassenger = "/passenger/trip/";
   final String getTravelAssociatedPassenger = "/passenger/trip/associated/";
   final String getTravelPlannedPassenger = "/passenger/trip/planned/";
   final String getTravelHistoryPassenger = "/passenger/trip/history/";
-  
+
   final String getGeneralTravels = "/trip/";
 }

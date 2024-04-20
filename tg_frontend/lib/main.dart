@@ -32,38 +32,35 @@ class MyApp extends StatelessWidget {
       builder: EasyLoading.init(),
       home: const Splash(),
       //home: const Home(),
-      
     );
   }
 
   final ThemeData myTheme = ThemeData.light().copyWith(
     primaryColor: ColorManager.thirdColor, // Color primario
     colorScheme: const ColorScheme.light().copyWith(
-      primary:  ColorManager.thirdColor,// Color primario
+      primary: ColorManager.thirdColor, // Color primario
       secondary: const Color(0x4E504333), // Color secundario
       error: const Color(0xFFDD3D32), // Color terciario (error)
     ),
     textTheme: const TextTheme(
       titleLarge: TextStyle(
-        fontFamily: 'Jost',
-        color: Color(0xFF333333),
-        fontSize: 28.0,
-        fontWeight: FontWeight.w800,
-        overflow: TextOverflow.ellipsis
-      ),
+          fontFamily: 'Jost',
+          color: Color(0xFF333333),
+          fontSize: 28.0,
+          fontWeight: FontWeight.w800,
+          overflow: TextOverflow.ellipsis),
       titleMedium: TextStyle(
-        // Equivalente a bodyText2
-        color: Color(0xFF333333),
-        fontFamily: 'Jost',
-        fontSize: 22.0,
-        overflow: TextOverflow.ellipsis
-      ),
+          // Equivalente a bodyText2
+          color: Color(0xFF333333),
+          fontFamily: 'Jost',
+          fontSize: 22.0,
+          overflow: TextOverflow.ellipsis),
       titleSmall: TextStyle(
         fontFamily: 'Jost',
         fontSize: 17,
         fontWeight: FontWeight.w400,
         color: Colors.black,
-        overflow: TextOverflow.ellipsis
+        //overflow: TextOverflow.ellipsis
       ),
     ),
   );

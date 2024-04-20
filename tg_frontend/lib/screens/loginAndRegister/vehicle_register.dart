@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:tg_frontend/models/vehicleOptions_model.dart';
 import 'package:tg_frontend/models/vehicle_model.dart';
+import 'package:tg_frontend/screens/home.dart';
 import 'package:tg_frontend/screens/loginAndRegister/password_register.dart';
 import 'package:tg_frontend/screens/theme.dart';
 import 'package:tg_frontend/widgets/input_field.dart';
@@ -65,7 +66,6 @@ class _VehicleRegisterState extends State<VehicleRegister> {
     }
   }
 
-  
   // InputDecoration(
   //                 enabledBorder: OutlineInputBorder(
   //                   borderSide: BorderSide(color: Colors.blue, width: 2),
@@ -78,23 +78,23 @@ class _VehicleRegisterState extends State<VehicleRegister> {
   //                 filled: true,
   //                 fillColor: Color.fromARGB(255, 38, 159, 80),
   //               );
-  InputDecoration myInputDecoration(String label){
+  InputDecoration myInputDecoration(String label) {
     return InputDecoration(
       labelText: label,
-    enabledBorder: OutlineInputBorder(
-      borderSide: BorderSide(color: ColorManager.secondaryColor, width: 2),
-      borderRadius: BorderRadius.circular(10),
-    ),
-    border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(5),
-        borderSide: const BorderSide(
-          width: 0,
-          style: BorderStyle.none,
-        )),
-    filled: true,
-    fillColor: ColorManager.thirdColor,
-  );
-  }  
+      enabledBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: ColorManager.secondaryColor, width: 2),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(5),
+          borderSide: const BorderSide(
+            width: 0,
+            style: BorderStyle.none,
+          )),
+      filled: true,
+      fillColor: ColorManager.thirdColor,
+    );
+  }
 
   void submitForm(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
@@ -111,9 +111,12 @@ class _VehicleRegisterState extends State<VehicleRegister> {
       if (widget.parent == "menu") {
         var response =
             await userDatasourceImpl.insertVehicleRemote(vehicle: vehicle);
-        response is int
-            ? await EasyLoading.showInfo("vehículo añadido")
-            : await EasyLoading.showInfo("Intentelo mas tarde");
+        if (response is int) {
+          await EasyLoading.showInfo("vehículo añadido");
+          Get.to(() => const Home());
+        } else {
+          await EasyLoading.showInfo("Intentelo mas tarde");
+        }
       } else {
         Get.to(() => PasswordRegister(user: widget.user, vehicle: vehicle));
       }
@@ -175,7 +178,7 @@ class _VehicleRegisterState extends State<VehicleRegister> {
                                   ),
                                   const SizedBox(height: 16.0),
                                   SizedBox(
-                                      height: 50,
+                                      height: 70,
                                       child: DropdownButtonFormField<int>(
                                         value: _selectedType,
                                         onChanged: (value) {
@@ -189,10 +192,14 @@ class _VehicleRegisterState extends State<VehicleRegister> {
                                             .map<DropdownMenuItem<int>>((type) {
                                           return DropdownMenuItem<int>(
                                             value: type['id_vehicle_type'],
-                                            child: Text(type['name'], style: Theme.of(context).textTheme.titleSmall ),
+                                            child: Text(type['name'],
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .titleSmall),
                                           );
                                         }).toList(),
-                                        decoration: myInputDecoration("Tipo de vehículo"),
+                                        decoration: myInputDecoration(
+                                            "Tipo de vehículo"),
                                         validator: (value) {
                                           if (value == null) {
                                             return 'Por favor seleccione el tipo';
@@ -200,9 +207,9 @@ class _VehicleRegisterState extends State<VehicleRegister> {
                                           return null;
                                         },
                                       )),
-                                  SizedBox(height: 16.0),
+                                  const SizedBox(height: 16.0),
                                   SizedBox(
-                                      height: 50,
+                                      height: 70,
                                       child: DropdownButtonFormField<int>(
                                         value: _selectedBrand,
                                         onChanged: (value) {
@@ -216,7 +223,10 @@ class _VehicleRegisterState extends State<VehicleRegister> {
                                                     (brand) {
                                           return DropdownMenuItem<int>(
                                             value: brand['id_vehicle_brand'],
-                                            child: Text(brand['name'], style: Theme.of(context).textTheme.titleSmall),
+                                            child: Text(brand['name'],
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .titleSmall),
                                           );
                                         }).toList(),
                                         decoration: myInputDecoration("Marca"),
@@ -229,7 +239,7 @@ class _VehicleRegisterState extends State<VehicleRegister> {
                                       )),
                                   SizedBox(height: 16.0),
                                   SizedBox(
-                                      height: 50,
+                                      height: 70,
                                       child: DropdownButtonFormField<int>(
                                         value: _selectedModel,
                                         onChanged: (value) {
@@ -243,7 +253,10 @@ class _VehicleRegisterState extends State<VehicleRegister> {
                                                     (model) {
                                           return DropdownMenuItem<int>(
                                             value: model['id_vehicle_model'],
-                                            child: Text(model['name'], style: Theme.of(context).textTheme.titleSmall),
+                                            child: Text(model['name'],
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .titleSmall),
                                           );
                                         }).toList(),
                                         decoration: myInputDecoration("Modelo"),
@@ -256,7 +269,7 @@ class _VehicleRegisterState extends State<VehicleRegister> {
                                       )),
                                   SizedBox(height: 16.0),
                                   SizedBox(
-                                      height: 50,
+                                      height: 70,
                                       child: DropdownButtonFormField<int>(
                                         value: _selectedColor,
                                         onChanged: (value) {
@@ -270,7 +283,10 @@ class _VehicleRegisterState extends State<VehicleRegister> {
                                                     (color) {
                                           return DropdownMenuItem<int>(
                                             value: color['id_vehicle_color'],
-                                            child: Text(color['name'], style: Theme.of(context).textTheme.titleSmall),
+                                            child: Text(color['name'],
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .titleSmall),
                                           );
                                         }).toList(),
                                         decoration: myInputDecoration("Color"),
@@ -293,6 +309,5 @@ class _VehicleRegisterState extends State<VehicleRegister> {
                                 ])));
                   }
                 })));
-   
   }
 }

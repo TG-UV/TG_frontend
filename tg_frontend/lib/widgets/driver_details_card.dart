@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tg_frontend/models/passenger_model.dart';
 import 'package:tg_frontend/models/travel_model.dart';
@@ -14,6 +13,7 @@ import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 const mapboxAccessToken =
     'pk.eyJ1Ijoic2FybWFyaWUiLCJhIjoiY2xwYm15eTRrMGZyYjJtcGJ1bnJ0Y3hpciJ9.v5mHXrC66zG4x-dgZDdLSA';
@@ -49,6 +49,18 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
       });
     });
     _loadPassengers();
+    initializeDateFormat();
+  }
+
+  void initializeDateFormat() {
+    initializeDateFormatting('es_ES', null);
+  }
+
+  DateTime _parseTimeString(String timeString) {
+    List<String> parts = timeString.split(':');
+    int hour = int.parse(parts[0]);
+    int minute = int.parse(parts[1]);
+    return DateTime(1, 1, 1, hour, minute);
   }
 
   Future<void> _loadPassengers() async {
@@ -86,14 +98,6 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
     }
   }
 
-  // _launchCaller(String phoneNumber) async {
-  // Uri url = 'tel:$phoneNumber';
-  // if (await canLaunchUrl(url)) {
-  //   await launchUrl(url);
-  // } else {
-  //   throw 'No se pudo realizar la llamada: $url';
-  // }
-  // }
   Future<void> _makePhoneCall(String phoneNumber) async {
     final Uri launchUri = Uri(
       scheme: 'tel',
@@ -105,7 +109,7 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
   Widget _mapDialog(LatLng coordinates) {
     return AlertDialog(
       title: const Text('Punto para recoger'),
-      content: Container(
+      content: SizedBox(
         width: double.maxFinite,
         height: 300.0,
         child: FlutterMap(
@@ -141,114 +145,157 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
           onPressed: () {
             Navigator.of(context).pop();
           },
-          child: Text('Cerrar'),
+          child: const Text('Cerrar'),
         ),
       ],
     );
   }
 
-  Card buildPassengerInfo(Passenger myPassenger) {
-    return Card(
-        color: Colors.white54,
-        borderOnForeground: false,
-        child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-          Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(
-                  ' ${myPassenger.firstName} ${myPassenger.lastName} ',
-                  style: Theme.of(context).textTheme.titleSmall,
-                ),
-                Spacer(),
-                IconButton(
-                    onPressed: () {
-                      // Mostrar el AlertDialog con el mapa
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return _mapDialog(LatLng(3.3765821, -76.5334617));
-                        },
-                      );
-                    },
-                    icon: const Icon(Icons.location_on_outlined)),
-                const SizedBox(width: 2),
-                IconButton(
-                  icon: const Icon(Icons.phone_enabled),
-                  onPressed: _hasCallSupport
-                      ? () => setState(() {
-                            _launched = _makePhoneCall(myPassenger.phoneNumber);
-                          })
-                      : null,
-                ),
-              ])
-        ]));
+  Widget buildPassengerInfo(Passenger myPassenger) {
+    return SizedBox(
+        height: 30,
+        width: 200,
+        child: Card(
+            color: Colors.white54,
+            borderOnForeground: false,
+            child: Column(
+                // mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    ' ${myPassenger.firstName} ${myPassenger.lastName} ',
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        IconButton(
+                            onPressed: () {
+                              // Mostrar el AlertDialog con el mapa
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return _mapDialog(
+                                      const LatLng(3.3765821, -76.5334617));
+                                },
+                              );
+                            },
+                            icon: const Icon(Icons.location_on_outlined)),
+                        const SizedBox(width: 2),
+                        IconButton(
+                          icon: const Icon(Icons.phone_enabled),
+                          onPressed: _hasCallSupport
+                              ? () => setState(() {
+                                    _launched =
+                                        _makePhoneCall(myPassenger.phoneNumber);
+                                  })
+                              : null,
+                        ),
+                      ])
+                ])));
   }
 
-  Container buildPassengerCard(Passenger myPassenger, Function onDelete) {
-    return  Container(height: 200, child:Card(
-      elevation: 0.5,
-      color: Colors.white54,
-      shadowColor: ColorManager.secondaryColor,
-      child: Column(
-        //mainAxisSize: MainAxisSize.max,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Row(
-             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                ' ${myPassenger.firstName} ${myPassenger.lastName}',
-                style: Theme.of(context)
-                    .textTheme
-                    .titleSmall!
-                    .copyWith(fontSize: 15, fontWeight: FontWeight.bold),
-              ),
-              IconButton(
-                icon: const Icon(
-                  Icons.close,
-                  color: Colors.red,
-                  size: 40,
-                ),
-                onPressed: () {
-                  onDelete();
-                  _updatePassengers(myPassenger.idPassenger, false);
-                },
-              ),
-              const SizedBox(width: 8),
-            ],
-          ),
-          Row(
+  Widget buildPassengerCard(
+      Passenger myPassenger, Function onAccept, Function onDelete) {
+    return SizedBox(
+        height: 150,
+        width: 230,
+        child: Card(
+          elevation: 0.5,
+          color: Colors.white54,
+          shadowColor: ColorManager.secondaryColor,
+          child: Column(
+            //mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Text(
-            'Recoger en: ${myPassenger.pickupPoint}',
-            style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15,),
-          ),
-              IconButton(
-                    onPressed: () {
-                      // Mostrar el AlertDialog con el mapa
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return _mapDialog(LatLng(3.3765821, -76.5334617));
-                        },
-                      );
-                    },
-                    icon: const Icon(Icons.location_on_outlined)),
-              const SizedBox(width: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    '  ${myPassenger.firstName} ${myPassenger.lastName}',
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleSmall!
+                        .copyWith(fontSize: 15, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(width: 50),
+                  // IconButton(
+                  //   icon: const Icon(
+                  //     Icons.close,
+                  //     color: Colors.red,
+                  //     size: 30,
+                  //   ),
+                  //   onPressed: () {
+                  //     onAccept();
+                  //     _updatePassengers(myPassenger.idPassenger, false);
+                  //   },
+                  // ),
+                  const SizedBox(width: 8),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  const Text(
+                    ' Coordenadas: ',
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
+                    softWrap: true,
+                  ),
+                  IconButton(
+                      onPressed: () {
+                        // Mostrar el AlertDialog con el mapa
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return _mapDialog(LatLng(3.3765821, -76.5334617));
+                          },
+                        );
+                      },
+                      icon: const Icon(Icons.location_on_outlined)),
+                  const SizedBox(width: 8),
+                ],
+              ),
+              const Spacer(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  TextButton(
+                      onPressed: () {
+                        onDelete();
+                        _updatePassengers(myPassenger.idPassenger, false);
+                      },
+                      child: Text(
+                        "rechazar",
+                        style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                            color: ColorManager.fourthColor,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold),
+                      )),
+                  TextButton(
+                      onPressed: () {
+                        onAccept();
+                        _updatePassengers(myPassenger.idPassenger, true);
+                      },
+                      child: Text(
+                        "aceptar",
+                        style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                            color: Colors.white, fontWeight: FontWeight.bold),
+                      ))
+                ],
+              ),
+              // SizedBox(
+              //   height: 10,
+              // )
+              // LargeButton(
+              //     text: 'aceptar',
+              //     large: false,
+              //     onPressed: () {
+              //       _updatePassengers(myPassenger.idPassenger, true);
+              //     })
             ],
           ),
-          
-          // LargeButton(
-          //     text: 'aceptar',
-          //     large: false,
-          //     onPressed: () {
-          //       _updatePassengers(myPassenger.idPassenger, true);
-          //     })
-        ],
-      ),) 
-    );
+        ));
   }
 
   @override
@@ -259,21 +306,22 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
             child: Padding(
                 padding: const EdgeInsets.all(18.0),
                 child: Column(
-                    mainAxisSize: MainAxisSize.min,
+                    // mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: <Widget>[
                             Text(
-                              DateFormat('EEEE')
+                              DateFormat('EEEE', 'es_ES')
                                   .format(DateTime.parse(widget.travel.date)),
                               //travel.date,
                               style: Theme.of(context).textTheme.titleLarge,
                             ),
                             const SizedBox(width: 10),
                             Text(
-                              widget.travel.hour,
+                              DateFormat('hh:mm a')
+                                  .format(_parseTimeString(widget.travel.hour)),
                               style: Theme.of(context)
                                   .textTheme
                                   .titleLarge!
@@ -281,30 +329,41 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                               overflow: TextOverflow.ellipsis,
                             ),
                           ]),
+                      Text(
+                        '   ${widget.travel.date}',
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium!
+                            .copyWith(fontSize: 16.0),
+                      ),
                       const SizedBox(height: 20),
                       Text(
                         'Desde: ${widget.travel.startingPoint}',
-                        style: Theme.of(context).textTheme.titleSmall,
-                      ),
-                      Text(
-                        'Hacia: ${widget.travel.arrivalPoint}',
-                        style: Theme.of(context).textTheme.titleSmall,
-                      ),
-                      Text(
-                        '${widget.travel.seats} cupos disponibles ',
                         style: Theme.of(context)
                             .textTheme
                             .titleSmall!
-                            .copyWith(fontWeight: FontWeight.normal),
+                            .copyWith(fontSize: 15),
+                      ),
+                      Text(
+                        'Hacia: ${widget.travel.arrivalPoint}',
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleSmall!
+                            .copyWith(fontSize: 15),
+                      ),
+                      Text(
+                        '${widget.travel.seats} cupos disponibles ',
+                        style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                            fontWeight: FontWeight.normal, fontSize: 16),
                       ),
                       Text(
                         '\$ ${widget.travel.price} ',
                         style: Theme.of(context)
                             .textTheme
                             .titleSmall!
-                            .copyWith(fontWeight: FontWeight.normal),
+                            .copyWith(fontSize: 15),
                       ),
-                      const SizedBox(height: 25),
+                      const SizedBox(height: 10),
                       Row(
                           //mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
@@ -318,17 +377,21 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                                       .copyWith(fontWeight: FontWeight.w800)),
                             ])
                           ]),
-                      ListView.builder(
-                          shrinkWrap: true,
-                          //physics: const NeverScrollableScrollPhysics(),
-                          itemCount: confirmedPassengersList.length,
-                          itemBuilder: (context, index) {
-                            return buildPassengerInfo(
-                                confirmedPassengersList[index]);
-                          }),
-                      const SizedBox(
-                        height: 40,
-                      ),
+                      SizedBox(
+                          //width: 300,
+                          height: 100,
+                          child: Container(
+                              alignment: Alignment.topLeft,
+                              child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  // scrollDirection: Axis.horizontal,
+                                  // shrinkWrap: true,
+                                  //physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: confirmedPassengersList.length,
+                                  itemBuilder: (context, index) {
+                                    return buildPassengerInfo(
+                                        confirmedPassengersList[index]);
+                                  }))),
                       Text(
                         'Pasajeros pendientes',
                         style: Theme.of(context)
@@ -351,6 +414,10 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                                                 pendingPassengersList[index]);
                                             pendingPassengersList
                                                 .removeAt(index);
+                                          }),
+                                      () => setState(() {
+                                            pendingPassengersList
+                                                .removeAt(index);
                                           }))
                                   : Text(
                                       'No tienes pasajeros pendientes',
@@ -364,7 +431,7 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 50),
+                      const SizedBox(height: 25),
                       LargeButton(
                         large: false,
                         text: "cancelar",

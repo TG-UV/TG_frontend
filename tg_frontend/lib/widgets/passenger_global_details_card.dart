@@ -184,7 +184,6 @@ class _GlobalDetailsCardState extends State<GlobalDetailsCard> {
                                             .textTheme
                                             .titleMedium!
                                             .copyWith(fontSize: 16.0),
-                                        overflow: TextOverflow.ellipsis,
                                       ),
                                       const SizedBox(height: 25),
                                       Text(
@@ -326,17 +325,14 @@ class _GlobalDetailsCardState extends State<GlobalDetailsCard> {
                                             ),
                                           ),
                                         ),
-                                        Center(
+                                      Center(
                                           child: LargeButton(
                                         large: false,
                                         text: "reserva",
                                         onPressed: () {
                                           reserveSpot();
                                         },
-                                      )
-
-                                        ),
-                                      
+                                      )),
                                       const SizedBox(height: 15),
                                     ]))))));
   }

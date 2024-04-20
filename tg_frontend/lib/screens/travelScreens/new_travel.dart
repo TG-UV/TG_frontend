@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:tg_frontend/screens/home.dart';
 import 'package:tg_frontend/widgets/large_button.dart';
 import 'package:tg_frontend/widgets/square_button.dart';
 import 'package:tg_frontend/widgets/input_field.dart';
@@ -9,6 +11,7 @@ import 'package:tg_frontend/datasource/travel_data.dart';
 import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/device/environment.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class NewTravel extends StatefulWidget {
   const NewTravel({super.key});
@@ -57,13 +60,16 @@ class _NewTravelState extends State<NewTravel> {
           seats: int.parse(seatsController.text),
           date: _selectedDate,
           hour: _selectedTime,
-          // date: DateFormat('yyyy-MM-dd').parse(dateController.text),
-          // hour: DateFormat('HH:mm').parse(dateController.text),
           currentTrip: 0);
 
-      //travelDatasourceMethods.insertTravelRemote(travel: travel);
-      //Get.to(() => const Home());
-      print("form correcto.........$travel");
+      int sentResponse =
+          await travelDatasourceMethods.insertTravelRemote(travel: travel);
+      if (sentResponse != 0) {
+        await EasyLoading.showInfo("Viaje registrado");
+        Get.to(() => const Home());
+      } else {
+        await EasyLoading.showInfo("Error, intentalo más tarde");
+      }
     } else {
       showDialog(
           context: context,
@@ -155,7 +161,7 @@ class _NewTravelState extends State<NewTravel> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: true,
         body: SingleChildScrollView(
             child: Form(
                 key: _formKey,

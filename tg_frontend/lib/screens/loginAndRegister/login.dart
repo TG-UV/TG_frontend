@@ -12,6 +12,9 @@ import 'package:tg_frontend/services/auth_services.dart';
 import 'package:tg_frontend/datasource/user_data.dart';
 import 'package:tg_frontend/models/user_model.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:flutter/services.dart';
+
+
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -78,7 +81,14 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return
+     PopScope(
+      canPop: false,
+        onPopInvoked:  (bool isPopGesture) {
+          SystemNavigator.pop(); 
+        },
+        child:
+     Scaffold(
         resizeToAvoidBottomInset: false,
         body: SingleChildScrollView(
             child: Container(
@@ -167,6 +177,6 @@ class _LoginState extends State<Login> {
                       ]),
 
                  
-                ])))));
+                ]))))));
   }
 }
