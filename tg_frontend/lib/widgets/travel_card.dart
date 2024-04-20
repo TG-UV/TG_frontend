@@ -17,6 +17,7 @@ class TravelCard extends StatelessWidget {
 
   final Travel travel;
   final bool? pastTravel;
+  
 
   DateTime _parseTimeString(String timeString) {
     List<String> parts = timeString.split(':');
@@ -27,6 +28,13 @@ class TravelCard extends StatelessWidget {
 
   void initializeDateFormat() {
     initializeDateFormatting('es_ES', null);
+  }
+  String _dayOfWeekFormated(){
+    String dayOfWeekFormated = "";
+     String dayOfWeek= DateFormat('EEEE', 'es_ES')
+                                  .format(DateTime.parse(travel.date));
+    dayOfWeekFormated = "${dayOfWeek.substring(0, 1).toUpperCase()}${dayOfWeek.substring(1)}";  
+    return dayOfWeekFormated;
   }
 
    Future<dynamic>?_onTapHandle(){
@@ -60,9 +68,7 @@ class TravelCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
                     Text(
-                        DateFormat('EEEE', 'es_ES')
-                            .format(DateTime.parse(travel.date)),
-                        //travel.date,
+                       _dayOfWeekFormated(),
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                       Text(
@@ -81,10 +87,16 @@ class TravelCard extends StatelessWidget {
                 Text(
                   'Desde: ${travel.startingPoint}',
                   style: Theme.of(context).textTheme.titleSmall,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
+
                 ),
                 Text(
                   'Hacia: ${travel.arrivalPoint}',
                   style: Theme.of(context).textTheme.titleSmall,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+
                 ),])
               
             )));

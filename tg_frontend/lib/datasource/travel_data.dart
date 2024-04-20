@@ -17,6 +17,7 @@ abstract class TravelDatasource {
   Future<LatLng> getMapCoordinates({required String address});
   Future<void> insertTravelsLocal({required List<Travel> travels});
   Future<void> insertTravelRemote({required Travel travel});
+  Future<void> deleteTravelRemote({required String travelId});
   Future<void> getTravelLocal({required int travelId, String filter});
   Future<List<Travel>> getTravelsRemote({required String finalEndPoint});
   Future<Response<Map<String, dynamic>>?> getTravelDetails(
@@ -128,9 +129,34 @@ class TravelDatasourceMethods implements TravelDatasource {
     try {
       String? token = await AuthStorage().getToken();
       Map<String, dynamic> jsonTravel = travel.toJson();
+      print(jsonTravel);
       dio.options.headers['Authorization'] = 'Token $token';
       response = await dio.post(_endPoints.baseUrl + _endPoints.postTravel,
           data: jsonTravel);
+      // String data = Travel.toJson(travels[sent] as Travel);
+
+      //  print(response.data);
+
+      // await updateTravelLocal(
+      //     travelId: int.parse(travels[sent].id),
+      //     fields: [Local.FIELD_SINCRONIZADO_ORDEN],
+      //     values: [SINCRONIZADO.toString()]);
+      sent++;
+    } catch (e) {
+      return sent;
+    }
+    return sent;
+  }
+
+   @override
+  Future<int> deleteTravelRemote({required String travelId}) async {
+    Response? response;
+    int sent = 0;
+    String url = "${_endPoints.baseUrl}${_endPoints.postTravel}$travelId/";
+    try {
+      dio.options.headers['Authorization'] = 'Token $token';
+      response = await dio.post(url);
+          
       // String data = Travel.toJson(travels[sent] as Travel);
 
       //  print(response.data);

@@ -60,8 +60,11 @@ class MyApp extends StatelessWidget {
         fontSize: 17,
         fontWeight: FontWeight.w400,
         color: Colors.black,
-        //overflow: TextOverflow.ellipsis
+        overflow: TextOverflow.ellipsis,
+
+        
       ),
+      
     ),
   );
 }

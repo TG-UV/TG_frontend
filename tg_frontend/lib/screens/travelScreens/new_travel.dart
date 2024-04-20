@@ -127,12 +127,16 @@ class _NewTravelState extends State<NewTravel> {
             DateFormat('EEEE, d MMMM', 'es_ES').format(DateTime.now());
       });
     } else {
+      
+      
       final TimeOfDay? pickedTime =
           await showTimePicker(context: context, initialTime: TimeOfDay.now());
 
       if (pickedTime != null) {
+        DateTime today = DateTime.now();
+        final day = DateTime(today.year,today.month, today.day, pickedTime.hour,pickedTime.minute, 00, );
         setState(() {
-          _selectedTime = pickedTime.toString();
+          _selectedTime = DateFormat('hh:mm:ss').format(day);
           timeController.text =
               DateFormat('hh:mm a').format(_parseTimeString(_selectedTime));
         });

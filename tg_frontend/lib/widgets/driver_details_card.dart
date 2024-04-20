@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:tg_frontend/models/passenger_model.dart';
 import 'package:tg_frontend/models/travel_model.dart';
 import 'package:tg_frontend/screens/theme.dart';
@@ -34,11 +35,12 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
   TravelDatasourceMethods travelDatasourceImpl =
       Environment.sl.get<TravelDatasourceMethods>();
   User user = Environment.sl.get<User>();
+
   List<Passenger> confirmedPassengersList = [];
   List<Passenger> pendingPassengersList = [];
   bool _hasCallSupport = false;
   Future<void>? _launched;
-  //late GoogleMapController mapController;
+  String dayOfWeekFormated = "Fecha";
 
   @override
   void initState() {
@@ -50,6 +52,10 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
     });
     _loadPassengers();
     initializeDateFormat();
+    String dayOfWeek =
+        DateFormat('EEEE', 'es_ES').format(DateTime.parse(widget.travel.date));
+    dayOfWeekFormated =
+        "${dayOfWeek.substring(0, 1).toUpperCase()}${dayOfWeek.substring(1)}";
   }
 
   void initializeDateFormat() {
@@ -74,7 +80,7 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
     });
   }
 
-  Future<void> _updatePassengers(
+  Future<void> _confirmPassenger(
       int passengerTripId, bool valueConfirmed) async {
     int updatePassengers = await travelDatasourceImpl.updatePassengerRemote(
         passengerTripId: passengerTripId, valueConfirmed: valueConfirmed);
@@ -86,16 +92,49 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
     }
   }
 
-  void _cancelTravel(int passengerId) async {
+  void _cancelPassenger(int passengerId) async {
     int sendResponse = await travelDatasourceImpl.deletePassengerRemote(
         passengerId: passengerId);
-    if (sendResponse == 1) {
-      await EasyLoading.showInfo("viaje cancelado");
-      Navigator.of(context).pop();
+    if (sendResponse != 0) {
+      _loadPassengers();
     } else {
-      await EasyLoading.showInfo("Intenta más tarde");
+      await EasyLoading.showInfo("Hubo un error");
       return;
     }
+  }
+
+  void _deleteTravel() async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirmación'),
+          content:
+              const Text('¿Estás seguro de que quieres eliminar el viaje?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () async {
+                int sendResponse = await travelDatasourceImpl
+                    .deleteTravelRemote(travelId: widget.travel.id.toString());
+                if (sendResponse != 0) {
+                  Navigator.of(context).pop();
+                } else {
+                  await EasyLoading.showInfo("Hubo un error");
+                  return;
+                }
+              },
+              child: const Text('Sí'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> _makePhoneCall(String phoneNumber) async {
@@ -204,43 +243,28 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
           color: Colors.white54,
           shadowColor: ColorManager.secondaryColor,
           child: Column(
-            //mainAxisSize: MainAxisSize.max,
+            // mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.start,
+           // mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
+              Center(
+                child: Text(
                     '  ${myPassenger.firstName} ${myPassenger.lastName}',
                     style: Theme.of(context)
                         .textTheme
                         .titleSmall!
-                        .copyWith(fontSize: 15, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(width: 50),
-                  // IconButton(
-                  //   icon: const Icon(
-                  //     Icons.close,
-                  //     color: Colors.red,
-                  //     size: 30,
-                  //   ),
-                  //   onPressed: () {
-                  //     onAccept();
-                  //     _updatePassengers(myPassenger.idPassenger, false);
-                  //   },
-                  // ),
-                  const SizedBox(width: 8),
-                ],
+                        .copyWith(fontWeight: FontWeight.bold)),
               ),
               Row(
-                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
+                  
+                   Text(
                     ' Coordenadas: ',
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 2,
-                    softWrap: true,
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleSmall!
+                        .copyWith(fontSize: 15),
                   ),
                   IconButton(
                       onPressed: () {
@@ -252,18 +276,19 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                           },
                         );
                       },
-                      icon: const Icon(Icons.location_on_outlined)),
-                  const SizedBox(width: 8),
+                      icon: const Icon(
+                        Icons.location_on_outlined,
+                        size: 20,
+                      )),
                 ],
               ),
-              const Spacer(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   TextButton(
                       onPressed: () {
                         onDelete();
-                        _updatePassengers(myPassenger.idPassenger, false);
+                        _cancelPassenger(myPassenger.idPassenger);
                       },
                       child: Text(
                         "rechazar",
@@ -275,7 +300,7 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                   TextButton(
                       onPressed: () {
                         onAccept();
-                        _updatePassengers(myPassenger.idPassenger, true);
+                        _confirmPassenger(myPassenger.idPassenger, true);
                       },
                       child: Text(
                         "aceptar",
@@ -284,15 +309,6 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                       ))
                 ],
               ),
-              // SizedBox(
-              //   height: 10,
-              // )
-              // LargeButton(
-              //     text: 'aceptar',
-              //     large: false,
-              //     onPressed: () {
-              //       _updatePassengers(myPassenger.idPassenger, true);
-              //     })
             ],
           ),
         ));
@@ -313,9 +329,7 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: <Widget>[
                             Text(
-                              DateFormat('EEEE', 'es_ES')
-                                  .format(DateTime.parse(widget.travel.date)),
-                              //travel.date,
+                              dayOfWeekFormated,
                               style: Theme.of(context).textTheme.titleLarge,
                             ),
                             const SizedBox(width: 10),
@@ -343,6 +357,7 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                             .textTheme
                             .titleSmall!
                             .copyWith(fontSize: 15),
+                        maxLines: 2,
                       ),
                       Text(
                         'Hacia: ${widget.travel.arrivalPoint}',
@@ -350,6 +365,7 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                             .textTheme
                             .titleSmall!
                             .copyWith(fontSize: 15),
+                        maxLines: 2,
                       ),
                       Text(
                         '${widget.travel.seats} cupos disponibles ',
@@ -377,68 +393,65 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                                       .copyWith(fontWeight: FontWeight.w800)),
                             ])
                           ]),
+                      confirmedPassengersList.isNotEmpty
+                          ? SizedBox(
+                              //width: 300,
+                              height: 100,
+                              child: Container(
+                                  alignment: Alignment.topLeft,
+                                  child: ListView.builder(
+                                      scrollDirection: Axis.horizontal,
+                                      // scrollDirection: Axis.horizontal,
+                                      // shrinkWrap: true,
+                                      //physics: const NeverScrollableScrollPhysics(),
+                                      itemCount: confirmedPassengersList.length,
+                                      itemBuilder: (context, index) {
+                                        return buildPassengerInfo(
+                                            confirmedPassengersList[index]);
+                                      })))
+                          : Text(
+                              "...Aún no tienes pasajeros en tu viaje ",
+                              style: Theme.of(context).textTheme.titleSmall,
+                            ),
+                      if (pendingPassengersList.isNotEmpty)
+                        Text(
+                          'Están solicitando un cupo',
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium!
+                              .copyWith(fontWeight: FontWeight.w800),
+                        ),
                       SizedBox(
-                          //width: 300,
-                          height: 100,
-                          child: Container(
-                              alignment: Alignment.topLeft,
-                              child: ListView.builder(
-                                  scrollDirection: Axis.horizontal,
-                                  // scrollDirection: Axis.horizontal,
-                                  // shrinkWrap: true,
-                                  //physics: const NeverScrollableScrollPhysics(),
-                                  itemCount: confirmedPassengersList.length,
-                                  itemBuilder: (context, index) {
-                                    return buildPassengerInfo(
-                                        confirmedPassengersList[index]);
-                                  }))),
-                      Text(
-                        'Pasajeros pendientes',
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleMedium!
-                            .copyWith(fontWeight: FontWeight.w800),
-                      ),
-                      Expanded(
+                        height: 130,
                         child: Container(
                           alignment: Alignment.topLeft,
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
                             itemCount: pendingPassengersList.length,
                             itemBuilder: (context, index) {
-                              return pendingPassengersList.isNotEmpty
-                                  ? buildPassengerCard(
-                                      pendingPassengersList[index],
-                                      () => setState(() {
-                                            confirmedPassengersList.add(
-                                                pendingPassengersList[index]);
-                                            pendingPassengersList
-                                                .removeAt(index);
-                                          }),
-                                      () => setState(() {
-                                            pendingPassengersList
-                                                .removeAt(index);
-                                          }))
-                                  : Text(
-                                      'No tienes pasajeros pendientes',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall!
-                                          .copyWith(
-                                              fontWeight: FontWeight.normal),
-                                    );
+                              return buildPassengerCard(
+                                  pendingPassengersList[index],
+                                  () => setState(() {
+                                        confirmedPassengersList
+                                            .add(pendingPassengersList[index]);
+                                        pendingPassengersList.removeAt(index);
+                                      }),
+                                  () => setState(() {
+                                        pendingPassengersList.removeAt(index);
+                                      }));
                             },
                           ),
                         ),
                       ),
-                      const SizedBox(height: 25),
-                      LargeButton(
+                      Spacer(),
+                      Center(
+                          child: LargeButton(
                         large: false,
                         text: "cancelar",
                         onPressed: () {
-                          _cancelTravel(user.idUser);
+                          _deleteTravel();
                         },
-                      ),
+                      ))
                     ]))));
   }
 }

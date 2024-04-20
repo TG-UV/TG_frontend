@@ -15,6 +15,7 @@ class EndPoints {
   final String postTravel = "/driver/trip/add/";
   final String getTravelHistoryDriver = "/driver/trip/history/";
   final String getTravelPlannedDriver = "/driver/trip/planned/";
+  final String deleteTRavelDriver = "/trip/";
 
   final String patchPassengerTrip = "/passenger-trip/";
   final String postPassengerTrip = "/passenger-trip/";

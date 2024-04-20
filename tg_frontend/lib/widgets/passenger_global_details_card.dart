@@ -42,13 +42,19 @@ class _GlobalDetailsCardState extends State<GlobalDetailsCard> {
   late FocusNode _currentFoco;
   List<String> _suggestions = [];
   late LatLng latLngStartingPoint;
+  String dayOfWeekFormated = "Fecha";
 
   @override
   void initState() {
     super.initState();
     _loadTravelDetails();
     initializeDateFormat();
+    String dayOfWeek =
+        DateFormat('EEEE', 'es_ES').format(DateTime.parse(widget.travel.date));
+    dayOfWeekFormated =
+        "${dayOfWeek.substring(0, 1).toUpperCase()}${dayOfWeek.substring(1)}";
   }
+
 
   void _seatsIncrement(int value) async {
     int newValue = _seats;
@@ -159,9 +165,7 @@ class _GlobalDetailsCardState extends State<GlobalDetailsCard> {
                                               MainAxisAlignment.spaceEvenly,
                                           children: <Widget>[
                                             Text(
-                                              DateFormat('EEEE', 'es_ES')
-                                                  .format(DateTime.parse(
-                                                      widget.travel.date)),
+                                             dayOfWeekFormated,
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .titleLarge,
@@ -198,7 +202,7 @@ class _GlobalDetailsCardState extends State<GlobalDetailsCard> {
                                             .textTheme
                                             .titleSmall,
                                       ),
-                                      const SizedBox(height: 50),
+                                      const SizedBox(height: 40),
                                       Row(
                                         //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                         children: [
@@ -236,6 +240,7 @@ class _GlobalDetailsCardState extends State<GlobalDetailsCard> {
                                             .copyWith(
                                                 fontWeight: FontWeight.normal),
                                       ),
+                                     const SizedBox(height: 50),
                                       Row(
                                         children: [
                                           Text(
@@ -325,6 +330,7 @@ class _GlobalDetailsCardState extends State<GlobalDetailsCard> {
                                             ),
                                           ),
                                         ),
+                                        const SizedBox(height: 30),
                                       Center(
                                           child: LargeButton(
                                         large: false,

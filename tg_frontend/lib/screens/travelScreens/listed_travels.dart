@@ -45,11 +45,7 @@ class _ListedTravelsState extends State<ListedTravels> {
             : currentEndPoint = endPoints.getTravelPlannedPassenger;
   }
 
-  // Future<void> _cargarViajes() async {
-  //   travelsList = await travelDatasourceImpl.getTravelsRemote(travelId: 2);
-  //   setState(() {});
-  // }
-
+  
   Stream<List<Travel>> _fetchTravelsStream() async* {
     _selectEndpoint();
     final value = await travelDatasourceImpl.getTravelsRemote(
