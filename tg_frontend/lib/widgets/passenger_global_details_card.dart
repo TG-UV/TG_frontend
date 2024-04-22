@@ -43,9 +43,12 @@ class _GlobalDetailsCardState extends State<GlobalDetailsCard> {
   List<String> _suggestions = [];
   late LatLng latLngStartingPoint;
   String dayOfWeekFormated = "Fecha";
+  String startingPointTextDirection = "";
+  String arrivalPointTextDirection = "";
 
   @override
   void initState() {
+    _getTextDirections();
     super.initState();
     _loadTravelDetails();
     initializeDateFormat();
@@ -53,6 +56,14 @@ class _GlobalDetailsCardState extends State<GlobalDetailsCard> {
         DateFormat('EEEE', 'es_ES').format(DateTime.parse(widget.travel.date));
     dayOfWeekFormated =
         "${dayOfWeek.substring(0, 1).toUpperCase()}${dayOfWeek.substring(1)}";
+  }
+
+  void _getTextDirections()async {
+    arrivalPointTextDirection= await travelDatasourceImpl.getTextDirection(lat: widget.travel.arrivalPointLat, long: widget.travel.arrivalPointLong);
+    startingPointTextDirection = await travelDatasourceImpl.getTextDirection(lat: widget.travel.startingPointLat, long: widget.travel.startingPointLong);
+    setState(() {
+      
+    });
   }
 
   void _seatsIncrement(int value) async {
@@ -189,13 +200,13 @@ class _GlobalDetailsCardState extends State<GlobalDetailsCard> {
                                       ),
                                       const SizedBox(height: 25),
                                       Text(
-                                        'Partida:  ${widget.travel.startingPoint}',
+                                        'Partida:  $startingPointTextDirection',
                                         style: Theme.of(context)
                                             .textTheme
                                             .titleSmall,
                                       ),
                                       Text(
-                                        'Destino:   ${widget.travel.arrivalPoint}',
+                                        'Destino:   $arrivalPointTextDirection',
                                         style: Theme.of(context)
                                             .textTheme
                                             .titleSmall,

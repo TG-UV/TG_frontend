@@ -41,9 +41,12 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
   bool _hasCallSupport = false;
   Future<void>? _launched;
   String dayOfWeekFormated = "Fecha";
+  String startingPointTextDirection = "";
+  String arrivalPointTextDirection = "";
 
   @override
   void initState() {
+    _getTextDirections();
     super.initState();
     canLaunchUrl(Uri(scheme: 'tel', path: '123')).then((bool result) {
       setState(() {
@@ -57,6 +60,15 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
     dayOfWeekFormated =
         "${dayOfWeek.substring(0, 1).toUpperCase()}${dayOfWeek.substring(1)}";
   }
+
+  void _getTextDirections()async {
+    arrivalPointTextDirection= await travelDatasourceImpl.getTextDirection(lat: widget.travel.arrivalPointLat, long: widget.travel.arrivalPointLong);
+    startingPointTextDirection = await travelDatasourceImpl.getTextDirection(lat: widget.travel.startingPointLat, long: widget.travel.startingPointLong);
+    setState(() {
+      
+    });
+  }
+
 
   void initializeDateFormat() {
     initializeDateFormatting('es_ES', null);
@@ -201,7 +213,7 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
   Widget buildPassengerInfo(Passenger myPassenger) {
     return SizedBox(
         height: 30,
-        width: 200,
+        width: 210,
         child: Card(
             color: ColorManager.thirdColor,
             borderOnForeground: false,
@@ -244,12 +256,12 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
   Widget buildPassengerCard(
       Passenger myPassenger, Function onAccept, Function onDelete) {
     return SizedBox(
-        height: 150,
+        height: 170,
         width: 230,
         child: Card(
           elevation: 0.9,
-          color: ColorManager.thirdColor,
-          shadowColor: ColorManager.primaryColor,
+         // color: ColorManager.thirdColor,
+          //shadowColor: ColorManager.primaryColor,
           child: Column(
             // mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -363,7 +375,7 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                             .copyWith(fontSize: 16.0),
                       ),
                       Text(
-                        'Desde: ${widget.travel.startingPoint}',
+                        'Desde: $startingPointTextDirection',
                         style: Theme.of(context)
                             .textTheme
                             .titleSmall!
@@ -371,7 +383,7 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                         maxLines: 1,
                       ),
                       Text(
-                        'Hacia: ${widget.travel.arrivalPoint}',
+                        'Hacia: $arrivalPointTextDirection',
                         style: Theme.of(context)
                             .textTheme
                             .titleSmall!
@@ -435,7 +447,7 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                                   fontWeight: FontWeight.w800, fontSize: 19),
                         ),
                       SizedBox(
-                        height: 140,
+                        height: 150,
                         child: Container(
                           alignment: Alignment.topLeft,
                           child: ListView.builder(
@@ -456,7 +468,7 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                           ),
                         ),
                       ),
-                      Spacer(),
+                      SizedBox(height: 5,),
                       Center(
                           child: MainButton(
                         large: true,

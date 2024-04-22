@@ -54,8 +54,10 @@ class _NewTravelState extends State<NewTravel> {
         seatsController.text.isNotEmpty) {
       Travel travel = Travel(
           id: 100,
-          arrivalPoint: arrivalPointController.text,
-          startingPoint: startingPointController.text,
+          arrivalPointLat: latLngArrivalPoint.latitude,
+          arrivalPointLong: latLngArrivalPoint.longitude,
+          startingPointLat: latLngStartingPoint.latitude,
+          startingPointLong: latLngStartingPoint.longitude,
           driver: user.idUser,
           price: int.parse(priceController.text),
           seats: int.parse(seatsController.text),

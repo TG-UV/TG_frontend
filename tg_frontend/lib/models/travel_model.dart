@@ -2,8 +2,10 @@ import 'package:intl/intl.dart';
 
 class Travel {
   final int id;
-  final String arrivalPoint;
-  final String startingPoint;
+  final double arrivalPointLat;
+  final double arrivalPointLong;
+  final double startingPointLat;
+  final double startingPointLong;
   final int driver;
   final int price;
   final int seats;
@@ -13,8 +15,10 @@ class Travel {
 
   Travel(
       {required this.id,
-      required this.arrivalPoint,
-      required this.startingPoint,
+      required this.arrivalPointLat,
+      required this.arrivalPointLong,
+      required this.startingPointLat,
+      required this.startingPointLong,
       required this.driver,
       required this.price,
       required this.seats,
@@ -25,19 +29,15 @@ class Travel {
   factory Travel.fromJson(Map<String, dynamic> json) {
     return Travel(
       id: json['id_trip'] as int? ?? 0,
-      arrivalPoint: json['arrival_point']?.toString() ?? '',
-      startingPoint: json['starting_point']?.toString() ?? '',
+      startingPointLat: json['starting_point']['lat']as double? ?? 0.0,
+      startingPointLong: json['starting_point']['long']as double? ?? 0.0,
+      arrivalPointLat: json['arrival_point']['lat']as double? ?? 0.0,
+      arrivalPointLong: json['arrival_point']['long']as double? ?? 0.0,
       driver: json['driver'] as int? ?? 0,
       price: json['fare'] as int? ?? 0,
       seats: json['seats'] as int? ?? 0,
       hour: json['start_time']?.toString() ?? '',
       date: json['start_date']?.toString() ?? '',
-      // hour: json['start_time'] != null
-      //     ? DateTime.parse('${json['start_date']} ${json['start_time']}')
-      //     : DateTime.now(),
-      // date: json['start_date'] != null
-      //     ? DateTime.parse('${json['start_date']} ${json['start_time']}')
-      //     : DateTime.now(),
       currentTrip: json['current_trip'] == true ? 1 : 0,
     );
   }
@@ -50,12 +50,22 @@ class Travel {
   //   return DateFormat('HH:mm').format(hour);
   // }
 
+  static Map<String, double> _parsePoint(Map<String, dynamic>? point) {
+    if (point == null) return {'lat': 0.0, 'long': 0.0};
+    return {
+      'lat': point['lat'] as double? ?? 0.0,
+      'long': point['long'] as double? ?? 0.0,
+    };
+  }
+
   Map<String, dynamic> toJson() {
     // DateTime dateFormatted = DateTime.parse(date);
     // DateTime hourFormatted = DateTime.parse(hour);
     return {
-      'arrival_point': arrivalPoint,
-      'starting_point': startingPoint,
+      'arrival_point_lat': arrivalPointLat,
+      'arrival_point_long': arrivalPointLong,
+      'starting_point_lat': startingPointLat,
+      'starting_point_long': startingPointLong,
       //'driver': driver,
       'fare': price,
       'seats': seats,

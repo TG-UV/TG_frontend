@@ -15,7 +15,8 @@ import 'dart:convert';
 abstract class TravelDatasource {
   Future<List<String>> getMapSuggestions({required String address});
   Future<LatLng> getMapCoordinates({required String address});
-  Future<void> insertTravelsLocal({required List<Travel> travels});
+  Future<String> getTextDirection({required double lat, required double long});
+  //Future<void> insertTravelsLocal({required List<Travel> travels});
   Future<void> insertTravelRemote({required Travel travel});
   Future<void> deleteTravelRemote({required String travelId});
   Future<void> getTravelLocal({required int travelId, String filter});
@@ -98,29 +99,55 @@ class TravelDatasourceMethods implements TravelDatasource {
   }
 
   @override
-  Future<void> insertTravelsLocal({required List<Travel> travels}) async {
-    var i = 0;
-    Travel currentTravel;
-    try {
-      while (i < travels.length) {
-        currentTravel = travels[i];
-        await database.insert(LocalDB.tbTravel, {
-          LocalDB.idTravel: currentTravel.id,
-          LocalDB.arrivalPoint: currentTravel.arrivalPoint,
-          LocalDB.startingPoint: currentTravel.startingPoint,
-          LocalDB.date: currentTravel.date,
-          LocalDB.hour: currentTravel.hour,
-          LocalDB.driver: currentTravel.driver,
-          LocalDB.price: currentTravel.price,
-          LocalDB.seats: currentTravel.seats,
-          LocalDB.currentTrip: currentTravel.currentTrip,
-        }).timeout(const Duration(seconds: 120));
-        i++;
-      }
-    } catch (e) {
-      print('Error al insertar un viaje Local' + e.toString());
+  Future<String> getTextDirection({required double lat, required double long}) async {
+    String placeName = "";
+    String url =
+      'https://api.mapbox.com/geocoding/v5/mapbox.places/$long,$lat.json?access_token=$apiKey';
+
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+    final jsonResponse = json.decode(response.body);
+    final features = jsonResponse['features'];
+    if (features != null && features.isNotEmpty) {
+      final firstFeature = features[0];
+       placeName = firstFeature['place_name'];
+      
+    } else {
+      return 'No se encontraron resultados';
     }
+  } else {
+    throw Exception('Error al obtener la dirección: ${response.statusCode}');
   }
+  return placeName;
+  }
+
+
+
+  // @override
+  // Future<void> insertTravelsLocal({required List<Travel> travels}) async {
+  //   var i = 0;
+  //   Travel currentTravel;
+  //   try {
+  //     while (i < travels.length) {
+  //       currentTravel = travels[i];
+  //       await database.insert(LocalDB.tbTravel, {
+  //         LocalDB.idTravel: currentTravel.id,
+  //         LocalDB.arrivalPoint: currentTravel.arrivalPoint,
+  //         LocalDB.startingPoint: currentTravel.startingPoint,
+  //         LocalDB.date: currentTravel.date,
+  //         LocalDB.hour: currentTravel.hour,
+  //         LocalDB.driver: currentTravel.driver,
+  //         LocalDB.price: currentTravel.price,
+  //         LocalDB.seats: currentTravel.seats,
+  //         LocalDB.currentTrip: currentTravel.currentTrip,
+  //       }).timeout(const Duration(seconds: 120));
+  //       i++;
+  //     }
+  //   } catch (e) {
+  //     print('Error al insertar un viaje Local' + e.toString());
+  //   }
+  // }
 
   @override
   Future<int> insertTravelRemote({required Travel travel}) async {

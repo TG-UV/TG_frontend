@@ -24,7 +24,8 @@ class AssociatesDetailsCard extends StatefulWidget {
   State<AssociatesDetailsCard> createState() => _DetailsCardState();
 }
 
-class _DetailsCardState extends State<AssociatesDetailsCard> {
+class _DetailsCardState extends State<AssociatesDetailsCard>
+    with SingleTickerProviderStateMixin {
   TravelDatasourceMethods travelDatasourceImpl =
       Environment.sl.get<TravelDatasourceMethods>();
   User user = Environment.sl.get<User>();
@@ -33,20 +34,36 @@ class _DetailsCardState extends State<AssociatesDetailsCard> {
   bool _hasCallSupport = false;
   Future<void>? _launched;
   String dayOfWeekFormated = "Fecha";
+  late AnimationController _controller;
+  String startingPointTextDirection = "";
+  String arrivalPointTextDirection = "";
 
   @override
   void initState() {
     super.initState();
+    _getTextDirections();
     canLaunchUrl(Uri(scheme: 'tel', path: '123')).then((bool result) {
       setState(() {
         _hasCallSupport = result;
       });
     });
     initializeDateFormat();
+    _controller = AnimationController(
+      duration: Duration(milliseconds: 500),
+      vsync: this,
+    )..repeat(reverse: true);
   }
 
   void initializeDateFormat() {
     initializeDateFormatting('es_ES', null);
+  }
+
+  void _getTextDirections()async {
+    arrivalPointTextDirection= await travelDatasourceImpl.getTextDirection(lat: widget.travel.arrivalPointLat, long: widget.travel.arrivalPointLong);
+    startingPointTextDirection = await travelDatasourceImpl.getTextDirection(lat: widget.travel.startingPointLat, long: widget.travel.startingPointLong);
+    setState(() {
+      
+    });
   }
 
   DateTime _parseTimeString(String timeString) {
@@ -110,6 +127,25 @@ class _DetailsCardState extends State<AssociatesDetailsCard> {
                       return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            if (!detailsList!["is_confirmed"])
+                              AnimatedBuilder(
+                                animation: _controller,
+                                builder: (context, child) {
+                                  return Opacity(
+                                    opacity: _controller.value,
+                                    child: Text(
+                                      
+                                      'El conductor aún no ha confirmado',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 20.0,
+                                        fontWeight: FontWeight.bold,
+                                        color: ColorManager.fourthColor,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
                             Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceEvenly,
@@ -140,11 +176,11 @@ class _DetailsCardState extends State<AssociatesDetailsCard> {
                             ),
                             const SizedBox(height: 25),
                             Text(
-                              'Partida:  ${widget.travel.startingPoint}',
+                              'Partida:  $startingPointTextDirection',
                               style: Theme.of(context).textTheme.titleSmall,
                             ),
                             Text(
-                              'Destino:   ${widget.travel.arrivalPoint}',
+                              'Destino:   $arrivalPointTextDirection',
                               style: Theme.of(context).textTheme.titleSmall,
                             ),
                             Text(
@@ -155,6 +191,7 @@ class _DetailsCardState extends State<AssociatesDetailsCard> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
+                                if (!detailsList!["is_confirmed"])
                                 Column(
                                   children: [
                                     Text(
