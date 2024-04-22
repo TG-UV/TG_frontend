@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:tg_frontend/datasource/endPoints/end_point.dart';
 import 'package:tg_frontend/models/passenger_model.dart';
 import 'package:tg_frontend/models/travel_model.dart';
-import 'package:tg_frontend/widgets/large_button.dart';
+import 'package:tg_frontend/screens/theme.dart';
+import 'package:tg_frontend/widgets/main_button.dart';
 import 'package:tg_frontend/datasource/travel_data.dart';
 import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/device/environment.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 class AssociatesDetailsCard extends StatefulWidget {
   const AssociatesDetailsCard({
@@ -30,6 +32,7 @@ class _DetailsCardState extends State<AssociatesDetailsCard> {
   final EndPoints _endPoints = EndPoints();
   bool _hasCallSupport = false;
   Future<void>? _launched;
+  String dayOfWeekFormated = "Fecha";
 
   @override
   void initState() {
@@ -39,6 +42,18 @@ class _DetailsCardState extends State<AssociatesDetailsCard> {
         _hasCallSupport = result;
       });
     });
+    initializeDateFormat();
+  }
+
+  void initializeDateFormat() {
+    initializeDateFormatting('es_ES', null);
+  }
+
+  DateTime _parseTimeString(String timeString) {
+    List<String> parts = timeString.split(':');
+    int hour = int.parse(parts[0]);
+    int minute = int.parse(parts[1]);
+    return DateTime(1, 1, 1, hour, minute);
   }
 
   Stream<Map<String, dynamic>?> _loadTravelDetails() async* {
@@ -100,15 +115,14 @@ class _DetailsCardState extends State<AssociatesDetailsCard> {
                                     MainAxisAlignment.spaceEvenly,
                                 children: <Widget>[
                                   Text(
-                                    DateFormat('EEEE').format(
-                                        DateTime.parse(widget.travel.date)),
-                                    //travel.date,
+                                    dayOfWeekFormated,
                                     style:
                                         Theme.of(context).textTheme.titleLarge,
                                   ),
                                   const SizedBox(width: 10),
                                   Text(
-                                    widget.travel.hour,
+                                    DateFormat('hh:mm a').format(
+                                        _parseTimeString(widget.travel.hour)),
                                     style: Theme.of(context)
                                         .textTheme
                                         .titleLarge!
@@ -116,7 +130,6 @@ class _DetailsCardState extends State<AssociatesDetailsCard> {
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 ]),
-                            const SizedBox(width: 10),
                             Text(
                               '      ${widget.travel.date}',
                               style: Theme.of(context)
@@ -213,9 +226,10 @@ class _DetailsCardState extends State<AssociatesDetailsCard> {
                             ),
 
                             const SizedBox(height: 50),
-                            LargeButton(
-                              large: false,
-                              text: "cancelar",
+                            MainButton(
+                              large: true,
+                              text: "cancelar cupo",
+                              buttonColor: ColorManager.fourthColor,
                               onPressed: () {
                                 _cancelSpot(detailsList!["id_passenger_trip"]);
                               },

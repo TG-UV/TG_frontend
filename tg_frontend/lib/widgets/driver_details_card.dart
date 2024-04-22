@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:tg_frontend/models/passenger_model.dart';
 import 'package:tg_frontend/models/travel_model.dart';
 import 'package:tg_frontend/screens/theme.dart';
-import 'package:tg_frontend/widgets/large_button.dart';
+import 'package:tg_frontend/widgets/main_button.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:tg_frontend/models/user_model.dart';
@@ -147,7 +147,12 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
 
   Widget _mapDialog(LatLng coordinates) {
     return AlertDialog(
-      title: const Text('Punto para recoger'),
+      title: Text(
+        'Punto para recoger',
+        textAlign: TextAlign.center,
+        style: TextStyle(
+            color: ColorManager.primaryColor, fontFamily: 'Jost', fontSize: 18),
+      ),
       content: SizedBox(
         width: double.maxFinite,
         height: 300.0,
@@ -184,7 +189,10 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
           onPressed: () {
             Navigator.of(context).pop();
           },
-          child: const Text('Cerrar'),
+          child: const Text(
+            'Cerrar',
+            style: TextStyle(color: Colors.black),
+          ),
         ),
       ],
     );
@@ -195,7 +203,7 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
         height: 30,
         width: 200,
         child: Card(
-            color: Colors.white54,
+            color: ColorManager.thirdColor,
             borderOnForeground: false,
             child: Column(
                 // mainAxisSize: MainAxisSize.min,
@@ -239,13 +247,13 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
         height: 150,
         width: 230,
         child: Card(
-          elevation: 0.5,
-          color: Colors.white54,
-          shadowColor: ColorManager.secondaryColor,
+          elevation: 0.9,
+          color: ColorManager.thirdColor,
+          shadowColor: ColorManager.primaryColor,
           child: Column(
             // mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
-           // mainAxisAlignment: MainAxisAlignment.start,
+            // mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Center(
                 child: Text(
@@ -255,11 +263,15 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                         .titleSmall!
                         .copyWith(fontWeight: FontWeight.bold)),
               ),
+              Text('  ${myPassenger.seats} asiento',
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleSmall!
+                      .copyWith(fontSize: 15)),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  
-                   Text(
+                  Text(
                     ' Coordenadas: ',
                     style: Theme.of(context)
                         .textTheme
@@ -350,34 +362,33 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                             .titleMedium!
                             .copyWith(fontSize: 16.0),
                       ),
-                      const SizedBox(height: 20),
                       Text(
                         'Desde: ${widget.travel.startingPoint}',
                         style: Theme.of(context)
                             .textTheme
                             .titleSmall!
-                            .copyWith(fontSize: 15),
-                        maxLines: 2,
+                            .copyWith(fontSize: 14),
+                        maxLines: 1,
                       ),
                       Text(
                         'Hacia: ${widget.travel.arrivalPoint}',
                         style: Theme.of(context)
                             .textTheme
                             .titleSmall!
-                            .copyWith(fontSize: 15),
-                        maxLines: 2,
+                            .copyWith(fontSize: 14),
+                        maxLines: 1,
                       ),
                       Text(
-                        '${widget.travel.seats} cupos disponibles ',
+                        '${widget.travel.seats} cupos ',
                         style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                            fontWeight: FontWeight.normal, fontSize: 16),
+                            fontWeight: FontWeight.normal, fontSize: 14),
                       ),
                       Text(
                         '\$ ${widget.travel.price} ',
                         style: Theme.of(context)
                             .textTheme
                             .titleSmall!
-                            .copyWith(fontSize: 15),
+                            .copyWith(fontSize: 14),
                       ),
                       const SizedBox(height: 10),
                       Row(
@@ -413,16 +424,18 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                               "...Aún no tienes pasajeros en tu viaje ",
                               style: Theme.of(context).textTheme.titleSmall,
                             ),
+                      Divider(),
                       if (pendingPassengersList.isNotEmpty)
                         Text(
                           'Están solicitando un cupo',
                           style: Theme.of(context)
                               .textTheme
                               .titleMedium!
-                              .copyWith(fontWeight: FontWeight.w800),
+                              .copyWith(
+                                  fontWeight: FontWeight.w800, fontSize: 19),
                         ),
                       SizedBox(
-                        height: 130,
+                        height: 140,
                         child: Container(
                           alignment: Alignment.topLeft,
                           child: ListView.builder(
@@ -445,9 +458,10 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                       ),
                       Spacer(),
                       Center(
-                          child: LargeButton(
-                        large: false,
-                        text: "cancelar",
+                          child: MainButton(
+                        large: true,
+                        text: "cancelar viaje",
+                        buttonColor: ColorManager.fourthColor,
                         onPressed: () {
                           _deleteTravel();
                         },

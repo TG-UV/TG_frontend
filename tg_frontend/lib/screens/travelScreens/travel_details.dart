@@ -77,8 +77,12 @@ class _TravelDetailsState extends State<TravelDetails> {
               height: MediaQuery.of(context).size.height *
                   0.75, // 3 cuartos de la pantallaS
               decoration: const BoxDecoration(
-                  color: Color.fromARGB(255, 235, 235, 235),
-                  borderRadius: BorderRadius.all(Radius.elliptical(50, 30))),
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.elliptical(50, 30),
+                  topRight: Radius.elliptical(50, 30),
+                ),
+              ),
               child: ClipRRect(
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(50.0),

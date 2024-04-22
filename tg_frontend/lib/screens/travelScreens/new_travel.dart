@@ -3,7 +3,8 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:tg_frontend/screens/home.dart';
-import 'package:tg_frontend/widgets/large_button.dart';
+import 'package:tg_frontend/screens/theme.dart';
+import 'package:tg_frontend/widgets/main_button.dart';
 import 'package:tg_frontend/widgets/square_button.dart';
 import 'package:tg_frontend/widgets/input_field.dart';
 import 'package:tg_frontend/models/travel_model.dart';
@@ -127,14 +128,19 @@ class _NewTravelState extends State<NewTravel> {
             DateFormat('EEEE, d MMMM', 'es_ES').format(DateTime.now());
       });
     } else {
-      
-      
       final TimeOfDay? pickedTime =
           await showTimePicker(context: context, initialTime: TimeOfDay.now());
 
       if (pickedTime != null) {
         DateTime today = DateTime.now();
-        final day = DateTime(today.year,today.month, today.day, pickedTime.hour,pickedTime.minute, 00, );
+        final day = DateTime(
+          today.year,
+          today.month,
+          today.day,
+          pickedTime.hour,
+          pickedTime.minute,
+          00,
+        );
         setState(() {
           _selectedTime = DateFormat('hh:mm:ss').format(day);
           timeController.text =
@@ -449,9 +455,10 @@ class _NewTravelState extends State<NewTravel> {
                       icon: const Icon(Icons.edit),
                     ),
                     const SizedBox(height: 30),
-                    LargeButton(
+                    MainButton(
                         text: 'crear',
                         large: false,
+                        buttonColor: ColorManager.fourthColor,
                         onPressed: () {
                           submitForm(context);
                         }),

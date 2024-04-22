@@ -5,7 +5,7 @@ import 'package:tg_frontend/models/vehicle_model.dart';
 import 'package:tg_frontend/screens/loginAndRegister/vehicle_register.dart';
 import 'package:tg_frontend/screens/theme.dart';
 import 'package:tg_frontend/widgets/input_field.dart';
-import 'package:tg_frontend/widgets/large_button.dart';
+import 'package:tg_frontend/widgets/main_button.dart';
 import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/datasource/user_data.dart';
 import 'package:tg_frontend/device/environment.dart';
@@ -79,7 +79,7 @@ class _VehicleManagmentState extends State<VehicleManagment> {
     return InputDecoration(
       labelText: label,
       enabledBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: ColorManager.secondaryColor, width: 2),
+        borderSide: BorderSide(color: ColorManager.secondaryColor, width: 0.5),
         borderRadius: BorderRadius.circular(10),
       ),
       border: OutlineInputBorder(
@@ -136,215 +136,238 @@ class _VehicleManagmentState extends State<VehicleManagment> {
         body: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             alignment: Alignment.center,
-            child:
-                // FutureBuilder<Map<String, dynamic>>(
-                //     future: fetchOptions(),
-                //     builder: (context, snapshot) {
-                //       if (snapshot.connectionState == ConnectionState.waiting) {
-                //         return const Center(child: CircularProgressIndicator());
-                //       } else if (snapshot.hasError) {
-                //         return Center(
-                //             child: Text(
-                //                 'Error al cargar future de vehicle options: ${snapshot.error}'));
-                //       } else {
-                //         options = snapshot.data!;
-                //         return SingleChildScrollView(
-                //             padding: const EdgeInsets.all(16.0),
-                //             child: Form(
-                //                 key: _formKey,
-                //                 child:
-                Column(
+            child: Form(
+                key: _formKey,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                  const SizedBox(
-                    height: 100,
-                  ),
-                  Row(children: [
-                    IconButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        icon: const Icon(Icons.arrow_back)),
-                    Text(
-                      " Administra tus vehículos",
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleLarge!
-                          .copyWith(fontSize: 23),
-                    )
-                  ]),
-                  const SizedBox(height: 30),
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        LargeButton(
-                            text: "Modificar",
-                            large: false,
+                      const SizedBox(
+                        height: 80,
+                      ),
+                      Row(children: [
+                        IconButton(
                             onPressed: () {
-                              setState(() {
-                                isVisible = true;
-                              });
-                            }),
-                        LargeButton(
-                            text: "Añadir",
-                            large: false,
-                            onPressed: () => Get.to(() => VehicleRegister(
-                                user: widget.user, parent: widget.parent))),
+                              Navigator.pop(context);
+                            },
+                            icon: const Icon(Icons.arrow_back)),
+                        Text(
+                          " Administra tus vehículos",
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleLarge!
+                              .copyWith(fontSize: 20),
+                        )
                       ]),
-                  Visibility(
-                      visible: isVisible,
-                      child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            DropdownButton<Vehicle>(
-                              value: vehicleSelected,
-                              onChanged: (Vehicle? newValue) {
-                                setState(() {
-                                  vehicleSelected = newValue!;
-                                  licensePlateController.text =
-                                      vehicleSelected!.licensePlate;
-                                });
-                              },
-                              items: driverVehicles.map((Vehicle vehiculo) {
-                                return DropdownMenuItem<Vehicle>(
-                                  value: vehiculo,
-                                  child: Text(
-                                      '${vehiculo.licensePlate} ${vehiculo.vehicleBrand}'),
-                                );
-                              }).toList(),
-                            ),
-                            const SizedBox(height: 30.0),
-                            InputField(
-                              controller: licensePlateController,
-                              textInput: 'Placa',
-                              textInputType: TextInputType.text,
-                              obscure: false,
-                              icon: const Icon(null),
-                            ),
-                            const SizedBox(height: 16.0),
-                            SizedBox(
-                                height: 50,
-                                child: DropdownButtonFormField<int>(
-                                  value: _selectedType,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _selectedType = value;
-                                    });
-                                  },
-                                  //dropdownColor: ColorManager.secondaryColor,
-                                  items: (options['types'] as List<dynamic>)
-                                      .map<DropdownMenuItem<int>>((type) {
-                                    return DropdownMenuItem<int>(
-                                      value: type['id_vehicle_type'],
-                                      child: Text(type['name'],
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .titleSmall),
-                                    );
-                                  }).toList(),
-                                  decoration:
-                                      myInputDecoration("Tipo de vehículo"),
-                                  validator: (value) {
-                                    if (value == null) {
-                                      return 'Por favor seleccione el tipo';
-                                    }
-                                    return null;
-                                  },
-                                )),
-                            const SizedBox(height: 16.0),
-                            SizedBox(
-                                height: 70,
-                                child: DropdownButtonFormField<int>(
-                                  value: _selectedBrand,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _selectedBrand = value;
-                                    });
-                                  },
-                                  items: (options['brands'] as List<dynamic>)
-                                      .map<DropdownMenuItem<int>>((brand) {
-                                    return DropdownMenuItem<int>(
-                                      value: brand['id_vehicle_brand'],
-                                      child: Text(brand['name'],
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .titleSmall),
-                                    );
-                                  }).toList(),
-                                  decoration: myInputDecoration("Marca"),
-                                  validator: (value) {
-                                    if (value == null) {
-                                      return 'Por favor seleccione la marca';
-                                    }
-                                    return null;
-                                  },
-                                )),
-                            const SizedBox(height: 16.0),
-                            SizedBox(
-                                height: 50,
-                                child: DropdownButtonFormField<int>(
-                                  value: _selectedModel,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _selectedModel = value;
-                                    });
-                                  },
-                                  items: (options['models'] as List<dynamic>)
-                                      .map<DropdownMenuItem<int>>((model) {
-                                    return DropdownMenuItem<int>(
-                                      value: model['id_vehicle_model'],
-                                      child: Text(model['name'],
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .titleSmall),
-                                    );
-                                  }).toList(),
-                                  decoration: myInputDecoration("Modelo"),
-                                  validator: (value) {
-                                    if (value == null) {
-                                      return 'Por favor seleccione el modelo';
-                                    }
-                                    return null;
-                                  },
-                                )),
-                            SizedBox(height: 16.0),
-                            SizedBox(
-                                height: 50,
-                                child: DropdownButtonFormField<int>(
-                                  value: _selectedColor,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _selectedColor = value;
-                                    });
-                                  },
-                                  items: (options['colors'] as List<dynamic>)
-                                      .map<DropdownMenuItem<int>>((color) {
-                                    return DropdownMenuItem<int>(
-                                      value: color['id_vehicle_color'],
-                                      child: Text(color['name'],
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .titleSmall),
-                                    );
-                                  }).toList(),
-                                  decoration: myInputDecoration("Color"),
-                                  validator: (value) {
-                                    if (value == null) {
-                                      return 'Por favor seleccione el color';
-                                    }
-                                    return null;
-                                  },
-                                )),
-                            const SizedBox(height: 80),
-                            Container(
-                                alignment: Alignment.center,
-                                child: LargeButton(
-                                    text: 'Confirmar',
-                                    large: true,
-                                    onPressed: () {
-                                      submitForm(context);
-                                    })),
-                          ]))
-                ])));
+                      const SizedBox(height: 30),
+                      !isVisible
+                          ? Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                  MainButton(
+                                      text: "Modificar",
+                                      large: false,
+                                      buttonColor: ColorManager.thirdColor,
+                                      onPressed: () {
+                                        setState(() {
+                                          isVisible = true;
+                                        });
+                                      }),
+                                  MainButton(
+                                      text: "Añadir",
+                                      large: false,
+                                      buttonColor: ColorManager.fourthColor,
+                                      onPressed: () => Get.to(() =>
+                                          VehicleRegister(
+                                              user: widget.user,
+                                              parent: widget.parent))),
+                                ])
+                          : Visibility(
+                              visible: isVisible,
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      "Modifica uno de tus vehículos",
+                                      textAlign: TextAlign.center,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium!
+                                          .copyWith(fontSize: 18),
+                                    ),
+                                    const SizedBox(
+                                      height: 20,
+                                    ),
+                                    SizedBox(
+                                        height: 70,
+                                        child: DropdownButtonFormField<Vehicle>(
+                                          value: vehicleSelected,
+                                          onChanged: (Vehicle? newValue) {
+                                            setState(() {
+                                              vehicleSelected = newValue!;
+                                              licensePlateController.text =
+                                                  vehicleSelected!.licensePlate;
+                                            });
+                                          },
+                                          items: driverVehicles
+                                              .map((Vehicle vehiculo) {
+                                            return DropdownMenuItem<Vehicle>(
+                                              value: vehiculo,
+                                              child: Text(
+                                                  '${vehiculo.licensePlate} ${vehiculo.vehicleBrand}',
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .titleSmall),
+                                            );
+                                          }).toList(),
+                                          decoration:
+                                              myInputDecoration(" Vehículo"),
+                                        )),
+                                    const SizedBox(height: 30.0),
+                                    InputField(
+                                      controller: licensePlateController,
+                                      textInput: 'Placa',
+                                      textInputType: TextInputType.text,
+                                      obscure: false,
+                                      icon: const Icon(null),
+                                    ),
+                                    const SizedBox(height: 16.0),
+                                    SizedBox(
+                                        height: 70,
+                                        child: DropdownButtonFormField<int>(
+                                          value: _selectedType,
+                                          onChanged: (value) {
+                                            setState(() {
+                                              _selectedType = value;
+                                            });
+                                          },
+                                          //dropdownColor: ColorManager.secondaryColor,
+                                          items: (options['types']
+                                                  as List<dynamic>)
+                                              .map<DropdownMenuItem<int>>(
+                                                  (type) {
+                                            return DropdownMenuItem<int>(
+                                              value: type['id_vehicle_type'],
+                                              child: Text(type['name'],
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .titleSmall),
+                                            );
+                                          }).toList(),
+                                          decoration: myInputDecoration(
+                                              "Tipo de vehículo"),
+                                          validator: (value) {
+                                            if (value == null) {
+                                              return 'Por favor seleccione el tipo';
+                                            }
+                                            return null;
+                                          },
+                                        )),
+                                    const SizedBox(height: 16.0),
+                                    SizedBox(
+                                        height: 70,
+                                        child: DropdownButtonFormField<int>(
+                                          value: _selectedBrand,
+                                          onChanged: (value) {
+                                            setState(() {
+                                              _selectedBrand = value;
+                                            });
+                                          },
+                                          items: (options['brands']
+                                                  as List<dynamic>)
+                                              .map<DropdownMenuItem<int>>(
+                                                  (brand) {
+                                            return DropdownMenuItem<int>(
+                                              value: brand['id_vehicle_brand'],
+                                              child: Text(brand['name'],
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .titleSmall),
+                                            );
+                                          }).toList(),
+                                          decoration:
+                                              myInputDecoration("Marca"),
+                                          validator: (value) {
+                                            if (value == null) {
+                                              return 'Por favor seleccione la marca';
+                                            }
+                                            return null;
+                                          },
+                                        )),
+                                    const SizedBox(height: 16.0),
+                                    SizedBox(
+                                        height: 70,
+                                        child: DropdownButtonFormField<int>(
+                                          value: _selectedModel,
+                                          onChanged: (value) {
+                                            setState(() {
+                                              _selectedModel = value;
+                                            });
+                                          },
+                                          items: (options['models']
+                                                  as List<dynamic>)
+                                              .map<DropdownMenuItem<int>>(
+                                                  (model) {
+                                            return DropdownMenuItem<int>(
+                                              value: model['id_vehicle_model'],
+                                              child: Text(model['name'],
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .titleSmall),
+                                            );
+                                          }).toList(),
+                                          decoration:
+                                              myInputDecoration("Modelo"),
+                                          validator: (value) {
+                                            if (value == null) {
+                                              return 'Por favor seleccione el modelo';
+                                            }
+                                            return null;
+                                          },
+                                        )),
+                                    SizedBox(height: 16.0),
+                                    SizedBox(
+                                        height: 70,
+                                        child: DropdownButtonFormField<int>(
+                                          value: _selectedColor,
+                                          onChanged: (value) {
+                                            setState(() {
+                                              _selectedColor = value;
+                                            });
+                                          },
+                                          items: (options['colors']
+                                                  as List<dynamic>)
+                                              .map<DropdownMenuItem<int>>(
+                                                  (color) {
+                                            return DropdownMenuItem<int>(
+                                              value: color['id_vehicle_color'],
+                                              child: Text(color['name'],
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .titleSmall),
+                                            );
+                                          }).toList(),
+                                          decoration:
+                                              myInputDecoration("Color"),
+                                          validator: (value) {
+                                            if (value == null) {
+                                              return 'Por favor seleccione el color';
+                                            }
+                                            return null;
+                                          },
+                                        )),
+                                    const SizedBox(height: 80),
+                                    Container(
+                                        alignment: Alignment.center,
+                                        child: MainButton(
+                                            text: 'Confirmar',
+                                            buttonColor:
+                                                ColorManager.fourthColor,
+                                            large: true,
+                                            onPressed: () {
+                                              submitForm(context);
+                                            })),
+                                  ]))
+                    ]))));
   }
 }

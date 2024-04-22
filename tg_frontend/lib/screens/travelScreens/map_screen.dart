@@ -8,7 +8,7 @@ import 'package:tg_frontend/screens/theme.dart';
 import 'package:tg_frontend/screens/travelScreens/available_travels.dart';
 import 'package:tg_frontend/screens/travelScreens/new_travel.dart';
 import 'package:tg_frontend/services/auth_services.dart';
-import 'package:tg_frontend/widgets/large_button.dart';
+import 'package:tg_frontend/widgets/main_button.dart';
 import 'package:get/get.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -56,9 +56,8 @@ class _MapScreenState extends State<MapScreen> {
   Future<void> _getLocation() async {
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
-    setState(() {
-      myPosition = LatLng(position.latitude, position.longitude);
-    });
+    myPosition = LatLng(position.latitude, position.longitude);
+    setState(() {});
   }
 
   LatLng _getCenterPosition() {
@@ -102,13 +101,14 @@ class _MapScreenState extends State<MapScreen> {
     return Scaffold(
         drawer: Drawer(
           width: MediaQuery.of(context).size.width / 1.4,
-          shadowColor: Colors.black,
-          backgroundColor: const Color.fromARGB(255, 239, 239, 239),
-          shape: const Border(right: BorderSide(color: Colors.red, width: 3)),
+          shadowColor: ColorManager.primaryColor,
+          backgroundColor: ColorManager.thirdColor,
+          shape: Border(
+              right: BorderSide(color: ColorManager.fourthColor, width: 3)),
           child: ListView(
             children: <Widget>[
               SizedBox(
-                  height: 130,
+                  height: 150,
                   child: UserAccountsDrawerHeader(
                       decoration: const BoxDecoration(
                           border: Border(
@@ -121,10 +121,10 @@ class _MapScreenState extends State<MapScreen> {
                         user.email,
                         style: Theme.of(context).textTheme.titleSmall,
                       ),
-                      otherAccountsPictures: const [
+                      otherAccountsPictures: [
                         CircleAvatar(
-                          backgroundColor: Colors.white,
-                          backgroundImage: NetworkImage(
+                          backgroundColor: ColorManager.secondaryColor,
+                          backgroundImage: const NetworkImage(
                               //"https://randomuser.me/api/portraits/women/74.jpg"),
                               "https://api.dicebear.com/8.x/bottts/png"),
                         ),
@@ -148,7 +148,46 @@ class _MapScreenState extends State<MapScreen> {
               ListTile(
                 leading: const Icon(Icons.support_agent_outlined),
                 title: const Text('Soporte'),
-                onTap: () {},
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text("¿Necesitas ayuda?"),
+                        content: Column(
+                          children: [
+                            Text(
+                              "Escribe un correo explicando en que podemos ayudarte, te contestaremos lo mas pronto posible. ",
+                              maxLines: 4,
+                              overflow: TextOverflow.clip,
+                              textAlign: TextAlign.center,
+                              style:
+                                  TextStyle(color: ColorManager.primaryColor),
+                            ),
+                            Text(
+                              "soporte@rayo.com",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: ColorManager.primaryColor),
+                            )
+                          ],
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text(
+                              "Cerrar",
+                              style:
+                                  TextStyle(color: ColorManager.primaryColor),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
               ),
               const AboutListTile(
                 icon: Icon(
@@ -247,8 +286,9 @@ class _MapScreenState extends State<MapScreen> {
             top: MediaQuery.of(context).size.width / 0.8,
             left: 50,
             right: 50,
-            child: LargeButton(
+            child: MainButton(
               text: 'Voy para la U',
+              buttonColor: ColorManager.fourthColor,
               onPressed: () {
                 user.type == 2
                     ? Get.to(() => const NewTravel())
@@ -261,8 +301,9 @@ class _MapScreenState extends State<MapScreen> {
             top: MediaQuery.of(context).size.width / 0.8 + 100,
             left: 50,
             right: 50,
-            child: LargeButton(
+            child: MainButton(
               text: 'Salgo de la U',
+              buttonColor: ColorManager.fourthColor,
               onPressed: () {
                 user.type == 2
                     ? Get.to(() => const NewTravel())

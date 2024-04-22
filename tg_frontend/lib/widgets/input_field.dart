@@ -11,15 +11,17 @@ class InputField extends StatelessWidget {
       this.icon,
       this.onChange,
       this.foco,
-      required this.obscure});
+      required this.obscure,
+      this.color});
 
   final TextEditingController controller;
   final String textInput;
   final TextInputType textInputType;
   final bool obscure;
   final Icon? icon;
-  final Function(String)? onChange; 
+  final Function(String)? onChange;
   final FocusNode? foco;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +64,6 @@ class InputField extends StatelessWidget {
         }
         return null;
       },
-      
     );
   }
 }

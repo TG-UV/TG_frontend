@@ -6,7 +6,7 @@ import 'package:tg_frontend/screens/loginAndRegister/password_register.dart';
 import 'package:tg_frontend/screens/loginAndRegister/vehicle_register.dart';
 import 'package:tg_frontend/screens/theme.dart';
 import 'package:tg_frontend/widgets/input_field.dart';
-import 'package:tg_frontend/widgets/large_button.dart';
+import 'package:tg_frontend/widgets/main_button.dart';
 import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/datasource/user_data.dart';
 import 'package:tg_frontend/device/environment.dart';
@@ -152,7 +152,8 @@ class _UserRegisterState extends State<UserRegister> {
                                     .copyWith(fontSize: 26),
                               )
                             ]),
-                            const SizedBox(height: 30),
+                            SizedBox(
+                                height: MediaQuery.of(context).size.width / 4),
                             InputField(
                               controller: nameController,
                               textInput: 'Nombre',
@@ -265,9 +266,10 @@ class _UserRegisterState extends State<UserRegister> {
                             const SizedBox(height: 60),
                             Container(
                               alignment: Alignment.center,
-                              child: LargeButton(
+                              child: MainButton(
                                   text: 'Continuar',
                                   large: true,
+                                  buttonColor: ColorManager.fourthColor,
                                   onPressed: () {
                                     submitForm(context);
                                   }),

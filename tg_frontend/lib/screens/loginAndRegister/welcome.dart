@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tg_frontend/widgets/large_button.dart';
+import 'package:tg_frontend/widgets/main_button.dart';
 import 'package:get/get.dart';
 import 'package:tg_frontend/screens/loginAndRegister/login.dart';
 import 'package:tg_frontend/screens/loginAndRegister/sign_up.dart';
@@ -36,7 +36,7 @@ class Welcome extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 70),
-                        LargeButton(
+                        MainButton(
                           text: 'Conductor',
                           large: true,
                           onPressed: () {
@@ -44,7 +44,7 @@ class Welcome extends StatelessWidget {
                           },
                         ),
                         const SizedBox(height: 20),
-                        LargeButton(
+                        MainButton(
                             text: 'Pasajero',
                             large: true,
                             onPressed: () {

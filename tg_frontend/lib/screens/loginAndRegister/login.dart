@@ -6,15 +6,14 @@ import 'package:tg_frontend/datasource/local_database_provider.dart';
 import 'package:tg_frontend/device/environment.dart';
 import 'package:tg_frontend/screens/home.dart';
 import 'package:tg_frontend/screens/loginAndRegister/sign_up.dart';
+import 'package:tg_frontend/screens/theme.dart';
 import 'package:tg_frontend/widgets/input_field.dart';
-import 'package:tg_frontend/widgets/large_button.dart';
+import 'package:tg_frontend/widgets/main_button.dart';
 import 'package:tg_frontend/services/auth_services.dart';
 import 'package:tg_frontend/datasource/user_data.dart';
 import 'package:tg_frontend/models/user_model.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:flutter/services.dart';
-
-
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -35,21 +34,21 @@ class _LoginState extends State<Login> {
   late Future<String> user;
 
   @override
-  void initState()  {
+  void initState() {
     databaseProvider = DatabaseProvider.db;
-     databaseProvider.cleanDatabase();
+    databaseProvider.cleanDatabase();
     Environment.sl.unregister<User>();
 
     super.initState();
   }
 
   Future<void> loginUser(String username, String password) async {
-    if (_formKey.currentState!.validate()){
+    if (_formKey.currentState!.validate()) {
       final token = await userDatasourceImpl.getUserAuth(
-        username: username, password: password);
-    token != null
-        ? saveAuthInformation(token, username, password)
-        : showErrorMessage('El usuario no existe, intente de nuevo');
+          username: username, password: password);
+      token != null
+          ? saveAuthInformation(token, username, password)
+          : showErrorMessage('El usuario no existe, intente de nuevo');
     }
   }
 
@@ -81,102 +80,98 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
-    return
-     PopScope(
-      canPop: false,
-        onPopInvoked:  (bool isPopGesture) {
-          SystemNavigator.pop(); 
+    return PopScope(
+        canPop: false,
+        onPopInvoked: (bool isPopGesture) {
+          SystemNavigator.pop();
         },
-        child:
-     Scaffold(
-        resizeToAvoidBottomInset: false,
-        body: SingleChildScrollView(
-            child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                alignment: Alignment.center,
-                child: Form(
+        child: Scaffold(
+            resizeToAvoidBottomInset: false,
+            body: SingleChildScrollView(
+                child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    alignment: Alignment.center,
+                    child: Form(
                         key: _formKey,
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                         child: Stack(children: [
-                  Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const SizedBox(height: 100),
-                        Center(
-                            child: Image.asset(
-                          'assets/1200px-U+2301.svg.png',
-                          width: 100,
-                          height: 100,
-                          fit: BoxFit.cover,
-                        )),
-                        const SizedBox(height: 60),
-                        Text(
-                          "Inicia sesión",
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
-                        const SizedBox(height: 50),
-                        InputField(
-                          controller: mailLoginController,
-                          textInput: 'Correo electrónico',
-                          textInputType: TextInputType.text,
-                          obscure: false,
-                          
-                        ),
-                        const SizedBox(height: 15),
-                        InputField(
-                          controller: passwordLoginController,
-                          textInput: 'Contraseña',
-                          textInputType: TextInputType.text,
-                          obscure: true,
-                          icon: const Icon(Icons.key),
-                        ),
-                        const SizedBox(height: 50),
-                        LargeButton(
-                            text: 'Iniciar sesión',
-                            large: true,
-                            onPressed: () {
-                              loginUser(mailLoginController.text,
-                                  passwordLoginController.text);
-                            }),
-                        const SizedBox(height: 80),
-                        Row(
-                          children: <Widget>[
-                            const Expanded(
-                              child: Text(
-                                '¿No tienes una cuenta?',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontFamily: 'Jost',
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: TextButton(
-                                onPressed: () {
-                                  //Get.to(() => const SignUp());
-                                  Get.to(() => const SignUp());
-                                },
-                                child: const Text(
-                                  'Regístrate !',
+                          Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const SizedBox(height: 100),
+                                Center(
+                                    child: Image.asset(
+                                  'assets/1200px-U+2301.svg.png',
+                                  width: 100,
+                                  height: 100,
+                                  fit: BoxFit.cover,
+                                )),
+                                const SizedBox(height: 60),
+                                Text(
+                                  "Inicia sesión",
                                   textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontFamily: 'Jost',
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.red,
-                                  ),
+                                  style: Theme.of(context).textTheme.titleLarge,
                                 ),
-                              ),
-                            ),
-                          ],
-                        )
-                      ]),
-
-                 
-                ]))))));
+                                const SizedBox(height: 50),
+                                InputField(
+                                  controller: mailLoginController,
+                                  textInput: 'Correo electrónico',
+                                  textInputType: TextInputType.text,
+                                  obscure: false,
+                                ),
+                                const SizedBox(height: 15),
+                                InputField(
+                                  controller: passwordLoginController,
+                                  textInput: 'Contraseña',
+                                  textInputType: TextInputType.text,
+                                  obscure: true,
+                                  icon: const Icon(Icons.key),
+                                ),
+                                const SizedBox(height: 50),
+                                MainButton(
+                                    text: 'Iniciar sesión',
+                                    large: true,
+                                    buttonColor: ColorManager.fourthColor,
+                                    onPressed: () {
+                                      loginUser(mailLoginController.text,
+                                          passwordLoginController.text);
+                                    }),
+                                const SizedBox(height: 80),
+                                Row(
+                                  children: <Widget>[
+                                    const Expanded(
+                                      child: Text(
+                                        '¿No tienes una cuenta?',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontFamily: 'Jost',
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.w400,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: TextButton(
+                                        onPressed: () {
+                                          //Get.to(() => const SignUp());
+                                          Get.to(() => const SignUp());
+                                        },
+                                        child: const Text(
+                                          'Regístrate !',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontFamily: 'Jost',
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.red,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              ]),
+                        ]))))));
   }
 }

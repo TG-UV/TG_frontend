@@ -107,18 +107,16 @@ class _HomeState extends State<Home> {
         items: const [
           TabItem(
               icon: Icon(
-            Icons.house_outlined,
+            Icons.home,
             color: Colors.black,
           )),
           TabItem(
               icon: Icon(
-            Icons.motorcycle_outlined,
+            Icons.time_to_leave_sharp,
             color: Colors.black,
           )),
-          TabItem(icon: Icon(Icons.watch_later_outlined, color: Colors.black)),
-          TabItem(
-              icon: Icon(Icons.notifications_active_outlined,
-                  color: Colors.black)),
+          TabItem(icon: Icon(Icons.timelapse_sharp, color: Colors.black)),
+          TabItem(icon: Icon(Icons.notifications, color: Colors.black)),
         ],
         onTap: (int index) {
           setState(() {

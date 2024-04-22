@@ -1,30 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:tg_frontend/screens/theme.dart';
 
-class LargeButton extends StatelessWidget {
-  const LargeButton({
+class MainButton extends StatelessWidget {
+  const MainButton({
     super.key,
     required this.text,
     required this.large,
     required this.onPressed,
     this.myIcon,
+    this.buttonColor,
   });
 
   final VoidCallback? onPressed;
   final String text;
   final bool large;
   final IconData? myIcon;
+  final Color? buttonColor;
 
   @override
   Widget build(BuildContext context) {
     double largeWidth = MediaQuery.of(context).size.width / 2;
-    double largeHeigth = MediaQuery.of(context).size.width / 6;
-    double shortWidth = MediaQuery.of(context).size.width / 2.6;
+    double largeHeigth = MediaQuery.of(context).size.width / 6.3;
+    double shortWidth = MediaQuery.of(context).size.width / 2.5;
     double shortHeigth = MediaQuery.of(context).size.width / 9;
 
-    Color myBackgroundColor = (text == 'Buscar')
-        ? ColorManager.primaryColor
-        : Theme.of(context).colorScheme.error;
+    Color myBackgroundColor =
+        buttonColor != null ? buttonColor! : ColorManager.secondaryColor;
     return SizedBox(
         width: large ? largeWidth : shortWidth,
         height: large ? largeHeigth : shortHeigth,
@@ -53,6 +54,7 @@ class LargeButton extends StatelessWidget {
                   fontSize: 18,
                   color: Colors.white,
                   fontFamily: 'Jost,'),
+              maxLines: 2,
             )
           ]),
         ));

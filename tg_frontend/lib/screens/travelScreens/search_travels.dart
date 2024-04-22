@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:tg_frontend/widgets/large_button.dart';
+import 'package:tg_frontend/screens/theme.dart';
+import 'package:tg_frontend/widgets/main_button.dart';
 import 'package:tg_frontend/widgets/square_button.dart';
 import 'package:tg_frontend/widgets/input_field.dart';
 import 'package:tg_frontend/models/travel_model.dart';
@@ -339,9 +340,10 @@ class _SearchTravelsState extends State<SearchTravels> {
                                 ),
                               ]),
                           const SizedBox(height: 20),
-                          LargeButton(
+                          MainButton(
                               text: "buscar",
                               large: false,
+                              buttonColor: ColorManager.fourthColor,
                               onPressed: () => _submitForm(context)),
                         ],
                       ),

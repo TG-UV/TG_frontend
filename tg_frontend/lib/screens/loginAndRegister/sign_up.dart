@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tg_frontend/screens/loginAndRegister/user_register.dart';
-import 'package:tg_frontend/widgets/large_button.dart';
+import 'package:tg_frontend/screens/theme.dart';
+import 'package:tg_frontend/widgets/main_button.dart';
 import 'package:get/get.dart';
 
 class SignUp extends StatelessWidget {
@@ -18,7 +19,7 @@ class SignUp extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SizedBox(height: MediaQuery.of(context).size.height / 16),
+              SizedBox(height: MediaQuery.of(context).size.width / 20),
               Row(children: [
                 IconButton(
                     onPressed: () {
@@ -46,11 +47,13 @@ class SignUp extends StatelessWidget {
                 'Selecciona el tipo de cuenta que deseas crear',
                 style: Theme.of(context).textTheme.titleSmall,
                 textAlign: TextAlign.center,
+                maxLines: 2,
               ),
               const SizedBox(height: 80),
-              LargeButton(
+              MainButton(
                   text: 'Pasajero',
                   large: true,
+                  buttonColor: ColorManager.fourthColor,
                   onPressed: () {
                     Get.to(() => const UserRegister(userType: 3));
                   }),
@@ -64,7 +67,7 @@ class SignUp extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 55),
-              LargeButton(
+              MainButton(
                   text: 'Conductor',
                   large: true,
                   onPressed: () {
@@ -86,6 +89,7 @@ class SignUp extends StatelessWidget {
                     .titleSmall!
                     .copyWith(fontSize: 12),
                 textAlign: TextAlign.center,
+                maxLines: 2,
               ),
             ],
           )),

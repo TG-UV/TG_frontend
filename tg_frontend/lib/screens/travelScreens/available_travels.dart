@@ -3,7 +3,7 @@ import 'package:tg_frontend/datasource/endPoints/end_point.dart';
 import 'package:tg_frontend/models/travel_model.dart';
 import 'package:tg_frontend/screens/theme.dart';
 import 'package:tg_frontend/screens/travelScreens/search_travels.dart';
-import 'package:tg_frontend/widgets/large_button.dart';
+import 'package:tg_frontend/widgets/main_button.dart';
 import 'package:tg_frontend/widgets/travel_card.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -68,7 +68,7 @@ class _ListedTravelsState extends State<AvailableTravels> {
               )
             ]),
             const SizedBox(height: 40),
-            LargeButton(
+            MainButton(
               text: 'Buscar',
               large: false,
               onPressed: () {
@@ -140,7 +140,6 @@ class _ListedTravelsState extends State<AvailableTravels> {
                                     //TravelCard(travel: perfectTravel),
                                     TravelCard(
                                       travel: travelsList[0],
-                                      
                                     ),
                                     const SizedBox(height: 30),
                                     Align(

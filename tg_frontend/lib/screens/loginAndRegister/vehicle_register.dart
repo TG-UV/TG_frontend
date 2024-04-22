@@ -7,7 +7,7 @@ import 'package:tg_frontend/screens/home.dart';
 import 'package:tg_frontend/screens/loginAndRegister/password_register.dart';
 import 'package:tg_frontend/screens/theme.dart';
 import 'package:tg_frontend/widgets/input_field.dart';
-import 'package:tg_frontend/widgets/large_button.dart';
+import 'package:tg_frontend/widgets/main_button.dart';
 import 'package:tg_frontend/models/user_model.dart';
 import 'package:flutter_dropdown/flutter_dropdown.dart';
 import 'package:tg_frontend/datasource/user_data.dart';
@@ -158,16 +158,25 @@ class _VehicleRegisterState extends State<VehicleRegister> {
                         padding: const EdgeInsets.all(16.0),
                         child: Form(
                             key: _formKey,
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
                             child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
-                                  Text(
-                                    "Registra un vehículo",
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleLarge!
-                                        .copyWith(fontSize: 26),
-                                  ),
+                                  Row(children: [
+                                    IconButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        icon: const Icon(Icons.arrow_back)),
+                                    Text(
+                                      " Registra un vehículo",
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleLarge!
+                                          .copyWith(fontSize: 20),
+                                    )
+                                  ]),
                                   const SizedBox(height: 30.0),
                                   InputField(
                                     controller: licensePlateController,
@@ -300,9 +309,10 @@ class _VehicleRegisterState extends State<VehicleRegister> {
                                   const SizedBox(height: 80),
                                   Container(
                                       alignment: Alignment.center,
-                                      child: LargeButton(
+                                      child: MainButton(
                                           text: 'Continuar',
                                           large: true,
+                                          buttonColor: ColorManager.fourthColor,
                                           onPressed: () {
                                             submitForm(context);
                                           })),

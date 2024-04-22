@@ -6,7 +6,7 @@ import 'package:tg_frontend/screens/home.dart';
 import 'package:tg_frontend/screens/loginAndRegister/login.dart';
 import 'package:tg_frontend/screens/theme.dart';
 import 'package:tg_frontend/widgets/input_field.dart';
-import 'package:tg_frontend/widgets/large_button.dart';
+import 'package:tg_frontend/widgets/main_button.dart';
 import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/datasource/user_data.dart';
 import 'package:tg_frontend/device/environment.dart';
@@ -200,7 +200,7 @@ class _PasswordRegisterState extends State<PasswordRegister> {
                                 )),
                             Visibility(
                               visible: !emailCheckAdvice,
-                              child: LargeButton(
+                              child: MainButton(
                                   text: 'Crear cuenta',
                                   large: true,
                                   onPressed: () {
