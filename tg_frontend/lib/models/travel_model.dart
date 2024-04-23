@@ -29,10 +29,10 @@ class Travel {
   factory Travel.fromJson(Map<String, dynamic> json) {
     return Travel(
       id: json['id_trip'] as int? ?? 0,
-      startingPointLat: json['starting_point']['lat']as double? ?? 0.0,
-      startingPointLong: json['starting_point']['long']as double? ?? 0.0,
-      arrivalPointLat: json['arrival_point']['lat']as double? ?? 0.0,
-      arrivalPointLong: json['arrival_point']['long']as double? ?? 0.0,
+      startingPointLat: json['starting_point']['lat'] as double? ?? 0.0,
+      startingPointLong: json['starting_point']['long'] as double? ?? 0.0,
+      arrivalPointLat: json['arrival_point']['lat'] as double? ?? 0.0,
+      arrivalPointLong: json['arrival_point']['long'] as double? ?? 0.0,
       driver: json['driver'] as int? ?? 0,
       price: json['fare'] as int? ?? 0,
       seats: json['seats'] as int? ?? 0,
@@ -62,10 +62,10 @@ class Travel {
     // DateTime dateFormatted = DateTime.parse(date);
     // DateTime hourFormatted = DateTime.parse(hour);
     return {
-      'arrival_point_lat': arrivalPointLat,
-      'arrival_point_long': arrivalPointLong,
-      'starting_point_lat': startingPointLat,
-      'starting_point_long': startingPointLong,
+      'arrival_point_lat': double.parse(arrivalPointLat.toStringAsFixed(6)),
+      'arrival_point_long': double.parse(arrivalPointLong.toStringAsFixed(6)),
+      'starting_point_lat': double.parse(startingPointLat.toStringAsFixed(6)),
+      'starting_point_long': double.parse(startingPointLong.toStringAsFixed(6)),
       //'driver': driver,
       'fare': price,
       'seats': seats,

@@ -58,12 +58,14 @@ class _DetailsCardState extends State<AssociatesDetailsCard>
     initializeDateFormatting('es_ES', null);
   }
 
-  void _getTextDirections()async {
-    arrivalPointTextDirection= await travelDatasourceImpl.getTextDirection(lat: widget.travel.arrivalPointLat, long: widget.travel.arrivalPointLong);
-    startingPointTextDirection = await travelDatasourceImpl.getTextDirection(lat: widget.travel.startingPointLat, long: widget.travel.startingPointLong);
-    setState(() {
-      
-    });
+  void _getTextDirections() async {
+    arrivalPointTextDirection = await travelDatasourceImpl.getTextDirection(
+        lat: widget.travel.arrivalPointLat,
+        long: widget.travel.arrivalPointLong);
+    startingPointTextDirection = await travelDatasourceImpl.getTextDirection(
+        lat: widget.travel.startingPointLat,
+        long: widget.travel.startingPointLong);
+    setState(() {});
   }
 
   DateTime _parseTimeString(String timeString) {
@@ -134,7 +136,6 @@ class _DetailsCardState extends State<AssociatesDetailsCard>
                                   return Opacity(
                                     opacity: _controller.value,
                                     child: Text(
-                                      
                                       'El conductor aún no ha confirmado',
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
@@ -175,58 +176,52 @@ class _DetailsCardState extends State<AssociatesDetailsCard>
                               overflow: TextOverflow.ellipsis,
                             ),
                             const SizedBox(height: 25),
-                            Text(
-                              'Partida:  $startingPointTextDirection',
-                              style: Theme.of(context).textTheme.titleSmall,
+                            Row(
+                              children: [
+                                const Image(
+                                  image: AssetImage(
+                                    'assets/side2side.png',
+                                  ),
+                                  width: 50,
+                                  height: 70,
+                                ),
+                                Expanded(
+                                  child: Column(
+                                    children: [
+                                      SingleChildScrollView(
+                                        scrollDirection: Axis.horizontal,
+                                        child: Text(
+                                          'Partida:  $startingPointTextDirection',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleSmall,
+                                        ),
+                                      ),
+                                      SingleChildScrollView(
+                                        scrollDirection: Axis.horizontal,
+                                        child: Text(
+                                          'Destino:   $arrivalPointTextDirection',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleSmall,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
                             Text(
-                              'Destino:   $arrivalPointTextDirection',
-                              style: Theme.of(context).textTheme.titleSmall,
-                            ),
-                            Text(
-                              '${detailsList!["seats"]} cupos reservados',
+                              '    ${detailsList!["seats"]} cupos reservados',
                               style: Theme.of(context).textTheme.titleSmall,
                             ),
                             const SizedBox(height: 45),
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                if (!detailsList!["is_confirmed"])
                                 Column(
-                                  children: [
-                                    Text(
-                                      "Conductor ",
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall!
-                                          .copyWith(
-                                              fontWeight: FontWeight.bold),
-                                    ),
-                                    Text(
-                                      '${detailsList!["trip"]["driver"]["first_name"]}  ${detailsList!["trip"]["driver"]["last_name"]}',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall!
-                                          .copyWith(
-                                              fontWeight: FontWeight.normal),
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(Icons.phone),
-                                      onPressed: _hasCallSupport
-                                          ? () => setState(() {
-                                                _launched = _makePhoneCall(
-                                                    detailsList!["trip"]
-                                                            ["driver"]
-                                                        ["phone_number"]);
-                                              })
-                                          : null,
-                                    ),
-                                  ],
-                                ),
-
-                                const SizedBox(width: 20),
-                                Column(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Row(
                                         mainAxisAlignment:
@@ -257,19 +252,66 @@ class _DetailsCardState extends State<AssociatesDetailsCard>
                                         softWrap: true,
                                       ),
                                     ]),
+                                const SizedBox(width: 20),
+                                if (detailsList!["is_confirmed"])
+                                  Container(
+                                    // color: Color.fromARGB(69, 127, 127, 127),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(20),
+                                      ),
+                                      color: Color.fromARGB(69, 127, 127, 127),
+                                    ),
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          "Conductor ",
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleSmall!
+                                              .copyWith(
+                                                  fontWeight: FontWeight.bold),
+                                        ),
+                                        Text(
+                                          '${detailsList!["trip"]["driver"]["first_name"]}  ${detailsList!["trip"]["driver"]["last_name"]}',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleSmall!
+                                              .copyWith(
+                                                  fontWeight:
+                                                      FontWeight.normal),
+                                        ),
+                                        IconButton(
+                                          icon: const Icon(Icons.phone),
+                                          onPressed: _hasCallSupport
+                                              ? () => setState(() {
+                                                    _launched = _makePhoneCall(
+                                                        detailsList!["trip"]
+                                                                ["driver"]
+                                                            ["phone_number"]);
+                                                  })
+                                              : null,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
 
                                 //const SizedBox(width: 8),
                               ],
                             ),
 
                             const SizedBox(height: 50),
-                            MainButton(
-                              large: true,
-                              text: "cancelar cupo",
-                              buttonColor: ColorManager.fourthColor,
-                              onPressed: () {
-                                _cancelSpot(detailsList!["id_passenger_trip"]);
-                              },
+
+                            Center(
+                              child: MainButton(
+                                large: true,
+                                text: "cancelar cupo",
+                                buttonColor: ColorManager.fourthColor,
+                                onPressed: () {
+                                  _cancelSpot(
+                                      detailsList!["id_passenger_trip"]);
+                                },
+                              ),
                             ),
                             //const SizedBox(width: 8),
 

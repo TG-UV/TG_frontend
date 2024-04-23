@@ -37,7 +37,9 @@ class MyApp extends StatelessWidget {
 
   final ThemeData myTheme = ThemeData.light().copyWith(
     cardColor: ColorManager.fourthColor,
-    cardTheme: CardTheme(color: ColorManager.thirdColor, surfaceTintColor: Colors.transparent),
+    cardTheme: CardTheme(
+        color: ColorManager.thirdColor,
+        surfaceTintColor: Color.fromARGB(162, 239, 239, 239)),
     dialogBackgroundColor: ColorManager.thirdColor,
     primaryColor: ColorManager.thirdColor, // Color primario
     colorScheme: const ColorScheme.light().copyWith(

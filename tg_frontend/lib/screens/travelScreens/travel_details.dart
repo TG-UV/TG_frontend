@@ -74,8 +74,10 @@ class _TravelDetailsState extends State<TravelDetails> {
               //color: const Color.fromARGB(255, 255, 58, 58),
               width: MediaQuery.of(context).size.width *
                   0.75, // 3 cuartos de la pantalla
-              height: MediaQuery.of(context).size.height *
-                  0.75, // 3 cuartos de la pantallaS
+              height: user.type == 2
+                  ? MediaQuery.of(context).size.height * 0.75
+                  : MediaQuery.of(context).size.height *
+                      0.67, // 3 cuartos de la pantallaS
               decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.only(

@@ -114,7 +114,7 @@ class _UserRegisterState extends State<UserRegister> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: true,
         body: FutureBuilder<List<dynamic>?>(
             future: _fetchCities(),
             builder: (context, snapshot) {
@@ -127,7 +127,7 @@ class _UserRegisterState extends State<UserRegister> {
               } else {
                 cities = snapshot.data!;
                 return SingleChildScrollView(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.all(20.0),
                     child: Form(
                       key: _formKey,
                       autovalidateMode: AutovalidateMode.onUserInteraction,

@@ -116,7 +116,7 @@ class _HomeState extends State<Home> {
             color: Colors.black,
           )),
           TabItem(icon: Icon(Icons.timelapse_sharp, color: Colors.black)),
-          TabItem(icon: Icon(Icons.notifications, color: Colors.black)),
+          // TabItem(icon: Icon(Icons.notifications, color: Colors.black)),
         ],
         onTap: (int index) {
           setState(() {

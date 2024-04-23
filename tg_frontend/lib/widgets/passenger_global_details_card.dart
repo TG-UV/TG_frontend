@@ -58,12 +58,14 @@ class _GlobalDetailsCardState extends State<GlobalDetailsCard> {
         "${dayOfWeek.substring(0, 1).toUpperCase()}${dayOfWeek.substring(1)}";
   }
 
-  void _getTextDirections()async {
-    arrivalPointTextDirection= await travelDatasourceImpl.getTextDirection(lat: widget.travel.arrivalPointLat, long: widget.travel.arrivalPointLong);
-    startingPointTextDirection = await travelDatasourceImpl.getTextDirection(lat: widget.travel.startingPointLat, long: widget.travel.startingPointLong);
-    setState(() {
-      
-    });
+  void _getTextDirections() async {
+    arrivalPointTextDirection = await travelDatasourceImpl.getTextDirection(
+        lat: widget.travel.arrivalPointLat,
+        long: widget.travel.arrivalPointLong);
+    startingPointTextDirection = await travelDatasourceImpl.getTextDirection(
+        lat: widget.travel.startingPointLat,
+        long: widget.travel.startingPointLong);
+    setState(() {});
   }
 
   void _seatsIncrement(int value) async {
@@ -199,17 +201,42 @@ class _GlobalDetailsCardState extends State<GlobalDetailsCard> {
                                             .copyWith(fontSize: 16.0),
                                       ),
                                       const SizedBox(height: 25),
-                                      Text(
-                                        'Partida:  $startingPointTextDirection',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .titleSmall,
-                                      ),
-                                      Text(
-                                        'Destino:   $arrivalPointTextDirection',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .titleSmall,
+                                      Row(
+                                        children: [
+                                          const Image(
+                                            image: AssetImage(
+                                              'assets/side2side.png',
+                                            ),
+                                            width: 50,
+                                            height: 70,
+                                          ),
+                                          Expanded(
+                                            child: Column(
+                                              children: [
+                                                SingleChildScrollView(
+                                                  scrollDirection:
+                                                      Axis.horizontal,
+                                                  child: Text(
+                                                    'Partida:  $startingPointTextDirection',
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .titleSmall,
+                                                  ),
+                                                ),
+                                                SingleChildScrollView(
+                                                  scrollDirection:
+                                                      Axis.horizontal,
+                                                  child: Text(
+                                                    'Destino:   $arrivalPointTextDirection',
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .titleSmall,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                       const SizedBox(height: 40),
                                       Row(

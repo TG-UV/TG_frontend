@@ -26,6 +26,7 @@ class _LoginState extends State<Login> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController mailLoginController = TextEditingController();
   final TextEditingController passwordLoginController = TextEditingController();
+  final TextEditingController reSetMailController = TextEditingController();
   UserDatasourceMethods userDatasourceImpl =
       Environment.sl.get<UserDatasourceMethods>();
   EndPoints endPoint = EndPoints();
@@ -50,6 +51,10 @@ class _LoginState extends State<Login> {
           ? saveAuthInformation(token, username, password)
           : showErrorMessage('El usuario no existe, intente de nuevo');
     }
+  }
+
+  Future<void> reSetPassword(String email) async {
+    await userDatasourceImpl.postReSetPassword(email: email);
   }
 
   void saveAuthInformation(token, username, password) async {
@@ -90,13 +95,14 @@ class _LoginState extends State<Login> {
             body: SingleChildScrollView(
                 child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    alignment: Alignment.center,
+                    //alignment: Alignment.center,
                     child: Form(
                         key: _formKey,
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                         child: Stack(children: [
                           Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                              //mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
                                 const SizedBox(height: 100),
                                 Center(
@@ -126,6 +132,52 @@ class _LoginState extends State<Login> {
                                   textInputType: TextInputType.text,
                                   obscure: true,
                                   icon: const Icon(Icons.key),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          // Aquí construyes el AlertDialog
+                                          return AlertDialog(
+                                              title: const Text(
+                                                  "Restablecer contraseña"),
+                                              content: Column(
+                                                children: [
+                                                  const Text(
+                                                      "Ingrese el correo para restablecer la contraseña"),
+                                                  TextFormField(
+                                                    controller:
+                                                        reSetMailController,
+                                                  )
+                                                ],
+                                              ),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () {
+                                                    reSetPassword(
+                                                        reSetMailController
+                                                            .text);
+                                                  },
+                                                  child: const Text("Enviar"),
+                                                )
+                                              ]);
+                                        });
+                                  },
+                                  style: TextButton.styleFrom(
+                                    textStyle: TextStyle(
+                                        decoration: TextDecoration.underline,
+                                        color: ColorManager.primaryColor,
+                                        fontSize: 12),
+                                  ),
+                                  child: Text(
+                                    '¿Olvidaste tu contraseña?',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleLarge!
+                                        .copyWith(fontSize: 12),
+                                    textAlign: TextAlign.end,
+                                  ),
                                 ),
                                 const SizedBox(height: 50),
                                 MainButton(

@@ -61,14 +61,15 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
         "${dayOfWeek.substring(0, 1).toUpperCase()}${dayOfWeek.substring(1)}";
   }
 
-  void _getTextDirections()async {
-    arrivalPointTextDirection= await travelDatasourceImpl.getTextDirection(lat: widget.travel.arrivalPointLat, long: widget.travel.arrivalPointLong);
-    startingPointTextDirection = await travelDatasourceImpl.getTextDirection(lat: widget.travel.startingPointLat, long: widget.travel.startingPointLong);
-    setState(() {
-      
-    });
+  void _getTextDirections() async {
+    arrivalPointTextDirection = await travelDatasourceImpl.getTextDirection(
+        lat: widget.travel.arrivalPointLat,
+        long: widget.travel.arrivalPointLong);
+    startingPointTextDirection = await travelDatasourceImpl.getTextDirection(
+        lat: widget.travel.startingPointLat,
+        long: widget.travel.startingPointLong);
+    setState(() {});
   }
-
 
   void initializeDateFormat() {
     initializeDateFormatting('es_ES', null);
@@ -135,6 +136,7 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                 int sendResponse = await travelDatasourceImpl
                     .deleteTravelRemote(travelId: widget.travel.id.toString());
                 if (sendResponse != 0) {
+                  await EasyLoading.showInfo("Se eliminó tu viaje..");
                   Navigator.of(context).pop();
                 } else {
                   await EasyLoading.showInfo("Hubo un error");
@@ -260,7 +262,7 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
         width: 230,
         child: Card(
           elevation: 0.9,
-         // color: ColorManager.thirdColor,
+          // color: ColorManager.thirdColor,
           //shadowColor: ColorManager.primaryColor,
           child: Column(
             // mainAxisSize: MainAxisSize.min,
@@ -347,7 +349,7 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                 padding: const EdgeInsets.all(18.0),
                 child: Column(
                     // mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -374,26 +376,48 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                             .titleMedium!
                             .copyWith(fontSize: 16.0),
                       ),
-                      Text(
-                        'Desde: $startingPointTextDirection',
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleSmall!
-                            .copyWith(fontSize: 14),
-                        maxLines: 1,
-                      ),
-                      Text(
-                        'Hacia: $arrivalPointTextDirection',
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleSmall!
-                            .copyWith(fontSize: 14),
-                        maxLines: 1,
+                      Row(
+                        children: [
+                          const Image(
+                            image: AssetImage(
+                              'assets/side2side.png',
+                            ),
+                            width: 50,
+                            height: 70,
+                          ),
+                          Expanded(
+                            child: Column(
+                              children: [
+                                SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: Text(
+                                    'Desde: $startingPointTextDirection',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleSmall!
+                                        .copyWith(fontSize: 14),
+                                  ),
+                                ),
+                                SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: Text(
+                                    'Hacia: $arrivalPointTextDirection',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleSmall!
+                                        .copyWith(fontSize: 14),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                       Text(
                         '${widget.travel.seats} cupos ',
                         style: Theme.of(context).textTheme.titleSmall!.copyWith(
                             fontWeight: FontWeight.normal, fontSize: 14),
+                        textAlign: TextAlign.end,
                       ),
                       Text(
                         '\$ ${widget.travel.price} ',
@@ -401,6 +425,7 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                             .textTheme
                             .titleSmall!
                             .copyWith(fontSize: 14),
+                        textAlign: TextAlign.end,
                       ),
                       const SizedBox(height: 10),
                       Row(
@@ -468,7 +493,9 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                           ),
                         ),
                       ),
-                      SizedBox(height: 5,),
+                      SizedBox(
+                        height: 5,
+                      ),
                       Center(
                           child: MainButton(
                         large: true,

@@ -22,6 +22,7 @@ abstract class UserDatasource {
   Future<List<Vehicle>?> getVehiclesDriver();
   Future<String?> getUserAuth(
       {required String username, required String password});
+  Future<void> postReSetPassword({required String email});
   Future<User> getUserLocal(int idUser);
   Future<List<dynamic>?> getUserCitiesRemote();
 }
@@ -236,6 +237,18 @@ class UserDatasourceMethods implements UserDatasource {
       print('Error al autenticar: $error');
     }
     return token;
+  }
+
+  @override
+  Future<void> postReSetPassword({required String email}) async {
+    try {
+      await dio.post(
+        _endPoints.baseUrl + _endPoints.postReSetPassword,
+        data: {"email": email},
+      );
+    } catch (error) {
+      print('Error al reSetPassword: $error');
+    }
   }
 
   @override

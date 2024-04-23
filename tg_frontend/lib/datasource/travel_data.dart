@@ -99,30 +99,28 @@ class TravelDatasourceMethods implements TravelDatasource {
   }
 
   @override
-  Future<String> getTextDirection({required double lat, required double long}) async {
+  Future<String> getTextDirection(
+      {required double lat, required double long}) async {
     String placeName = "";
     String url =
-      'https://api.mapbox.com/geocoding/v5/mapbox.places/$long,$lat.json?access_token=$apiKey';
+        'https://api.mapbox.com/geocoding/v5/mapbox.places/$long,$lat.json?access_token=$apiKey';
 
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
-    final jsonResponse = json.decode(response.body);
-    final features = jsonResponse['features'];
-    if (features != null && features.isNotEmpty) {
-      final firstFeature = features[0];
-       placeName = firstFeature['place_name'];
-      
+      final jsonResponse = json.decode(response.body);
+      final features = jsonResponse['features'];
+      if (features != null && features.isNotEmpty) {
+        final firstFeature = features[0];
+        placeName = firstFeature['place_name'];
+      } else {
+        return 'No se encontraron resultados';
+      }
     } else {
-      return 'No se encontraron resultados';
+      throw Exception('Error al obtener la dirección: ${response.statusCode}');
     }
-  } else {
-    throw Exception('Error al obtener la dirección: ${response.statusCode}');
+    return placeName;
   }
-  return placeName;
-  }
-
-
 
   // @override
   // Future<void> insertTravelsLocal({required List<Travel> travels}) async {
@@ -175,15 +173,16 @@ class TravelDatasourceMethods implements TravelDatasource {
     return sent;
   }
 
-   @override
+  @override
   Future<int> deleteTravelRemote({required String travelId}) async {
     Response? response;
     int sent = 0;
-    String url = "${_endPoints.baseUrl}${_endPoints.postTravel}$travelId/";
+    String url =
+        "${_endPoints.baseUrl}${_endPoints.deleteTRavelDriver}$travelId/";
     try {
       dio.options.headers['Authorization'] = 'Token $token';
-      response = await dio.post(url);
-          
+      response = await dio.delete(url);
+
       // String data = Travel.toJson(travels[sent] as Travel);
 
       //  print(response.data);
