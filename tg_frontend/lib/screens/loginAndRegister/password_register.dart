@@ -12,6 +12,7 @@ import 'package:tg_frontend/datasource/user_data.dart';
 import 'package:tg_frontend/device/environment.dart';
 import 'package:tg_frontend/services/auth_services.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_pw_validator/flutter_pw_validator.dart';
 
 class PasswordRegister extends StatefulWidget {
   const PasswordRegister({super.key, required this.user, this.vehicle});
@@ -29,6 +30,10 @@ class _PasswordRegisterState extends State<PasswordRegister> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController passwordConfirmationController =
       TextEditingController();
+
+  final GlobalKey<FlutterPwValidatorState> validatorKey =
+      GlobalKey<FlutterPwValidatorState>();
+
   bool emailCheckAdvice = false;
 
   Future<dynamic> submitForm(BuildContext context) async {
@@ -144,6 +149,15 @@ class _PasswordRegisterState extends State<PasswordRegister> {
                               obscure: false,
                               icon: const Icon(null),
                             ),
+                            FlutterPwValidator(
+                                controller: passwordConfirmationController,
+                                minLength: 6,
+                                uppercaseCharCount: 1,
+                                numericCharCount: 1,
+                                specialCharCount: 1,
+                                width: 400,
+                                height: 150,
+                                onSuccess: () {}),
                             const SizedBox(height: 200),
                             Visibility(
                                 visible: emailCheckAdvice,

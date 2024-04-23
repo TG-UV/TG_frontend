@@ -1,0 +1,155 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:tg_frontend/models/vehicle_model.dart';
+import 'package:tg_frontend/screens/theme.dart';
+import 'package:tg_frontend/widgets/input_field.dart';
+import 'package:tg_frontend/models/user_model.dart';
+import 'package:tg_frontend/datasource/user_data.dart';
+import 'package:tg_frontend/device/environment.dart';
+import 'package:flutter_pw_validator/flutter_pw_validator.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:tg_frontend/widgets/main_button.dart';
+
+
+
+class SetUserInformation extends StatefulWidget {
+  const SetUserInformation({super.key, required this.user});
+  final User user;
+
+
+  @override
+  State<SetUserInformation> createState() => _SetUserInformationState();
+}
+
+class _SetUserInformationState extends State<SetUserInformation> {
+  UserDatasourceMethods userDatasourceImpl =
+      Environment.sl.get<UserDatasourceMethods>();
+  final _formKey = GlobalKey<FormState>();
+
+
+
+  late Map<String, dynamic> options;
+  final TextEditingController currentPasswordController = TextEditingController();
+  final TextEditingController newPasswordController = TextEditingController();
+
+  late Vehicle vehicle;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  
+
+  Future<void> _sendSetPassword()async {
+    var response = await userDatasourceImpl.postUserSetPassword(currentPassword: currentPasswordController.text, newPassword: newPasswordController.text);
+    if(response is String){
+       return EasyLoading.showInfo("contraseña registrada con exito");
+          } else {
+            return EasyLoading.showInfo(response.toString());
+          }
+    
+  }
+
+
+  InputDecoration myInputDecoration(String label) {
+    return InputDecoration(
+      labelText: label,
+      enabledBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: ColorManager.secondaryColor, width: 2),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(5),
+          borderSide: const BorderSide(
+            width: 0,
+            style: BorderStyle.none,
+          )),
+      filled: true,
+      fillColor: ColorManager.thirdColor,
+    );
+  }
+
+  void submitForm(BuildContext context) async {
+    if (_formKey.currentState!.validate()) {
+      //List<Travel> travelList = [];
+     
+      //Get.to(() => const Home());
+      
+    } else {
+      AlertDialog(
+          title: const Text("Error"),
+          content: const SingleChildScrollView(
+              child: ListBody(
+            children: <Widget>[
+              Text("Faltan campos por completar."),
+            ],
+          )),
+          actions: [
+            ElevatedButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text("Aceptar"))
+          ]);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        body: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            alignment: Alignment.center,
+            child: SingleChildScrollView(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Form(
+                            key: _formKey,
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
+                            child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  Row(children: [
+                                    IconButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        icon: const Icon(Icons.arrow_back)),
+                                    Text(
+                                      " Cambia tu contraseña",
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleLarge!
+                                          .copyWith(fontSize: 20),
+                                    )
+                                  ]),
+                                  const SizedBox(height: 30.0),
+                                  InputField(
+                                    controller: currentPasswordController,
+                                    textInput: 'Contraseña actual',
+                                    textInputType: TextInputType.text,
+                                    obscure: false,
+                                    icon: const Icon(null)
+                                  ),
+                                  InputField(
+                                    controller: newPasswordController,
+                                    textInput: 'Nueva contraseña',
+                                    textInputType: TextInputType.text,
+                                    obscure: false,
+                                    icon: const Icon(null),
+                                  ),
+                                  FlutterPwValidator(
+                                controller: newPasswordController,
+                                minLength: 6,
+                                uppercaseCharCount: 1,
+                                numericCharCount: 1,
+                                specialCharCount: 1,
+                                width: 400,
+                                height: 150,
+                                onSuccess: () {}),
+                                MainButton(text: "guardar", large: true, onPressed: _sendSetPassword)
+                                  ])
+                                  ))));
+                                  
+  }
+}

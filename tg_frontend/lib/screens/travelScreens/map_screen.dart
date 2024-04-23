@@ -3,7 +3,6 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:tg_frontend/device/environment.dart';
 import 'package:tg_frontend/screens/loginAndRegister/login.dart';
 import 'package:tg_frontend/screens/loginAndRegister/vehicle_managment.dart';
-import 'package:tg_frontend/screens/loginAndRegister/vehicle_register.dart';
 import 'package:tg_frontend/screens/theme.dart';
 import 'package:tg_frontend/screens/travelScreens/available_travels.dart';
 import 'package:tg_frontend/screens/travelScreens/new_travel.dart';
@@ -15,9 +14,9 @@ import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart' as loc;
 import 'package:logger/logger.dart';
 import 'package:tg_frontend/models/user_model.dart';
-import 'package:tg_frontend/datasource/user_data.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:tg_frontend/widgets/setUserInformation.dart';
 
 final logger = Logger();
 
@@ -34,20 +33,19 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   late loc.LocationData currentLocation;
   User user = Environment.sl.get<User>();
-  UserDatasourceMethods userDatasourceImpl =
-      Environment.sl.get<UserDatasourceMethods>();
-  LatLng? myPosition;
+  
+   LatLng? myPosition = const LatLng(3.3765821, -76.5334617);
   LatLng universityPosition = const LatLng(3.3765821, -76.5334617);
 
   @override
   void initState() {
     super.initState();
-    _requestLocationPermission();
+     _requestLocationPermission();
   }
 
   Future<void> _requestLocationPermission() async {
     if (await Permission.locationWhenInUse.request().isGranted) {
-      _getLocation();
+     await  _getLocation();
     } else {
       await EasyLoading.showInfo("permiso denegado");
     }
@@ -140,11 +138,29 @@ class _MapScreenState extends State<MapScreen> {
                         ));
                   },
                 ),
-              ListTile(
-                leading: const Icon(Icons.settings),
-                title: const Text('Configuración'),
-                onTap: () {},
-              ),
+                ExpansionTile(
+              title: Text('Configuración'),
+              children: <Widget>[
+                ListTile(
+                  title: Text('Editar perfil'),
+                  onTap: () {
+                   
+                  },
+                ),
+                ListTile(
+                  title: Text('Cambiar contraseña'),
+                  onTap: () {
+                    Get.to(() =>  SetUserInformation(user: user));
+                  },
+                ),
+              ],
+            ),
+              // ListTile(
+              //   leading: const Icon(Icons.settings),
+              //   title: const Text('Configuración'),
+              //   onTap: () {},
+              // ),
+              
               ListTile(
                 leading: const Icon(Icons.support_agent_outlined),
                 title: const Text('Soporte'),
@@ -229,7 +245,7 @@ class _MapScreenState extends State<MapScreen> {
         body: Stack(children: [
           FlutterMap(
             options: MapOptions(
-                initialCenter: _getCenterPosition(),
+                initialCenter: myPosition ?? universityPosition,
                 minZoom: 5,
                 maxZoom: 25,
                 initialZoom: 15),

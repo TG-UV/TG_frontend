@@ -14,6 +14,7 @@ abstract class UserDatasource {
   Future<int> insertUserLocal({required User user});
   Future<dynamic> insertUserRemote({required User user});
   Future<void> postUserSendEmail({required String userEmail});
+  Future<dynamic> postUserSetPassword({required String currentPassword, required String newPassword});
   Future<dynamic> insertVehicleRemote({required Vehicle vehicle});
   Future<dynamic> updateVehicelRemote(
       {required int vehicleId, required Vehicle vehicle});
@@ -76,6 +77,24 @@ class UserDatasourceMethods implements UserDatasource {
     } catch (e) {
       print("error al reenviar el email de confirmación $response");
     }
+  }
+
+  @override
+  Future<dynamic> postUserSetPassword({required String currentPassword, required String newPassword}) async {
+    var response;
+    Map<String, dynamic> _data = {"new_password": newPassword, "current_password": currentPassword};
+
+    try {
+      dio.options.headers['Authorization'] = 'Token $token';
+      response = await dio.post(
+        _endPoints.baseUrl + _endPoints.postSetPassword,
+        data: _data,
+      );
+    } catch (e) {
+      print("error al reenviar el email de confirmación $response");
+      return response.toString();
+    }
+    return response.toString();
   }
 
   @override

@@ -14,6 +14,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
+
 class UserRegister extends StatefulWidget {
   const UserRegister({super.key, required this.userType});
   final int userType;
@@ -37,6 +38,8 @@ class _UserRegisterState extends State<UserRegister> {
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController residenceController = TextEditingController();
+
+
 
   @override
   void initState() {
