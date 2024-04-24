@@ -11,12 +11,9 @@ import 'package:flutter_pw_validator/flutter_pw_validator.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:tg_frontend/widgets/main_button.dart';
 
-
-
 class SetUserInformation extends StatefulWidget {
   const SetUserInformation({super.key, required this.user});
   final User user;
-
 
   @override
   State<SetUserInformation> createState() => _SetUserInformationState();
@@ -27,31 +24,29 @@ class _SetUserInformationState extends State<SetUserInformation> {
       Environment.sl.get<UserDatasourceMethods>();
   final _formKey = GlobalKey<FormState>();
 
-
-
   late Map<String, dynamic> options;
-  final TextEditingController currentPasswordController = TextEditingController();
+  final TextEditingController currentPasswordController =
+      TextEditingController();
   final TextEditingController newPasswordController = TextEditingController();
 
   late Vehicle vehicle;
+  bool isVisible = false;
 
   @override
   void initState() {
     super.initState();
   }
 
-  
-
-  Future<void> _sendSetPassword()async {
-    var response = await userDatasourceImpl.postUserSetPassword(currentPassword: currentPasswordController.text, newPassword: newPasswordController.text);
-    if(response is String){
-       return EasyLoading.showInfo("contraseña registrada con exito");
-          } else {
-            return EasyLoading.showInfo(response.toString());
-          }
-    
+  Future<void> _sendSetPassword() async {
+    var response = await userDatasourceImpl.postUserSetPassword(
+        currentPassword: currentPasswordController.text,
+        newPassword: newPasswordController.text);
+    if (response is int) {
+      return EasyLoading.showInfo("contraseña registrada con exito");
+    } else {
+      return EasyLoading.showInfo(response.toString());
+    }
   }
-
 
   InputDecoration myInputDecoration(String label) {
     return InputDecoration(
@@ -74,9 +69,8 @@ class _SetUserInformationState extends State<SetUserInformation> {
   void submitForm(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       //List<Travel> travelList = [];
-     
+
       //Get.to(() => const Home());
-      
     } else {
       AlertDialog(
           title: const Text("Error"),
@@ -94,6 +88,12 @@ class _SetUserInformationState extends State<SetUserInformation> {
     }
   }
 
+  _changeVisbilityParameter(bool value) {
+    setState(() {
+      isVisible = value;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -101,44 +101,45 @@ class _SetUserInformationState extends State<SetUserInformation> {
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             alignment: Alignment.center,
             child: SingleChildScrollView(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Form(
-                            key: _formKey,
-                            autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
-                            child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  Row(children: [
-                                    IconButton(
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        },
-                                        icon: const Icon(Icons.arrow_back)),
-                                    Text(
-                                      " Cambia tu contraseña",
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleLarge!
-                                          .copyWith(fontSize: 20),
-                                    )
-                                  ]),
-                                  const SizedBox(height: 30.0),
-                                  InputField(
-                                    controller: currentPasswordController,
-                                    textInput: 'Contraseña actual',
-                                    textInputType: TextInputType.text,
-                                    obscure: false,
-                                    icon: const Icon(null)
-                                  ),
-                                  InputField(
-                                    controller: newPasswordController,
-                                    textInput: 'Nueva contraseña',
-                                    textInputType: TextInputType.text,
-                                    obscure: false,
-                                    icon: const Icon(null),
-                                  ),
-                                  FlutterPwValidator(
+                padding: const EdgeInsets.all(16.0),
+                child: Form(
+                    key: _formKey,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Row(children: [
+                            IconButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                icon: const Icon(Icons.arrow_back)),
+                            Text(
+                              " Cambia tu contraseña",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleLarge!
+                                  .copyWith(fontSize: 20),
+                            )
+                          ]),
+                          const SizedBox(height: 30.0),
+                          InputField(
+                              controller: currentPasswordController,
+                              textInput: 'Contraseña actual',
+                              textInputType: TextInputType.text,
+                              obscure: false,
+                              icon: const Icon(null)),
+                          const SizedBox(height: 10.0),
+                          InputField(
+                              controller: newPasswordController,
+                              textInput: 'Nueva contraseña',
+                              textInputType: TextInputType.text,
+                              obscure: false,
+                              icon: const Icon(null),
+                              onChange: _changeVisbilityParameter(true)),
+                          Visibility(
+                            visible: isVisible,
+                            child: FlutterPwValidator(
                                 controller: newPasswordController,
                                 minLength: 6,
                                 uppercaseCharCount: 1,
@@ -147,9 +148,11 @@ class _SetUserInformationState extends State<SetUserInformation> {
                                 width: 400,
                                 height: 150,
                                 onSuccess: () {}),
-                                MainButton(text: "guardar", large: true, onPressed: _sendSetPassword)
-                                  ])
-                                  ))));
-                                  
+                          ),
+                          MainButton(
+                              text: "guardar",
+                              large: true,
+                              onPressed: _sendSetPassword)
+                        ])))));
   }
 }

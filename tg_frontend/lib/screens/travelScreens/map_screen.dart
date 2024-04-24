@@ -33,19 +33,19 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   late loc.LocationData currentLocation;
   User user = Environment.sl.get<User>();
-  
-   LatLng? myPosition = const LatLng(3.3765821, -76.5334617);
+
+  LatLng? myPosition = const LatLng(3.3765821, -76.5334617);
   LatLng universityPosition = const LatLng(3.3765821, -76.5334617);
 
   @override
   void initState() {
     super.initState();
-     _requestLocationPermission();
+    _requestLocationPermission();
   }
 
   Future<void> _requestLocationPermission() async {
     if (await Permission.locationWhenInUse.request().isGranted) {
-     await  _getLocation();
+      await _getLocation();
     } else {
       await EasyLoading.showInfo("permiso denegado");
     }
@@ -138,29 +138,28 @@ class _MapScreenState extends State<MapScreen> {
                         ));
                   },
                 ),
-                ExpansionTile(
-              title: Text('Configuración'),
-              children: <Widget>[
-                ListTile(
-                  title: Text('Editar perfil'),
-                  onTap: () {
-                   
-                  },
-                ),
-                ListTile(
-                  title: Text('Cambiar contraseña'),
-                  onTap: () {
-                    Get.to(() =>  SetUserInformation(user: user));
-                  },
-                ),
-              ],
-            ),
+              ExpansionTile(
+                title: Text('Configuración'),
+                leading: const Icon(Icons.settings),
+                children: <Widget>[
+                  ListTile(
+                    title: Text('Editar perfil'),
+                    onTap: () {},
+                  ),
+                  ListTile(
+                    title: Text('Cambiar contraseña'),
+                    onTap: () {
+                      Get.to(() => SetUserInformation(user: user));
+                    },
+                  ),
+                ],
+              ),
               // ListTile(
               //   leading: const Icon(Icons.settings),
               //   title: const Text('Configuración'),
               //   onTap: () {},
               // ),
-              
+
               ListTile(
                 leading: const Icon(Icons.support_agent_outlined),
                 title: const Text('Soporte'),

@@ -33,7 +33,7 @@ class _DetailsCardState extends State<AssociatesDetailsCard>
   final EndPoints _endPoints = EndPoints();
   bool _hasCallSupport = false;
   Future<void>? _launched;
-  String dayOfWeekFormated = "Fecha";
+  late String dayOfWeekFormated;
   late AnimationController _controller;
   String startingPointTextDirection = "";
   String arrivalPointTextDirection = "";
@@ -52,6 +52,10 @@ class _DetailsCardState extends State<AssociatesDetailsCard>
       duration: Duration(milliseconds: 500),
       vsync: this,
     )..repeat(reverse: true);
+    String dayOfWeek =
+        DateFormat('EEEE', 'es_ES').format(DateTime.parse(widget.travel.date));
+    dayOfWeekFormated =
+        "${dayOfWeek.substring(0, 1).toUpperCase()}${dayOfWeek.substring(1)}";
   }
 
   void initializeDateFormat() {
@@ -280,6 +284,8 @@ class _DetailsCardState extends State<AssociatesDetailsCard>
                                               .copyWith(
                                                   fontWeight:
                                                       FontWeight.normal),
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 2,
                                         ),
                                         IconButton(
                                           icon: const Icon(Icons.phone),

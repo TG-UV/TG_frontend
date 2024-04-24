@@ -14,7 +14,6 @@ import 'package:intl/intl.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
-
 class UserRegister extends StatefulWidget {
   const UserRegister({super.key, required this.userType});
   final int userType;
@@ -38,8 +37,6 @@ class _UserRegisterState extends State<UserRegister> {
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController residenceController = TextEditingController();
-
-
 
   @override
   void initState() {
@@ -257,8 +254,12 @@ class _UserRegisterState extends State<UserRegister> {
                                   ),
                                 );
                               }).toList(),
-                              decoration:
-                                  const InputDecoration(labelText: 'Ciudad'),
+                              decoration: InputDecoration(
+                                  labelText: 'Ciudad',
+                                  labelStyle: Theme.of(context)
+                                      .textTheme
+                                      .titleSmall!
+                                      .copyWith(fontSize: 14)),
                               validator: (value) {
                                 if (value == null) {
                                   return 'Por favor seleccione la ciudad';
