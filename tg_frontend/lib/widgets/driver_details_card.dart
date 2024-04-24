@@ -485,9 +485,11 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                                         confirmedPassengersList
                                             .add(pendingPassengersList[index]);
                                         pendingPassengersList.removeAt(index);
+                                         _confirmPassenger(pendingPassengersList[index].idPassenger, true);
                                       }),
                                   () => setState(() {
                                         pendingPassengersList.removeAt(index);
+                                         _cancelPassenger(pendingPassengersList[index].idPassenger);
                                       }));
                             },
                           ),
