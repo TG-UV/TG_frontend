@@ -149,6 +149,7 @@ class _SetUserInformationState extends State<SetUserInformation> {
                                 height: 150,
                                 onSuccess: () {}),
                           ),
+                          const Spacer(),
                           MainButton(
                               text: "guardar",
                               large: true,

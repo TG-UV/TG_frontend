@@ -2,7 +2,8 @@ import 'package:intl/intl.dart';
 
 class Passenger {
   final int idPassenger;
-  final String pickupPoint;
+  final double pickupPointLat;
+  final double pickupPointLong;
   final int seats;
   final int isConfirmed;
   final int trip;
@@ -13,7 +14,8 @@ class Passenger {
 
   Passenger({
     required this.idPassenger,
-    required this.pickupPoint,
+    required this.pickupPointLat,
+    required this.pickupPointLong,
     required this.seats,
     required this.isConfirmed,
     required this.trip,
@@ -27,7 +29,8 @@ class Passenger {
     return Passenger(
       idPassenger: json['id_passenger_trip'] as int? ?? 0,
       isConfirmed: json['is_confirmed'] == true ? 1 : 0,
-      pickupPoint: json['pickup_point']?.toString() ?? '',
+      pickupPointLat: json['pickup_point_lat'] as double? ?? 0.0,
+      pickupPointLong: json['pickup_point_long'] as double? ?? 0.0,
       phoneNumber: json['phone_number']?.toString() ?? '',
       firstName: json['first_name']?.toString() ?? '',
       lastName: json['last_name']?.toString() ?? '',
@@ -40,7 +43,8 @@ class Passenger {
   Map<String, dynamic> toJson() {
     return {
       //'id_passenger_trip': idPassenger,
-      'pickup_point': pickupPoint,
+      'pickup_point_lat': double.parse(pickupPointLat.toStringAsFixed(6)),
+      'pickup_point_long': double.parse(pickupPointLong.toStringAsFixed(6)),
       'seats': seats,
       'is_confirmed': isConfirmed == 1 ? true : false,
       'trip': trip,

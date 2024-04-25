@@ -33,51 +33,53 @@ class PassengerRequestCard extends StatefulWidget {
 
 class _PassengerRequestCardState extends State<PassengerRequestCard> {
   User user = Environment.sl.get<User>();
-  LatLng coordinates = LatLng(0, 0);
-
+  late LatLng coordinates;
   @override
   void initState() {
+    coordinates = LatLng(
+        widget.myPassenger.pickupPointLat, widget.myPassenger.pickupPointLong);
     super.initState();
+    print("coordinates: $coordinates");
   }
 
-  Widget _mapDialog(){
+  Widget _mapDialog() {
     return SizedBox(
-        width: double.infinity,
-        height: 100.0,
-        child: FlutterMap(
-          options: MapOptions(
-              initialCenter: coordinates,
-              minZoom: 5,
-              maxZoom: 25,
-              initialZoom: 15),
-          children: [
-            TileLayer(
-              urlTemplate:
-                  'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}',
-              additionalOptions: const {
-                'accessToken': mapboxAccessToken,
-                'id': 'mapbox/streets-v11',
-              },
-            ),
-            MarkerLayer(markers: [
-              Marker(
-                point: coordinates,
-                child: Icon(
-                  Icons.location_on_sharp,
-                  color: ColorManager.fourthColor,
-                  size: 40,
-                ),
-              )
-            ]),
-          ],
-        ),
-      );
+      width: double.infinity,
+      height: 135,
+      child: FlutterMap(
+        options: MapOptions(
+            initialCenter: coordinates,
+            minZoom: 5,
+            maxZoom: 25,
+            initialZoom: 15),
+        children: [
+          TileLayer(
+            urlTemplate:
+                'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}',
+            additionalOptions: const {
+              'accessToken': mapboxAccessToken,
+              'id': 'mapbox/streets-v11',
+            },
+          ),
+          MarkerLayer(markers: [
+            Marker(
+              point: coordinates,
+              child: Icon(
+                Icons.location_on_sharp,
+                color: ColorManager.fourthColor,
+                size: 40,
+              ),
+            )
+          ]),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-        height: 170,
+        height: 230,
         width: 230,
         child: Card(
             shape: RoundedRectangleBorder(
@@ -94,22 +96,24 @@ class _PassengerRequestCardState extends State<PassengerRequestCard> {
                 children: [
                   _mapDialog(),
                   Container(
-                      padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
+                      padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                       child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                                '  ${widget.myPassenger.firstName} ${widget.myPassenger.lastName}',
+                                '${widget.myPassenger.firstName} ${widget.myPassenger.lastName}',
                                 style: Theme.of(context)
                                     .textTheme
                                     .titleSmall!
-                                    .copyWith(fontWeight: FontWeight.bold)),
+                                    .copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15)),
 
                             Text('cupos: ${widget.myPassenger.seats}',
                                 style: Theme.of(context)
                                     .textTheme
                                     .titleSmall!
-                                    .copyWith(fontSize: 15)),
+                                    .copyWith(fontSize: 12)),
                             // Row(
                             //   mainAxisAlignment: MainAxisAlignment.center,
                             //   children: [
@@ -151,7 +155,7 @@ class _PassengerRequestCardState extends State<PassengerRequestCard> {
                                           .titleSmall!
                                           .copyWith(
                                               color: ColorManager.fourthColor,
-                                              fontSize: 15,
+                                              fontSize: 14,
                                               fontWeight: FontWeight.bold),
                                     )),
                                 TextButton(
@@ -165,7 +169,8 @@ class _PassengerRequestCardState extends State<PassengerRequestCard> {
                                           .titleSmall!
                                           .copyWith(
                                               color: Colors.white,
-                                              fontWeight: FontWeight.bold),
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 15),
                                     ))
                               ],
                             ),

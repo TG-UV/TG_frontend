@@ -115,7 +115,8 @@ class _GlobalDetailsCardState extends State<GlobalDetailsCard> {
   void reserveSpot() async {
     Passenger passenger = Passenger(
         idPassenger: user.idUser,
-        pickupPoint: startingPointController.text,
+        pickupPointLat: latLngStartingPoint.latitude,
+        pickupPointLong: latLngStartingPoint.longitude,
         seats: _seats,
         isConfirmed: 0,
         trip: widget.travel.id,

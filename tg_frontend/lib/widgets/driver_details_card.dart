@@ -11,6 +11,7 @@ import 'package:tg_frontend/datasource/travel_data.dart';
 import 'package:tg_frontend/device/environment.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
+import 'package:tg_frontend/widgets/passenger_request_card.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -255,90 +256,90 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                 ])));
   }
 
-  Widget buildPassengerCard(
-      Passenger myPassenger, Function onAccept, Function onDelete) {
-    return SizedBox(
-        height: 170,
-        width: 230,
-        child: Card(
-          elevation: 0.9,
-          // color: ColorManager.thirdColor,
-          //shadowColor: ColorManager.primaryColor,
-          child: Column(
-            // mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            // mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Center(
-                child: Text(
-                    '  ${myPassenger.firstName} ${myPassenger.lastName}',
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleSmall!
-                        .copyWith(fontWeight: FontWeight.bold)),
-              ),
-              Text('  ${myPassenger.seats} asiento',
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleSmall!
-                      .copyWith(fontSize: 15)),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    ' Coordenadas: ',
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleSmall!
-                        .copyWith(fontSize: 15),
-                  ),
-                  IconButton(
-                      onPressed: () {
-                        // Mostrar el AlertDialog con el mapa
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return _mapDialog(LatLng(3.3765821, -76.5334617));
-                          },
-                        );
-                      },
-                      icon: const Icon(
-                        Icons.location_on_outlined,
-                        size: 20,
-                      )),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  TextButton(
-                      onPressed: () {
-                        onDelete();
-                        _cancelPassenger(myPassenger.idPassenger);
-                      },
-                      child: Text(
-                        "rechazar",
-                        style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                            color: ColorManager.fourthColor,
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold),
-                      )),
-                  TextButton(
-                      onPressed: () {
-                        onAccept();
-                        _confirmPassenger(myPassenger.idPassenger, true);
-                      },
-                      child: Text(
-                        "aceptar",
-                        style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                            color: Colors.white, fontWeight: FontWeight.bold),
-                      ))
-                ],
-              ),
-            ],
-          ),
-        ));
-  }
+  // Widget buildPassengerCard(
+  //     Passenger myPassenger, Function onAccept, Function onDelete) {
+  //   return SizedBox(
+  //       height: 170,
+  //       width: 230,
+  //       child: Card(
+  //         elevation: 0.9,
+  //         // color: ColorManager.thirdColor,
+  //         //shadowColor: ColorManager.primaryColor,
+  //         child: Column(
+  //           // mainAxisSize: MainAxisSize.min,
+  //           crossAxisAlignment: CrossAxisAlignment.center,
+  //           // mainAxisAlignment: MainAxisAlignment.start,
+  //           children: [
+  //             Center(
+  //               child: Text(
+  //                   '  ${myPassenger.firstName} ${myPassenger.lastName}',
+  //                   style: Theme.of(context)
+  //                       .textTheme
+  //                       .titleSmall!
+  //                       .copyWith(fontWeight: FontWeight.bold)),
+  //             ),
+  //             Text('  ${myPassenger.seats} asiento',
+  //                 style: Theme.of(context)
+  //                     .textTheme
+  //                     .titleSmall!
+  //                     .copyWith(fontSize: 15)),
+  //             Row(
+  //               mainAxisAlignment: MainAxisAlignment.center,
+  //               children: [
+  //                 Text(
+  //                   ' Coordenadas: ',
+  //                   style: Theme.of(context)
+  //                       .textTheme
+  //                       .titleSmall!
+  //                       .copyWith(fontSize: 15),
+  //                 ),
+  //                 IconButton(
+  //                     onPressed: () {
+  //                       // Mostrar el AlertDialog con el mapa
+  //                       showDialog(
+  //                         context: context,
+  //                         builder: (BuildContext context) {
+  //                           return _mapDialog(LatLng(3.3765821, -76.5334617));
+  //                         },
+  //                       );
+  //                     },
+  //                     icon: const Icon(
+  //                       Icons.location_on_outlined,
+  //                       size: 20,
+  //                     )),
+  //               ],
+  //             ),
+  //             Row(
+  //               mainAxisAlignment: MainAxisAlignment.spaceAround,
+  //               children: [
+  //                 TextButton(
+  //                     onPressed: () {
+  //                       onDelete();
+  //                       _cancelPassenger(myPassenger.idPassenger);
+  //                     },
+  //                     child: Text(
+  //                       "rechazar",
+  //                       style: Theme.of(context).textTheme.titleSmall!.copyWith(
+  //                           color: ColorManager.fourthColor,
+  //                           fontSize: 15,
+  //                           fontWeight: FontWeight.bold),
+  //                     )),
+  //                 TextButton(
+  //                     onPressed: () {
+  //                       onAccept();
+  //                       _confirmPassenger(myPassenger.idPassenger, true);
+  //                     },
+  //                     child: Text(
+  //                       "aceptar",
+  //                       style: Theme.of(context).textTheme.titleSmall!.copyWith(
+  //                           color: Colors.white, fontWeight: FontWeight.bold),
+  //                     ))
+  //               ],
+  //             ),
+  //           ],
+  //         ),
+  //       ));
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -441,27 +442,27 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                                       .copyWith(fontWeight: FontWeight.w800)),
                             ])
                           ]),
-                      confirmedPassengersList.isNotEmpty
-                          ? SizedBox(
-                              //width: 300,
-                              height: 100,
-                              child: Container(
-                                  alignment: Alignment.topLeft,
-                                  child: ListView.builder(
-                                      scrollDirection: Axis.horizontal,
-                                      // scrollDirection: Axis.horizontal,
-                                      // shrinkWrap: true,
-                                      //physics: const NeverScrollableScrollPhysics(),
-                                      itemCount: confirmedPassengersList.length,
-                                      itemBuilder: (context, index) {
-                                        return buildPassengerInfo(
-                                            confirmedPassengersList[index]);
-                                      })))
-                          : Text(
-                              "...Aún no tienes pasajeros en tu viaje ",
-                              style: Theme.of(context).textTheme.titleSmall,
-                            ),
-                      Divider(),
+                      // confirmedPassengersList.isNotEmpty
+                      //     ? SizedBox(
+                      //         //width: 300,
+                      //         height: 100,
+                      //         child: Container(
+                      //             alignment: Alignment.topLeft,
+                      //             child: ListView.builder(
+                      //                 scrollDirection: Axis.horizontal,
+                      //                 // scrollDirection: Axis.horizontal,
+                      //                 // shrinkWrap: true,
+                      //                 //physics: const NeverScrollableScrollPhysics(),
+                      //                 itemCount: confirmedPassengersList.length,
+                      //                 itemBuilder: (context, index) {
+                      //                   return buildPassengerInfo(
+                      //                       confirmedPassengersList[index]);
+                      //                 })))
+                      //     : Text(
+                      //         "...Aún no tienes pasajeros en tu viaje ",
+                      //         style: Theme.of(context).textTheme.titleSmall,
+                      //       ),
+                      // Divider(),
                       if (pendingPassengersList.isNotEmpty)
                         Text(
                           'Están solicitando un cupo',
@@ -472,30 +473,55 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                                   fontWeight: FontWeight.w800, fontSize: 19),
                         ),
                       SizedBox(
-                        height: 150,
+                        height: 255,
                         child: Container(
                           alignment: Alignment.topLeft,
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
                             itemCount: pendingPassengersList.length,
+                            itemExtent: 250,
                             itemBuilder: (context, index) {
-                              return buildPassengerCard(
-                                  pendingPassengersList[index],
-                                  () => setState(() {
-                                        confirmedPassengersList
-                                            .add(pendingPassengersList[index]);
-                                        pendingPassengersList.removeAt(index);
-                                         _confirmPassenger(pendingPassengersList[index].idPassenger, true);
-                                      }),
-                                  () => setState(() {
-                                        pendingPassengersList.removeAt(index);
-                                         _cancelPassenger(pendingPassengersList[index].idPassenger);
-                                      }));
+                              return Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal:
+                                          8.0), // Espacio horizontal entre cada elemento
+                                  child: PassengerRequestCard(
+                                      myPassenger: pendingPassengersList[index],
+                                      onAccept: () => setState(() {
+                                            confirmedPassengersList.add(
+                                                pendingPassengersList[index]);
+                                            pendingPassengersList
+                                                .removeAt(index);
+                                            _confirmPassenger(
+                                                pendingPassengersList[index]
+                                                    .idPassenger,
+                                                true);
+                                          }),
+                                      onDeny: () => setState(() {
+                                            pendingPassengersList
+                                                .removeAt(index);
+                                            _cancelPassenger(
+                                                pendingPassengersList[index]
+                                                    .idPassenger);
+                                          })));
+                              // return buildPassengerCard(
+                              //     pendingPassengersList[index],
+                              //     () => setState(() {
+                              //           confirmedPassengersList
+                              //               .add(pendingPassengersList[index]);
+                              //           pendingPassengersList.removeAt(index);
+                              //            _confirmPassenger(pendingPassengersList[index].idPassenger, true);
+                              //         }),
+                              //     () => setState(() {
+                              //           pendingPassengersList.removeAt(index);
+                              //            _cancelPassenger(pendingPassengersList[index].idPassenger);
+                              //         })
+                              //         );
                             },
                           ),
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 5,
                       ),
                       Center(

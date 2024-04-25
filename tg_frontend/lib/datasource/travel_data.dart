@@ -309,7 +309,8 @@ class TravelDatasourceMethods implements TravelDatasource {
           Passenger passenger = Passenger.fromJson({
             'id_passenger_trip': passengerData['id_passenger_trip'],
             'is_confirmed': passengerData['is_confirmed'],
-            'pickup_point': passengerData['pickup_point'],
+            'pickup_point_lat': passengerData['pickup_point']['lat'],
+            'pickup_point_long': passengerData['pickup_point']['long'],
             'phone_number': passengerDetails['phone_number'],
             'first_name': passengerDetails['first_name'],
             'last_name': passengerDetails['last_name'],
