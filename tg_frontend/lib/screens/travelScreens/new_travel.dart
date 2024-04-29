@@ -47,6 +47,12 @@ class _NewTravelState extends State<NewTravel> {
   final TextEditingController dateController = TextEditingController();
   final TextEditingController seatsController = TextEditingController();
 
+  @override
+  void initState() {
+    initializeDateFormatting();
+    super.initState();
+  }
+
   void submitForm(BuildContext context) async {
     if (_formKey.currentState!.validate() &&
         dateController.text.isNotEmpty &&
@@ -195,7 +201,7 @@ class _NewTravelState extends State<NewTravel> {
                         style: Theme.of(context)
                             .textTheme
                             .titleLarge!
-                            .copyWith(fontSize: 26),
+                            .copyWith(fontSize: 23),
                       )
                     ]),
                     const SizedBox(height: 60),

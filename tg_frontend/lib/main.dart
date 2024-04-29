@@ -26,6 +26,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+      locale: const Locale('es', 'ES'),
       debugShowCheckedModeBanner: false,
       title: 'Rayo',
       theme: myTheme,
@@ -40,6 +41,16 @@ class MyApp extends StatelessWidget {
     cardTheme: CardTheme(
         color: ColorManager.thirdColor,
         surfaceTintColor: Color.fromARGB(162, 239, 239, 239)),
+    datePickerTheme: DatePickerThemeData(
+        backgroundColor: ColorManager.staticColor,
+        headerHeadlineStyle: TextStyle(color: ColorManager.primaryColor),
+        cancelButtonStyle: ButtonStyle(
+          foregroundColor: MaterialStateProperty.all(ColorManager.primaryColor),
+          //backgroundColor: MaterialStateProperty.all(ColorManager.primaryColor),
+        ),
+        confirmButtonStyle: ButtonStyle(
+          foregroundColor: MaterialStateProperty.all(ColorManager.primaryColor),
+        )),
     dialogBackgroundColor: ColorManager.thirdColor,
     primaryColor: ColorManager.thirdColor, // Color primario
     colorScheme: const ColorScheme.light().copyWith(

@@ -27,5 +27,6 @@ class EndPoints {
   final String getTravelPlannedPassenger = "/passenger/trip/planned/";
   final String getTravelHistoryPassenger = "/passenger/trip/history/";
 
-  final String getGeneralTravels = "/trip/";
+  //final String getGeneralTravels = "/trip/";
+  final String getGeneralTravels = "/passenger/search/";
 }

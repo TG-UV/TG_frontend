@@ -18,6 +18,7 @@ import 'package:tg_frontend/models/user_model.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:tg_frontend/widgets/setUserInformation.dart';
+import 'package:flutter/services.dart';
 
 final logger = Logger();
 
@@ -35,7 +36,8 @@ class _MapScreenState extends State<MapScreen> {
   late loc.LocationData currentLocation;
   User user = Environment.sl.get<User>();
 
-  LatLng? myPosition = const LatLng(3.3765821, -76.5334617);
+  // LatLng? myPosition = const LatLng(3.3765821, -76.5334617);
+  late LatLng myPosition;
   LatLng universityPosition = const LatLng(3.3765821, -76.5334617);
 
   @override
@@ -59,8 +61,8 @@ class _MapScreenState extends State<MapScreen> {
     setState(() {});
   }
 
-  LatLng _getCenterPosition() {
-    _getLocation();
+  Future<LatLng> _getCenterPosition() async {
+    //_getLocation();
     if (myPosition != null) {
       return myPosition!;
     } else {
@@ -68,123 +70,116 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
-  _showConfirmationDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Confirmación'),
-          content: const Text('¿Estás seguro de que quieres cerrar sesión?'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cancelar'),
-            ),
-            TextButton(
-              onPressed: () {
-                AuthStorage().removeValues();
-                Get.to(() => const Login());
-              },
-              child: const Text('Salir'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        drawer: LateralBar(),
-        body: Stack(children: [
-          FlutterMap(
-            options: MapOptions(
-                initialCenter: myPosition ?? universityPosition,
-                minZoom: 5,
-                maxZoom: 25,
-                initialZoom: 15),
-            children: [
-              TileLayer(
-                urlTemplate:
-                    'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}',
-                additionalOptions: const {
-                  'accessToken': mapboxAccessToken,
-                  'id': 'mapbox/streets-v11',
-                },
-              ),
-              if (myPosition != null)
-                MarkerLayer(markers: [
-                  Marker(
-                    point: myPosition!,
-                    child: Icon(
-                      Icons.location_on_sharp,
-                      color: ColorManager.fourthColor,
-                      size: 40,
-                    ),
-                  )
-                ]),
-            ],
-          ),
-          Positioned(
-              top: 100.0,
-              left: 50,
-              right: 50,
-              child: Text(
-                '¡Hola ${user.firstName.substring(0, 1).toUpperCase()}${user.firstName.substring(1)}!',
-                style: Theme.of(context).textTheme.titleLarge,
-              )),
-          Positioned(
-            top: 50.0,
-            left: MediaQuery.of(context).size.width / 1.2,
-            right: 50,
-            child: Builder(builder: (BuildContext context) {
-              return FloatingActionButton(
-                onPressed: () {
-                  Scaffold.of(context).openDrawer(); // Abre el menú lateral
-                },
-                backgroundColor: Colors.transparent,
-                shape: const CircleBorder(),
-                child: const Icon(
-                  Icons.boy_rounded,
-                  color: Colors.black,
-                  size: 50,
-                ),
-              );
-            }),
-          ),
-          Positioned(
-            top: MediaQuery.of(context).size.width / 0.8,
-            left: 50,
-            right: 50,
-            child: MainButton(
-              text: 'Voy para la U',
-              buttonColor: ColorManager.fourthColor,
-              onPressed: () {
-                user.type == 2
-                    ? Get.to(() => const NewTravel())
-                    : Get.to(() => const AvailableTravels());
-              },
-              large: true,
-            ),
-          ),
-          Positioned(
-            top: MediaQuery.of(context).size.width / 0.8 + 100,
-            left: 50,
-            right: 50,
-            child: MainButton(
-              text: 'Salgo de la U',
-              buttonColor: ColorManager.fourthColor,
-              onPressed: () {
-                user.type == 2
-                    ? Get.to(() => const NewTravel())
-                    : Get.to(() => const AvailableTravels());
-              },
-              large: true,
-            ),
-          )
-        ]));
+    return PopScope(
+        canPop: false,
+        onPopInvoked: (bool isPopGesture) {
+          SystemNavigator.pop();
+        },
+        child: Scaffold(
+            drawer: LateralBar(),
+            body: FutureBuilder<LatLng>(
+                future: _getCenterPosition(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                        child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+                    ));
+                  } else if (snapshot.hasError) {
+                    return const Center(
+                        child: Text('Ops :(  ha ocurrido un error'));
+                  } else {
+                    myPosition = snapshot.data!;
+                    return Stack(children: [
+                      FlutterMap(
+                        options: MapOptions(
+                            initialCenter: myPosition,
+                            minZoom: 5,
+                            maxZoom: 25,
+                            initialZoom: 15),
+                        children: [
+                          TileLayer(
+                            urlTemplate:
+                                'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}',
+                            additionalOptions: const {
+                              'accessToken': mapboxAccessToken,
+                              'id': 'mapbox/streets-v11',
+                            },
+                          ),
+                          MarkerLayer(markers: [
+                            Marker(
+                              point: myPosition,
+                              child: Icon(
+                                Icons.location_on_sharp,
+                                color: ColorManager.fourthColor,
+                                size: 40,
+                              ),
+                            )
+                          ]),
+                        ],
+                      ),
+                      Positioned(
+                          top: 100.0,
+                          left: 50,
+                          right: 50,
+                          child: Text(
+                            '¡Hola ${user.firstName.substring(0, 1).toUpperCase()}${user.firstName.substring(1)}!',
+                            style: Theme.of(context).textTheme.titleLarge,
+                          )),
+                      Positioned(
+                        top: 50.0,
+                        left: MediaQuery.of(context).size.width / 1.2,
+                        right: 50,
+                        child: Builder(builder: (BuildContext context) {
+                          return FloatingActionButton(
+                            onPressed: () {
+                              Scaffold.of(context)
+                                  .openDrawer(); // Abre el menú lateral
+                            },
+                            backgroundColor: Colors.transparent,
+                            shape: const CircleBorder(),
+                            child: const Icon(
+                              Icons.boy_rounded,
+                              color: Colors.black,
+                              size: 50,
+                            ),
+                          );
+                        }),
+                      ),
+                      Positioned(
+                        top: MediaQuery.of(context).size.width / 0.8,
+                        left: 50,
+                        right: 50,
+                        child: MainButton(
+                          text: 'Voy para la U',
+                          buttonColor: ColorManager.fourthColor,
+                          onPressed: () {
+                            user.type == 2
+                                ? Get.to(() => const NewTravel())
+                                : Get.to(() => const AvailableTravels());
+                          },
+                          large: true,
+                        ),
+                      ),
+                      Positioned(
+                        top: MediaQuery.of(context).size.width / 0.8 + 100,
+                        left: 50,
+                        right: 50,
+                        child: MainButton(
+                          text: 'Salgo de la U',
+                          buttonColor: ColorManager.fourthColor,
+                          onPressed: () {
+                            user.type == 2
+                                ? Get.to(() => const NewTravel())
+                                : Get.to(() => const AvailableTravels());
+                          },
+                          large: true,
+                        ),
+                      )
+                    ]);
+                  }
+                })));
   }
 }

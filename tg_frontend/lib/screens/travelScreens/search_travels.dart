@@ -62,11 +62,21 @@ class _SearchTravelsState extends State<SearchTravels> {
     if (_formKey.currentState!.validate() &&
         dateController.text.isNotEmpty &&
         timeController.text.isNotEmpty) {
+      // Map<String, dynamic> requestData = {
+      //   'arrival_point': arrivalPointController.text,
+      //   'starting_point': startingPointController.text,
+      //   'start_time': _selectedTime,
+      //   'start_date': _selectedDate,
+      // };
+
       Map<String, dynamic> requestData = {
-        'arrival_point': arrivalPointController.text,
-        'starting_point': startingPointController.text,
-        'start_time': _selectedTime,
-        'start_date': _selectedDate,
+        "starting_point_lat": "3.370051",
+        "starting_point_long": "-76.532661",
+        "arrival_point_lat": "3.391652",
+        "arrival_point_long": "-76.551000",
+        "seats": "1",
+        "start_time": "5:25:00",
+        "start_date": "2024-04-29"
       };
 
       _fetchTravels(requestData);

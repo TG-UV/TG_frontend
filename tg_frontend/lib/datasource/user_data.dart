@@ -98,7 +98,7 @@ class UserDatasourceMethods implements UserDatasource {
       );
       sent++;
     } catch (e) {
-      print("error al reenviar el email de confirmación $response");
+      print("error al cambiar contraseña $response");
       return response.toString();
     }
     return sent;
@@ -276,6 +276,8 @@ class UserDatasourceMethods implements UserDatasource {
       print('Error al reSetPassword: $error');
     }
   }
+
+
 
   @override
   Future<List<dynamic>?> getUserCitiesRemote() async {

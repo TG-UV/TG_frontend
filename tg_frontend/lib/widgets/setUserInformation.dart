@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:tg_frontend/models/vehicle_model.dart';
+import 'package:tg_frontend/screens/home.dart';
 import 'package:tg_frontend/screens/theme.dart';
 import 'package:tg_frontend/widgets/input_field.dart';
 import 'package:tg_frontend/models/user_model.dart';
@@ -68,9 +70,7 @@ class _SetUserInformationState extends State<SetUserInformation> {
 
   void submitForm(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
-      //List<Travel> travelList = [];
-
-      //Get.to(() => const Home());
+      _sendSetPassword();
     } else {
       AlertDialog(
           title: const Text("Error"),
@@ -97,63 +97,65 @@ class _SetUserInformationState extends State<SetUserInformation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         body: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             alignment: Alignment.center,
-            child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16.0),
-                child: Form(
-                    key: _formKey,
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Row(children: [
-                            IconButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                icon: const Icon(Icons.arrow_back)),
-                            Text(
-                              " Cambia tu contraseña",
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleLarge!
-                                  .copyWith(fontSize: 20),
-                            )
-                          ]),
-                          const SizedBox(height: 30.0),
-                          InputField(
-                              controller: currentPasswordController,
-                              textInput: 'Contraseña actual',
-                              textInputType: TextInputType.text,
-                              obscure: false,
-                              icon: const Icon(null)),
-                          const SizedBox(height: 10.0),
-                          InputField(
-                              controller: newPasswordController,
-                              textInput: 'Nueva contraseña',
-                              textInputType: TextInputType.text,
-                              obscure: false,
-                              icon: const Icon(null),
-                              onChange: _changeVisbilityParameter(true)),
-                          Visibility(
-                            visible: isVisible,
-                            child: FlutterPwValidator(
-                                controller: newPasswordController,
-                                minLength: 6,
-                                uppercaseCharCount: 1,
-                                numericCharCount: 1,
-                                specialCharCount: 1,
-                                width: 400,
-                                height: 150,
-                                onSuccess: () {}),
-                          ),
-                          const Spacer(),
-                          MainButton(
-                              text: "guardar",
-                              large: true,
-                              onPressed: _sendSetPassword)
-                        ])))));
+            child: Form(
+                key: _formKey,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const SizedBox(
+                        height: 90,
+                      ),
+                      Row(children: [
+                        IconButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            icon: const Icon(Icons.arrow_back)),
+                        Text(
+                          " Cambia tu contraseña",
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleLarge!
+                              .copyWith(fontSize: 20),
+                        )
+                      ]),
+                      const SizedBox(height: 30.0),
+                      InputField(
+                          controller: currentPasswordController,
+                          textInput: 'Contraseña actual',
+                          textInputType: TextInputType.text,
+                          obscure: false,
+                          icon: const Icon(null)),
+                      const SizedBox(height: 10.0),
+                      InputField(
+                          controller: newPasswordController,
+                          textInput: 'Nueva contraseña',
+                          textInputType: TextInputType.text,
+                          obscure: false,
+                          icon: const Icon(null),
+                          onChange: _changeVisbilityParameter(true)),
+                      Visibility(
+                        visible: isVisible,
+                        child: FlutterPwValidator(
+                            controller: newPasswordController,
+                            minLength: 6,
+                            uppercaseCharCount: 1,
+                            numericCharCount: 1,
+                            specialCharCount: 1,
+                            width: 400,
+                            height: 180,
+                            onSuccess: () {}),
+                      ),
+                      //  const Spacer(),
+                      MainButton(
+                          text: "guardar",
+                          large: true,
+                          onPressed: _sendSetPassword)
+                    ]))));
   }
 }

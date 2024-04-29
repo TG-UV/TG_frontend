@@ -149,7 +149,7 @@ class _UserRegisterState extends State<UserRegister> {
                                 style: Theme.of(context)
                                     .textTheme
                                     .titleLarge!
-                                    .copyWith(fontSize: 26),
+                                    .copyWith(fontSize: 22),
                               )
                             ]),
                             SizedBox(

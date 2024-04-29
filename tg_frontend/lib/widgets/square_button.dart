@@ -19,9 +19,8 @@ class SquareButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: onPressed,
-      
       style: ButtonStyle(
-       
+        backgroundColor: MaterialStateProperty.all(ColorManager.staticColor),
         side: MaterialStateProperty.all<BorderSide>(BorderSide(
           color: isSelected
               ? ColorManager.secondaryColor
@@ -30,7 +29,7 @@ class SquareButton extends StatelessWidget {
         )),
         elevation: MaterialStateProperty.all(4),
         shadowColor:
-            MaterialStateProperty.all(Color.fromARGB(255, 122, 122, 122)),
+            MaterialStateProperty.all(Color.fromARGB(255, 184, 184, 184)),
         // shape: MaterialStateProperty.all<>(
         //   RoundedRectangleBorder(
         //     borderRadius: BorderRadius.circular(10.0), // Bordes redondeados
@@ -48,14 +47,13 @@ class SquareButton extends StatelessWidget {
                   text,
                   style: TextStyle(color: ColorManager.secondaryColor),
                 ),
-                if(text == "10" ||text == "30" ||text == "60")
-                Text(
-                  "min",
-                  style: TextStyle(color: ColorManager.secondaryColor),
-                )
+                if (text == "10" || text == "30" || text == "60")
+                  Text(
+                    "min",
+                    style: TextStyle(color: ColorManager.secondaryColor),
+                  )
               ],
             ),
     );
-    
   }
 }

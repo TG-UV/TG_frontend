@@ -47,9 +47,10 @@ class _LoginState extends State<Login> {
     if (_formKey.currentState!.validate()) {
       final token = await userDatasourceImpl.getUserAuth(
           username: username, password: password);
+
       token != null
           ? saveAuthInformation(token, username, password)
-          : showErrorMessage('El usuario no existe, intente de nuevo');
+          : showErrorMessage('Contraseña incorrecta');
     }
   }
 
@@ -184,7 +185,12 @@ class _LoginState extends State<Login> {
                                     text: 'Iniciar sesión',
                                     large: true,
                                     buttonColor: ColorManager.fourthColor,
-                                    onPressed: () {
+                                    onPressed: () async {
+                                      const CircularProgressIndicator(
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                                Colors.red),
+                                      );
                                       loginUser(mailLoginController.text,
                                           passwordLoginController.text);
                                     }),

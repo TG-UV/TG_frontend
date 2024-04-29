@@ -32,6 +32,7 @@ class _TravelCardState extends State<TravelCard> {
   @override
   void initState() {
     _getTextDirections();
+    initializeDateFormatting();
     super.initState();
   }
 

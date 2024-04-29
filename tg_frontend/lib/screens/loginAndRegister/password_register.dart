@@ -117,6 +117,7 @@ class _PasswordRegisterState extends State<PasswordRegister> {
               : Navigator.pop(context);
         },
         child: Scaffold(
+            resizeToAvoidBottomInset: false,
             body: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 alignment: Alignment.center,
@@ -127,12 +128,22 @@ class _PasswordRegisterState extends State<PasswordRegister> {
                       Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const SizedBox(height: 150),
-                            Text(
-                              "Por último añade una contraseña",
-                              textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.titleMedium,
-                            ),
+                            Row(children: [
+                              IconButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  icon: const Icon(Icons.arrow_back)),
+                              const SizedBox(width: 5),
+                              Text(
+                                " Por último, añade una contraseña",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleLarge!
+                                    .copyWith(fontSize: 15),
+                                maxLines: 2,
+                              )
+                            ]),
                             const SizedBox(height: 35),
                             InputField(
                               controller: passwordController,
@@ -156,7 +167,7 @@ class _PasswordRegisterState extends State<PasswordRegister> {
                                 numericCharCount: 1,
                                 specialCharCount: 1,
                                 width: 400,
-                                height: 150,
+                                height: 175,
                                 onSuccess: () {}),
                             const SizedBox(height: 200),
                             Visibility(
@@ -222,14 +233,6 @@ class _PasswordRegisterState extends State<PasswordRegister> {
                                   }),
                             )
                           ]),
-                      Positioned(
-                          top: 30.0,
-                          left: 5.0,
-                          child: IconButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              icon: const Icon(Icons.arrow_back)))
                     ])))));
   }
 }
