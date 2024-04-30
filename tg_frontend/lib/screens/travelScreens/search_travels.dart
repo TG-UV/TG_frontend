@@ -50,8 +50,8 @@ class _SearchTravelsState extends State<SearchTravels> {
 
   @override
   void initState() {
-    super.initState();
     initializeDateFormat();
+    super.initState();
   }
 
   void initializeDateFormat() {
@@ -86,7 +86,7 @@ class _SearchTravelsState extends State<SearchTravels> {
 
   Future<void> _fetchTravels(Map<String, dynamic> requestData) async {
     List<Travel> value = await travelDatasourceMethods.getTravelsRemote(
-        finalEndPoint: endPoint.getGeneralTravels);
+        finalEndPoint: endPoint.getGeneralTravels, searchData: requestData);
     if (value.isNotEmpty) {
       setState(() {
         travelsList = value;
@@ -129,8 +129,17 @@ class _SearchTravelsState extends State<SearchTravels> {
           await showTimePicker(context: context, initialTime: TimeOfDay.now());
 
       if (pickedTime != null) {
+        DateTime today = DateTime.now();
+        final day = DateTime(
+          today.year,
+          today.month,
+          today.day,
+          pickedTime.hour,
+          pickedTime.minute,
+          00,
+        );
         setState(() {
-          _selectedTime = pickedTime.toString();
+          _selectedTime = DateFormat('hh:mm:ss').format(day);
           timeController.text =
               DateFormat('hh:mm a').format(_parseTimeString(_selectedTime));
         });

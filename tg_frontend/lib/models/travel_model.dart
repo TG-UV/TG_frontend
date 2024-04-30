@@ -74,7 +74,7 @@ class Travel {
       // 'start_time': DateFormat("yyyy-MM-ddTHH:mm "),
       // 'start_date': DateFormat("yyyy-MM-dd").format(date).toString(),
       'current_trip': currentTrip == 1 ? true : false,
-      'vehicle': 27
+      'vehicle': 31
     };
   }
 }

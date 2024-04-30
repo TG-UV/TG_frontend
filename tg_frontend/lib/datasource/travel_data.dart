@@ -20,7 +20,8 @@ abstract class TravelDatasource {
   Future<void> insertTravelRemote({required Travel travel});
   Future<void> deleteTravelRemote({required String travelId});
   Future<void> getTravelLocal({required int travelId, String filter});
-  Future<List<Travel>> getTravelsRemote({required String finalEndPoint});
+  Future<List<Travel>> getTravelsRemote(
+      {required String finalEndPoint, Map<String, dynamic> searchData});
   Future<Response<Map<String, dynamic>>?> getTravelDetails(
       {required int travelId, required String finalUrl});
   Future<int?> updateTravelLocal(
@@ -220,7 +221,8 @@ class TravelDatasourceMethods implements TravelDatasource {
   }
 
   @override
-  Future<List<Travel>> getTravelsRemote({required String finalEndPoint}) async {
+  Future<List<Travel>> getTravelsRemote(
+      {required String finalEndPoint, Map<String, dynamic>? searchData}) async {
     String? token = await AuthStorage().getToken();
     List<Travel> travelList = [];
     Response<dynamic> response;
@@ -228,9 +230,12 @@ class TravelDatasourceMethods implements TravelDatasource {
     if (token != null) {
       try {
         dio.options.headers['Authorization'] = 'Token $token';
-        response = await dio.get(_endPoints.baseUrl + finalEndPoint
-            //queryParameters: parameters,
-            );
+        response = await dio.get(
+          _endPoints.baseUrl + finalEndPoint,
+          //queryParameters: parameters,
+
+          //data: searchData,
+        );
         if (finalEndPoint == _endPoints.getGeneralTravels) {
           for (var data in response.data) {
             Travel travel = Travel.fromJson(data);

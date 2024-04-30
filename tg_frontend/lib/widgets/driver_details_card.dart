@@ -11,7 +11,8 @@ import 'package:tg_frontend/datasource/travel_data.dart';
 import 'package:tg_frontend/device/environment.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
-import 'package:tg_frontend/widgets/passenger_request_card.dart';
+import 'package:tg_frontend/widgets/route_info_card.dart';
+import 'package:tg_frontend/widgets/seat_request_card.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -39,8 +40,7 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
 
   List<Passenger> confirmedPassengersList = [];
   List<Passenger> pendingPassengersList = [];
-  bool _hasCallSupport = false;
-  Future<void>? _launched;
+
   String dayOfWeekFormated = "Fecha";
   String startingPointTextDirection = "";
   String arrivalPointTextDirection = "";
@@ -49,11 +49,7 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
   void initState() {
     _getTextDirections();
     super.initState();
-    canLaunchUrl(Uri(scheme: 'tel', path: '123')).then((bool result) {
-      setState(() {
-        _hasCallSupport = result;
-      });
-    });
+
     _loadPassengers();
     initializeDateFormat();
     String dayOfWeek =
@@ -152,14 +148,6 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
     );
   }
 
-  Future<void> _makePhoneCall(String phoneNumber) async {
-    final Uri launchUri = Uri(
-      scheme: 'tel',
-      path: phoneNumber,
-    );
-    await launchUrl(launchUri);
-  }
-
   Widget _mapDialog(LatLng coordinates) {
     return AlertDialog(
       title: Text(
@@ -213,48 +201,48 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
     );
   }
 
-  Widget buildPassengerInfo(Passenger myPassenger) {
-    return SizedBox(
-        height: 30,
-        width: 210,
-        child: Card(
-            color: ColorManager.thirdColor,
-            borderOnForeground: false,
-            child: Column(
-                // mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    ' ${myPassenger.firstName} ${myPassenger.lastName} ',
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        IconButton(
-                            onPressed: () {
-                              // Mostrar el AlertDialog con el mapa
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return _mapDialog(
-                                      const LatLng(3.3765821, -76.5334617));
-                                },
-                              );
-                            },
-                            icon: const Icon(Icons.location_on_outlined)),
-                        const SizedBox(width: 2),
-                        IconButton(
-                          icon: const Icon(Icons.phone_enabled),
-                          onPressed: _hasCallSupport
-                              ? () => setState(() {
-                                    _launched =
-                                        _makePhoneCall(myPassenger.phoneNumber);
-                                  })
-                              : null,
-                        ),
-                      ])
-                ])));
-  }
+  // Widget buildPassengerInfo(Passenger myPassenger) {
+  //   return SizedBox(
+  //       height: 30,
+  //       width: 210,
+  //       child: Card(
+  //           color: ColorManager.thirdColor,
+  //           borderOnForeground: false,
+  //           child: Column(
+  //               // mainAxisSize: MainAxisSize.min,
+  //               children: [
+  //                 Text(
+  //                   ' ${myPassenger.firstName} ${myPassenger.lastName} ',
+  //                   style: Theme.of(context).textTheme.titleSmall,
+  //                 ),
+  //                 Row(
+  //                     mainAxisAlignment: MainAxisAlignment.center,
+  //                     children: <Widget>[
+  //                       IconButton(
+  //                           onPressed: () {
+  //                             // Mostrar el AlertDialog con el mapa
+  //                             showDialog(
+  //                               context: context,
+  //                               builder: (BuildContext context) {
+  //                                 return _mapDialog(
+  //                                     const LatLng(3.3765821, -76.5334617));
+  //                               },
+  //                             );
+  //                           },
+  //                           icon: const Icon(Icons.location_on_outlined)),
+  //                       const SizedBox(width: 2),
+  //                       IconButton(
+  //                         icon: const Icon(Icons.phone_enabled),
+  //                         onPressed: _hasCallSupport
+  //                             ? () => setState(() {
+  //                                   _launched =
+  //                                       _makePhoneCall(myPassenger.phoneNumber);
+  //                                 })
+  //                             : null,
+  //                       ),
+  //                     ])
+  //               ])));
+  // }
 
   // Widget buildPassengerCard(
   //     Passenger myPassenger, Function onAccept, Function onDelete) {
@@ -432,7 +420,19 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                       Row(
                           //mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            const Icon(Icons.people_alt_rounded),
+                            IconButton(
+                              icon: const Icon(Icons.people_alt_rounded),
+                              onPressed: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return RouteInfoCard(
+                                          passengersList:
+                                              confirmedPassengersList,
+                                          travel: widget.travel);
+                                    });
+                              },
+                            ),
                             const SizedBox(width: 10),
                             Column(children: [
                               Text('Pasajeros',

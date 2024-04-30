@@ -53,6 +53,10 @@ class _NewTravelState extends State<NewTravel> {
     super.initState();
   }
 
+  void initializeDateFormat() {
+    initializeDateFormatting('es_ES', null);
+  }
+
   void submitForm(BuildContext context) async {
     if (_formKey.currentState!.validate() &&
         dateController.text.isNotEmpty &&
@@ -101,9 +105,7 @@ class _NewTravelState extends State<NewTravel> {
     }
   }
 
-  void initializeDateFormat() {
-    initializeDateFormatting('es_ES', null);
-  }
+  
 
   DateTime _parseTimeString(String timeString) {
     List<String> parts = timeString.split(':');
