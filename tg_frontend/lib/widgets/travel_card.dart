@@ -7,6 +7,8 @@ import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:tg_frontend/datasource/travel_data.dart';
 import 'package:tg_frontend/device/environment.dart';
+import 'package:provider/provider.dart';
+import 'package:tg_frontend/services/travel_notification_provider.dart';
 
 class TravelCard extends StatefulWidget {
   const TravelCard({
@@ -28,6 +30,7 @@ class _TravelCardState extends State<TravelCard> {
       Environment.sl.get<TravelDatasourceMethods>();
   String startingPointTextDirection = "";
   String arrivalPointTextDirection = "";
+  late AnimationController _controller;
 
   @override
   void initState() {
@@ -82,6 +85,9 @@ class _TravelCardState extends State<TravelCard> {
 
   @override
   Widget build(BuildContext context) {
+    // bool isNewPassengerNotification = Provider.of<NotificationProvider>(context).isNewPassengerNotification;
+    bool isTravelNotification = Provider.of<TravelNotificationProvider>(context)
+        .isNewPassengerNotification;
     initializeDateFormat();
     return InkWell(
         onTap: _onTapHandle,
@@ -98,6 +104,16 @@ class _TravelCardState extends State<TravelCard> {
                       Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: <Widget>[
+                            if (isTravelNotification)
+                              AnimatedBuilder(
+                                animation: _controller,
+                                builder: (context, child) {
+                                  return Opacity(
+                                      opacity: _controller.value,
+                                      child: const Icon(
+                                          Icons.mark_unread_chat_alt_sharp));
+                                },
+                              ),
                             Text(
                               _dayOfWeekFormated(),
                               style: Theme.of(context).textTheme.titleLarge,

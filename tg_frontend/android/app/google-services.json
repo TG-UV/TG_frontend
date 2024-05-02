@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "221302898477",
+    "project_id": "rayo-2aa1a",
+    "storage_bucket": "rayo-2aa1a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:221302898477:android:0d7ca8cd4df2ab48e65da4",
+        "android_client_info": {
+          "package_name": "com.example.tg_frontend"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBulidJNbRSNiPKxIkLJjK3hGf7z3DdEOI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

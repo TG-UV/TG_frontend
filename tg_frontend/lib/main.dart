@@ -4,16 +4,14 @@ import 'package:get/get.dart';
 import 'package:tg_frontend/screens/loginAndRegister/splash.dart';
 //import 'package:tg_frontend/screens/welcome.dart';
 import 'package:tg_frontend/device/environment.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:tg_frontend/screens/theme.dart';
-import 'package:tg_frontend/screens/travelScreens/available_travels.dart';
-import 'package:tg_frontend/screens/travelScreens/new_travel.dart';
-import 'package:tg_frontend/screens/travelScreens/search_travels.dart';
-import 'package:tg_frontend/services/auth_services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:tg_frontend/services/firebase.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+ // await FirebaseService().initializeFirebaseMessaging();
+ // WidgetsFlutterBinding.ensureInitialized();
   final environment = Environment();
   await environment.startEnvironment();
   runApp(MyApp());

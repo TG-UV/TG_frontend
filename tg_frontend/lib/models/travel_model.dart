@@ -12,6 +12,7 @@ class Travel {
   final String hour;
   final String date;
   final int currentTrip;
+  final int? vehicle;
 
   Travel(
       {required this.id,
@@ -24,7 +25,8 @@ class Travel {
       required this.seats,
       required this.hour,
       required this.date,
-      required this.currentTrip});
+      required this.currentTrip,
+      this.vehicle});
 
   factory Travel.fromJson(Map<String, dynamic> json) {
     return Travel(
@@ -74,7 +76,7 @@ class Travel {
       // 'start_time': DateFormat("yyyy-MM-ddTHH:mm "),
       // 'start_date': DateFormat("yyyy-MM-dd").format(date).toString(),
       'current_trip': currentTrip == 1 ? true : false,
-      'vehicle': 31
+      'vehicle': vehicle
     };
   }
 }

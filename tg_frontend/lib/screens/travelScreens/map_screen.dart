@@ -1,26 +1,26 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:provider/provider.dart';
 import 'package:tg_frontend/device/environment.dart';
-import 'package:tg_frontend/screens/loginAndRegister/login.dart';
-import 'package:tg_frontend/screens/loginAndRegister/vehicle_managment.dart';
+import 'package:tg_frontend/models/travel_model.dart';
 import 'package:tg_frontend/screens/theme.dart';
 import 'package:tg_frontend/screens/travelScreens/available_travels.dart';
 import 'package:tg_frontend/screens/travelScreens/new_travel.dart';
-import 'package:tg_frontend/services/auth_services.dart';
+import 'package:tg_frontend/screens/travelScreens/travel_details.dart';
+import 'package:tg_frontend/services/firebase.dart';
+import 'package:tg_frontend/services/map_screen_provider.dart';
 import 'package:tg_frontend/widgets/lateral_bar.dart';
 import 'package:tg_frontend/widgets/main_button.dart';
 import 'package:get/get.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart' as loc;
-import 'package:logger/logger.dart';
 import 'package:tg_frontend/models/user_model.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:tg_frontend/widgets/setUserInformation.dart';
 import 'package:flutter/services.dart';
-
-final logger = Logger();
+import 'package:tg_frontend/widgets/notification_card.dart';
 
 const mapboxAccessToken =
     'pk.eyJ1Ijoic2FybWFyaWUiLCJhIjoiY2xwYm15eTRrMGZyYjJtcGJ1bnJ0Y3hpciJ9.v5mHXrC66zG4x-dgZDdLSA';
@@ -39,11 +39,23 @@ class _MapScreenState extends State<MapScreen> {
   // LatLng? myPosition = const LatLng(3.3765821, -76.5334617);
   late LatLng myPosition;
   LatLng universityPosition = const LatLng(3.3765821, -76.5334617);
+  late Travel travelNotification;
 
   @override
   void initState() {
     super.initState();
     _requestLocationPermission();
+    FirebaseService().initializeFirebaseMessaging(
+      onMessageReceived: (RemoteMessage message) {
+        travelNotification = Travel.fromJson(message.data);
+        setState(() {});
+        Provider.of<MapScreenProvider>(context, listen: false)
+            .setShowNotificationCard(true);
+      },
+      onNotificationTypeReceived: (String notificationType) {
+        // Manejar el tipo de notificación recibida si es necesario
+      },
+    );
   }
 
   Future<void> _requestLocationPermission() async {
@@ -72,6 +84,9 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
+    bool showNotificationCard =
+        Provider.of<MapScreenProvider>(context).showNotificationCard;
+
     return PopScope(
         canPop: false,
         onPopInvoked: (bool isPopGesture) {
@@ -148,6 +163,15 @@ class _MapScreenState extends State<MapScreen> {
                           );
                         }),
                       ),
+                      if (showNotificationCard)
+                        Center(
+                          child: NotificationCard(
+                            onPressed: () {
+                              Get.to(() => TravelDetails(
+                                  selectedTravel: travelNotification));
+                            },
+                          ),
+                        ),
                       Positioned(
                         top: MediaQuery.of(context).size.width / 0.8,
                         left: 50,

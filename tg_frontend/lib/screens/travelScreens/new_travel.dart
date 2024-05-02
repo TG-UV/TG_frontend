@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:tg_frontend/datasource/user_data.dart';
+import 'package:tg_frontend/models/vehicle_model.dart';
 import 'package:tg_frontend/screens/home.dart';
 import 'package:tg_frontend/screens/theme.dart';
 import 'package:tg_frontend/widgets/main_button.dart';
@@ -25,6 +27,8 @@ class _NewTravelState extends State<NewTravel> {
   User user = Environment.sl.get<User>();
   TravelDatasourceMethods travelDatasourceMethods =
       Environment.sl.get<TravelDatasourceMethods>();
+  UserDatasourceMethods userDatasourceImpl =
+      Environment.sl.get<UserDatasourceMethods>();
   int _selectedTimeButtonIndex = -1;
   int _selectedSeatsButtonIndex = -1;
   String _selectedDate = DateTime.now().toString();
@@ -33,6 +37,8 @@ class _NewTravelState extends State<NewTravel> {
   String inputAddress = "Universidad del valle";
   late LatLng latLngArrivalPoint;
   late LatLng latLngStartingPoint;
+  List<Vehicle> driverVehicles = [];
+  late Vehicle vehicleSelected;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -50,11 +56,25 @@ class _NewTravelState extends State<NewTravel> {
   @override
   void initState() {
     initializeDateFormatting();
+    _fetchVehicles();
     super.initState();
   }
 
   void initializeDateFormat() {
     initializeDateFormatting('es_ES', null);
+  }
+
+  void _fetchVehicles() async {
+    final List<Vehicle>? listResponse =
+        await userDatasourceImpl.getVehiclesDriver();
+    if (listResponse != null) {
+      setState(() {
+        driverVehicles = listResponse;
+        vehicleSelected = driverVehicles.first;
+      });
+    } else {
+      throw Exception('Error al llamar los vehículos, intente de nuevo');
+    }
   }
 
   void submitForm(BuildContext context) async {
@@ -63,17 +83,19 @@ class _NewTravelState extends State<NewTravel> {
         timeController.text.isNotEmpty &&
         seatsController.text.isNotEmpty) {
       Travel travel = Travel(
-          id: 100,
-          arrivalPointLat: latLngArrivalPoint.latitude,
-          arrivalPointLong: latLngArrivalPoint.longitude,
-          startingPointLat: latLngStartingPoint.latitude,
-          startingPointLong: latLngStartingPoint.longitude,
-          driver: user.idUser,
-          price: int.parse(priceController.text),
-          seats: int.parse(seatsController.text),
-          date: _selectedDate,
-          hour: _selectedTime,
-          currentTrip: 0);
+        id: 100,
+        arrivalPointLat: latLngArrivalPoint.latitude,
+        arrivalPointLong: latLngArrivalPoint.longitude,
+        startingPointLat: latLngStartingPoint.latitude,
+        startingPointLong: latLngStartingPoint.longitude,
+        driver: user.idUser,
+        price: int.parse(priceController.text),
+        seats: int.parse(seatsController.text),
+        date: _selectedDate,
+        hour: _selectedTime,
+        currentTrip: 0,
+        vehicle: vehicleSelected.idVehicle,
+      );
 
       int sentResponse =
           await travelDatasourceMethods.insertTravelRemote(travel: travel);
@@ -104,8 +126,6 @@ class _NewTravelState extends State<NewTravel> {
           });
     }
   }
-
-  
 
   DateTime _parseTimeString(String timeString) {
     List<String> parts = timeString.split(':');
@@ -176,6 +196,24 @@ class _NewTravelState extends State<NewTravel> {
           ? latLngArrivalPoint = response
           : latLngStartingPoint = response;
     });
+  }
+
+  InputDecoration myInputDecoration(String label) {
+    return InputDecoration(
+      labelText: label,
+      enabledBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: ColorManager.secondaryColor, width: 0.5),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(5),
+          borderSide: const BorderSide(
+            width: 0,
+            style: BorderStyle.none,
+          )),
+      filled: true,
+      fillColor: ColorManager.thirdColor,
+    );
   }
 
   @override
@@ -465,6 +503,29 @@ class _NewTravelState extends State<NewTravel> {
                       icon: const Icon(Icons.edit),
                     ),
                     const SizedBox(height: 30),
+                    SizedBox(
+                        height: 70,
+                        child: DropdownButtonFormField<Vehicle>(
+                          value: vehicleSelected,
+                          onChanged: (Vehicle? newValue) {
+                            setState(() {
+                              vehicleSelected = newValue!;
+                            });
+                          },
+                          items: driverVehicles.map((Vehicle vehiculo) {
+                            return DropdownMenuItem<Vehicle>(
+                              value: vehiculo,
+                              child: Text(
+                                  '${vehiculo.licensePlate} ${vehiculo.vehicleBrand}',
+                                  style:
+                                      Theme.of(context).textTheme.titleSmall),
+                            );
+                          }).toList(),
+                          decoration: myInputDecoration(" Vehículo"),
+                        )),
+                    const SizedBox(
+                      height: 20,
+                    ),
                     MainButton(
                         text: 'crear',
                         large: false,
