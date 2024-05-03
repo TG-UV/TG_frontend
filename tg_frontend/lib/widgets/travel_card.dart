@@ -85,85 +85,88 @@ class _TravelCardState extends State<TravelCard> {
 
   @override
   Widget build(BuildContext context) {
-    // bool isNewPassengerNotification = Provider.of<NotificationProvider>(context).isNewPassengerNotification;
-    bool isTravelNotification = Provider.of<TravelNotificationProvider>(context)
-        .isNewPassengerNotification;
+    //bool isTravelNotification = Provider.of<TravelNotificationProvider>(context).isNewPassengerNotification;
     initializeDateFormat();
-    return InkWell(
-        onTap: _onTapHandle,
-        child: Card(
-            //color: const Color.fromARGB(255, 252, 252, 252),
-            elevation: 8,
-            shadowColor: ColorManager.secondaryColor,
-            child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: <Widget>[
-                            if (isTravelNotification)
-                              AnimatedBuilder(
-                                animation: _controller,
-                                builder: (context, child) {
-                                  return Opacity(
-                                      opacity: _controller.value,
-                                      child: const Icon(
-                                          Icons.mark_unread_chat_alt_sharp));
-                                },
-                              ),
-                            Text(
-                              _dayOfWeekFormated(),
-                              style: Theme.of(context).textTheme.titleLarge,
-                            ),
-                            Text(
-                              DateFormat('hh:mm a')
-                                  .format(_parseTimeString(widget.travel.hour)),
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleLarge!
-                                  .copyWith(fontSize: 22.0),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ]),
-                      const SizedBox(width: 8),
-                      Row(
-                        children: [
-                          const Image(
-                            image: AssetImage(
-                              'assets/side2side.png',
-                            ),
-                            width: 50,
-                            height: 70,
-                          ),
-                          Expanded(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Desde: $startingPointTextDirection',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleSmall!
-                                      .copyWith(fontSize: 15.0),
-                                  overflow: TextOverflow.ellipsis,
+    return Consumer<TravelNotificationProvider>(
+        builder: (context, notificationProvider, _) {
+      return InkWell(
+          onTap: _onTapHandle,
+          child: Card(
+              //color: const Color.fromARGB(255, 252, 252, 252),
+              elevation: 8,
+              shadowColor: ColorManager.secondaryColor,
+              child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: <Widget>[
+                              if (notificationProvider.isTavelNotification &&
+                                  notificationProvider.idTravelNotification ==
+                                      widget.travel.id)
+                                AnimatedBuilder(
+                                  animation: _controller,
+                                  builder: (context, child) {
+                                    return Opacity(
+                                        opacity: _controller.value,
+                                        child: const Icon(
+                                            Icons.mark_unread_chat_alt_sharp));
+                                  },
                                 ),
-                                Text(
-                                  'Hacia: $arrivalPointTextDirection',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleSmall!
-                                      .copyWith(fontSize: 15.0),
-                                  overflow: TextOverflow.ellipsis,
-                                )
-                              ],
+                              Text(
+                                _dayOfWeekFormated(),
+                                style: Theme.of(context).textTheme.titleLarge,
+                              ),
+                              Text(
+                                DateFormat('hh:mm a').format(
+                                    _parseTimeString(widget.travel.hour)),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleLarge!
+                                    .copyWith(fontSize: 22.0),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ]),
+                        const SizedBox(width: 8),
+                        Row(
+                          children: [
+                            const Image(
+                              image: AssetImage(
+                                'assets/side2side.png',
+                              ),
+                              width: 50,
+                              height: 70,
                             ),
-                          )
-                        ],
-                      ),
-                    ]))));
+                            Expanded(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Desde: $startingPointTextDirection',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleSmall!
+                                        .copyWith(fontSize: 15.0),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  Text(
+                                    'Hacia: $arrivalPointTextDirection',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleSmall!
+                                        .copyWith(fontSize: 15.0),
+                                    overflow: TextOverflow.ellipsis,
+                                  )
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                      ]))));
+    });
   }
 }

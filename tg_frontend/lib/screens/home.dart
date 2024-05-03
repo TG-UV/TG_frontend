@@ -1,18 +1,18 @@
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:tg_frontend/datasource/travel_data.dart';
 import 'package:tg_frontend/datasource/user_data.dart';
-import 'package:tg_frontend/models/user_model.dart';
-import 'package:tg_frontend/screens/travelScreens/listed_notifications.dart';
+import 'package:tg_frontend/screens/theme.dart';
 import 'package:tg_frontend/screens/travelScreens/listed_travels.dart';
 import 'package:tg_frontend/screens/travelScreens/map_screen.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:dio/dio.dart';
 import 'package:tg_frontend/datasource/local_database_provider.dart';
 import 'package:tg_frontend/device/environment.dart';
-import 'package:tg_frontend/services/auth_services.dart';
+import 'package:tg_frontend/services/travel_notification_provider.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -31,7 +31,7 @@ class _HomeState extends State<Home> {
       Environment.sl.get<TravelDatasourceMethods>();
   late Database database;
   Dio dio = Dio();
-  //User user = Environment.sl.get<User>();
+  bool _hasNotifications = false;
 
   final List<Widget> _pages = [
     // Home (Index = 0)
@@ -45,50 +45,36 @@ class _HomeState extends State<Home> {
     const ListedTravels(
       pastTravel: true,
     ),
-    // Notifications
-    const ListedNotifications()
   ];
 
   @override
   void initState() {
     userDatasourceImpl.initDatabase();
     travelDatasourceImpl.initDatabase();
+    //_hasNotifications = Provider.of<TravelNotificationProvider>(context).isNewPassengerNotification;
     super.initState();
-    // _initializePages();
-    // setState(() {
-
-    // });
   }
 
-  // Future<void> _initializePages() async {
-  //   User user = await _getUser();
-  //   setState(() {
-  //     _pages = [
-  //       // Home (Index = 0)
-  //       MapScreen(
-  //         user: user,
-  //       ),
-
-  //       // Scheduled Travles (Future)
-  //        ListedTravels(
-  //         pastTravel: false,  user: user,
-  //       ),
-  //       // History Travels (Past)
-  //        ListedTravels(
-  //         pastTravel: true,  user: user,
-  //       ),
-  //       // Notifications
-  //       const ListedNotifications()
-  //     ];
-  //   });
-  // }
-
-  // Future<User> _getUser() async {
-  //   database = await databaseProvider.database;
-  //   userDatasourceImpl = UserDatasourceMethods();
-  //   User user = await userDatasourceImpl.getUserLocal();
-  //   return user;
-  // }
+  Widget _buildIconWithBadge(IconData iconData) {
+    return Stack(
+      alignment: Alignment.topRight,
+      children: [
+        Icon(
+          iconData,
+          color: Colors.black,
+        ),
+        if (_hasNotifications)
+          Container(
+            width: 10,
+            height: 10,
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.red,
+            ),
+          ),
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -100,35 +86,32 @@ class _HomeState extends State<Home> {
       );
     }
 
-    return Scaffold(
-      body: _pages[_selectedIndex],
-      //currentIndex: _selectedIndex,
-      bottomNavigationBar: ConvexAppBar(
-        items: const [
-          TabItem(
-              icon: Icon(
-            Icons.home,
-            color: Colors.black,
-          )),
-          TabItem(
-              icon: Icon(
-            Icons.time_to_leave_sharp,
-            color: Colors.black,
-          )),
-          TabItem(icon: Icon(Icons.timelapse_sharp, color: Colors.black)),
-          // TabItem(icon: Icon(Icons.notifications, color: Colors.black)),
-        ],
-        onTap: (int index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-        style: TabStyle.react,
-        backgroundColor: const Color.fromARGB(255, 239, 239, 239),
-        //activeColor: Colors.blue, // Color del ítem seleccionado
-        //curveItemInnerPadding: -15, // Ajusta este valor para cambiar el tamaño del cuadro alrededor del ítem seleccionado
-      ),
-      /*
+    return Consumer<TravelNotificationProvider>(
+        builder: (context, notificationProvider, _) {
+      _hasNotifications = notificationProvider.isTavelNotification;
+      return Scaffold(
+        body: _pages[_selectedIndex],
+        bottomNavigationBar: ConvexAppBar(
+          items: [
+            const TabItem(
+                icon: Icon(
+              Icons.home,
+              color: Colors.black,
+            )),
+            TabItem(icon: _buildIconWithBadge(Icons.time_to_leave_sharp)),
+            const TabItem(
+                icon: Icon(Icons.timelapse_sharp, color: Colors.black)),
+          ],
+          onTap: (int index) {
+            setState(() {
+              _selectedIndex = index;
+              _hasNotifications = false;
+            });
+          },
+          style: TabStyle.react,
+          backgroundColor: ColorManager.thirdColor,
+        ),
+        /*
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         
@@ -160,6 +143,7 @@ class _HomeState extends State<Home> {
           ),
         ],
       ),*/
-    );
+      );
+    });
   }
 }
