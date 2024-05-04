@@ -14,8 +14,9 @@ class FirebaseService {
 
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
-  void initializeFirebaseMessaging(BuildContext context) {
+  Future<void> initializeFirebaseMessaging(context) async {
     _firebaseMessaging.requestPermission();
+    final fCMToken = await _firebaseMessaging.getToken();
     // _firebaseMessaging.getToken().then((token) {
 
     // });

@@ -75,6 +75,17 @@ flutter {
     source '../..'
 }
 
+
+plugins {
+  id 'com.android.application'
+
+  // Add the Google services Gradle plugin
+  id 'com.google.gms.google-services'
+
+  
+}
+
+
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
@@ -89,13 +100,7 @@ dependencies {
 
   // Add the dependencies for any other desired Firebase products
   // https://firebase.google.com/docs/android/setup#available-libraries
-}
 
-plugins {
-  id 'com.android.application'
+  implementation 'com.google.firebase:firebase-messaging:10.0.4' 
 
-  // Add the Google services Gradle plugin
-  id 'com.google.gms.google-services'
-
-  
 }

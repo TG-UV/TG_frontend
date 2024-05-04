@@ -1,3 +1,6 @@
+import 'dart:js';
+
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 //import 'package:tg_frontend/screens/home.dart';
@@ -10,8 +13,10 @@ import 'package:tg_frontend/services/firebase.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
- // await FirebaseService().initializeFirebaseMessaging();
- // WidgetsFlutterBinding.ensureInitialized();
+  //await FirebaseService().initializeFirebaseMessaging(context)
+  // WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  await FirebaseService().initializeFirebaseMessaging(context);
   final environment = Environment();
   await environment.startEnvironment();
   runApp(MyApp());

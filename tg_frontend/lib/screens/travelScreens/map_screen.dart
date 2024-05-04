@@ -7,6 +7,7 @@ import 'package:tg_frontend/screens/theme.dart';
 import 'package:tg_frontend/screens/travelScreens/available_travels.dart';
 import 'package:tg_frontend/screens/travelScreens/new_travel.dart';
 import 'package:tg_frontend/screens/travelScreens/travel_details.dart';
+import 'package:tg_frontend/services/firebase.dart';
 import 'package:tg_frontend/services/travel_notification_provider.dart';
 import 'package:tg_frontend/widgets/lateral_bar.dart';
 import 'package:tg_frontend/widgets/main_button.dart';
@@ -43,6 +44,7 @@ class _MapScreenState extends State<MapScreen> {
   void initState() {
     super.initState();
     _requestLocationPermission();
+    FirebaseService().initializeFirebaseMessaging(context);
     // FirebaseService().initializeFirebaseMessaging(
     //   onMessageReceived: (RemoteMessage message) {
     //     travelNotification = Travel.fromJson(message.data);
