@@ -91,8 +91,8 @@ class _DetailsCardState extends State<AssociatesDetailsCard>
   }
 
   void _cancelSpot(int idPassengerTrip) async {
-    int sendResponse = await travelDatasourceImpl.deletePassengerRemote(
-        passengerId: idPassengerTrip);
+    int sendResponse = await travelDatasourceImpl.deleteSpotPassengerRemote(
+        tripId: widget.travel.id);
     if (sendResponse == 1) {
       await EasyLoading.showInfo("reserva cancelada");
       Navigator.of(context).pop();
@@ -260,7 +260,7 @@ class _DetailsCardState extends State<AssociatesDetailsCard>
                                 if (detailsList!["is_confirmed"])
                                   Container(
                                     // color: Color.fromARGB(69, 127, 127, 127),
-                                    decoration: BoxDecoration(
+                                    decoration: const BoxDecoration(
                                       borderRadius: BorderRadius.all(
                                         Radius.circular(20),
                                       ),

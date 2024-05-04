@@ -103,8 +103,8 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
   }
 
   void _cancelPassenger(int passengerId) async {
-    int sendResponse = await travelDatasourceImpl.deletePassengerRemote(
-        passengerId: passengerId);
+    int sendResponse = await travelDatasourceImpl.deleteSpotDriverRemote(
+        idPassengerTrip: passengerId);
     if (sendResponse != 0) {
       _loadPassengers();
     } else {

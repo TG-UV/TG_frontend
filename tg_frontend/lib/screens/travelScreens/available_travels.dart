@@ -27,22 +27,31 @@ class _ListedTravelsState extends State<AvailableTravels> {
       Environment.sl.get<TravelDatasourceMethods>();
   User user = Environment.sl.get<User>();
   List<Travel> travelsList = [];
-  final EndPoints _endPoints = EndPoints();
+  late Map<String, dynamic> requestData;
 
   @override
   void initState() {
-    print('widget keyyyyy--------------------: ${widget.key}');
+    _initRequestData();
     super.initState();
-    //_cargarViajes();
+  }
+
+  void _initRequestData() {
+    requestData = {
+      "starting_point_lat": "3.370051",
+      "starting_point_long": "-76.532661",
+      "arrival_point_lat": "3.391652",
+      "arrival_point_long": "-76.551000",
+      "seats": "1",
+      "start_time": "5:25:00",
+      "start_date": "2024-04-29"
+    };
+    setState(() {});
   }
 
   Stream<List<Travel>> _fetchTravelsStream() async* {
-    final value = await travelDatasourceImpl.getTravelsRemote(
-        finalEndPoint: _endPoints.getGeneralTravels);
+    final value = await travelDatasourceImpl.getTravelSuggestions(
+        searchData: requestData);
     yield value;
-    // setState(() {
-
-    // });
   }
 
   @override

@@ -22,6 +22,8 @@ abstract class TravelDatasource {
   Future<void> getTravelLocal({required int travelId, String filter});
   Future<List<Travel>> getTravelsRemote(
       {required String finalEndPoint, Map<String, dynamic> searchData});
+  Future<List<Travel>> getTravelSuggestions(
+      {required Map<String, dynamic> searchData});
   Future<Response<Map<String, dynamic>>?> getTravelDetails(
       {required int travelId, required String finalUrl});
   Future<int?> updateTravelLocal(
@@ -36,7 +38,8 @@ abstract class TravelDatasource {
   Future<int> insertPassengerRemote({required Passenger passenger});
   Future<int> updatePassengerRemote(
       {required int passengerTripId, required bool valueConfirmed});
-  Future<int> deletePassengerRemote({required int passengerId});
+  Future<int> deleteSpotPassengerRemote({required int tripId});
+  Future<int> deleteSpotDriverRemote({required int idPassengerTrip});
 }
 
 class TravelDatasourceMethods implements TravelDatasource {
@@ -232,9 +235,6 @@ class TravelDatasourceMethods implements TravelDatasource {
         dio.options.headers['Authorization'] = 'Token $token';
         response = await dio.get(
           _endPoints.baseUrl + finalEndPoint,
-          //queryParameters: parameters,
-
-          //data: searchData,
         );
         if (finalEndPoint == _endPoints.getGeneralTravels) {
           for (var data in response.data) {
@@ -256,6 +256,29 @@ class TravelDatasourceMethods implements TravelDatasource {
       }
     } else {
       print('No se encontró ningún token.');
+    }
+
+    return travelList;
+  }
+
+  @override
+  Future<List<Travel>> getTravelSuggestions(
+      {required Map<String, dynamic>? searchData}) async {
+    List<Travel> travelList = [];
+    Response<dynamic> response;
+
+    try {
+      dio.options.headers['Authorization'] = 'Token $token';
+      response = await dio.post(
+          _endPoints.baseUrl + _endPoints.getGeneralTravels,
+          data: searchData);
+
+      for (var data in response.data) {
+        Travel travel = Travel.fromJson(data);
+        travelList.add(travel);
+      }
+    } catch (error) {
+      print('Error al realizar la solicitud viaje remoto: $error');
     }
 
     return travelList;
@@ -366,7 +389,7 @@ class TravelDatasourceMethods implements TravelDatasource {
       print(jsonPassengerTrip);
       dio.options.headers['Authorization'] = 'Token $token';
       response = await dio.post(
-          _endPoints.baseUrl + _endPoints.postPassengerTrip,
+          _endPoints.baseUrl + _endPoints.postPassengerTripBook,
           data: jsonPassengerTrip);
       sent++;
     } catch (e) {
@@ -376,10 +399,27 @@ class TravelDatasourceMethods implements TravelDatasource {
   }
 
   @override
-  Future<int> deletePassengerRemote({required int passengerId}) async {
+  Future<int> deleteSpotPassengerRemote({required int tripId}) async {
     Response? response;
     String url =
-        "${_endPoints.baseUrl}${_endPoints.patchPassengerTrip}${passengerId.toString()}/";
+        "${_endPoints.baseUrl}${_endPoints.deleteSpotTripPassenger}${tripId.toString()}/";
+    int sent = 0;
+    try {
+      dio.options.headers['Authorization'] = 'Token $token';
+      response = await dio.delete(url);
+      print('response: --- $response');
+      sent++;
+    } catch (e) {
+      return sent;
+    }
+    return sent;
+  }
+
+  @override
+  Future<int> deleteSpotDriverRemote({required int idPassengerTrip}) async {
+    Response? response;
+    String url =
+        "${_endPoints.baseUrl}${_endPoints.deleteSpotTripDriver}${idPassengerTrip.toString()}/";
     int sent = 0;
     try {
       dio.options.headers['Authorization'] = 'Token $token';

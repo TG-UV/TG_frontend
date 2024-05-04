@@ -63,8 +63,10 @@ class _SearchTravelsState extends State<SearchTravels> {
         dateController.text.isNotEmpty &&
         timeController.text.isNotEmpty) {
       // Map<String, dynamic> requestData = {
-      //   'arrival_point': arrivalPointController.text,
-      //   'starting_point': startingPointController.text,
+      //   'starting_point_lat': latLngStartingPoint.latitude,
+      //   "starting_point_long": latLngStartingPoint.longitude,
+      //   "arrival_point_lat": latLngArrivalPoint.latitude,
+      //   "arrival_point_long": latLngArrivalPoint.longitude,
       //   'start_time': _selectedTime,
       //   'start_date': _selectedDate,
       // };
@@ -85,8 +87,8 @@ class _SearchTravelsState extends State<SearchTravels> {
   }
 
   Future<void> _fetchTravels(Map<String, dynamic> requestData) async {
-    List<Travel> value = await travelDatasourceMethods.getTravelsRemote(
-        finalEndPoint: endPoint.getGeneralTravels, searchData: requestData);
+    List<Travel> value = await travelDatasourceMethods.getTravelSuggestions(
+        searchData: requestData);
     if (value.isNotEmpty) {
       setState(() {
         travelsList = value;
