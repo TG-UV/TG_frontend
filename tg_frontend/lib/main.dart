@@ -34,7 +34,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await FirebaseMessaging.instance.setAutoInitEnabled(true);
-  // FirebaseService().initializeFirebaseMessaging();
+  FirebaseService().initializeFirebaseMessaging();
 
   runApp(MyApp());
 }

@@ -1,4 +1,5 @@
 import 'dart:ffi';
+import 'dart:js';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -31,7 +32,7 @@ class _HomeState extends State<Home> {
       Environment.sl.get<TravelDatasourceMethods>();
   late Database database;
   Dio dio = Dio();
-  bool _hasNotifications = false;
+  bool _varHasNotifications = false;
 
   final List<Widget> _pages = [
     // Home (Index = 0)
@@ -56,7 +57,7 @@ class _HomeState extends State<Home> {
     super.initState();
   }
 
-  Widget _buildIconWithBadge(IconData iconData) {
+  Widget _buildIconWithBadge(IconData iconData, bool _hasNotifications) {
     return Stack(
       alignment: Alignment.topRight,
       children: [
@@ -79,6 +80,8 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    var _hasNotifications = Provider.of<TravelNotificationProvider>(context);
+
     if (_pages.isEmpty) {
       return const Scaffold(
         body: Center(
@@ -87,32 +90,33 @@ class _HomeState extends State<Home> {
       );
     }
 
-    return Consumer<TravelNotificationProvider>(
-        builder: (context, notificationProvider, _) {
-      _hasNotifications = notificationProvider.isTavelNotification;
-      return Scaffold(
-        body: _pages[_selectedIndex],
-        bottomNavigationBar: ConvexAppBar(
-          items: [
-            const TabItem(
-                icon: Icon(
-              Icons.home,
-              color: Colors.black,
-            )),
-            TabItem(icon: _buildIconWithBadge(Icons.time_to_leave_sharp)),
-            const TabItem(
-                icon: Icon(Icons.timelapse_sharp, color: Colors.black)),
-          ],
-          onTap: (int index) {
-            setState(() {
-              _selectedIndex = index;
-              _hasNotifications = false;
-            });
-          },
-          style: TabStyle.react,
-          backgroundColor: ColorManager.thirdColor,
-        ),
-        /*
+    // return Consumer<TravelNotificationProvider>(
+    //     builder: (context, notificationProvider, _) {
+    //   _hasNotifications = notificationProvider.isTavelNotification;
+    return Scaffold(
+      body: _pages[_selectedIndex],
+      bottomNavigationBar: ConvexAppBar(
+        items: [
+          const TabItem(
+              icon: Icon(
+            Icons.home,
+            color: Colors.black,
+          )),
+          TabItem(
+              icon: _buildIconWithBadge(Icons.time_to_leave_sharp,
+                  _hasNotifications.isTavelNotification)),
+          const TabItem(icon: Icon(Icons.timelapse_sharp, color: Colors.black)),
+        ],
+        onTap: (int index) {
+          setState(() {
+            _selectedIndex = index;
+            //  _hasNotifications = false;
+          });
+        },
+        style: TabStyle.react,
+        backgroundColor: ColorManager.thirdColor,
+      ),
+      /*
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         
@@ -144,7 +148,6 @@ class _HomeState extends State<Home> {
           ),
         ],
       ),*/
-      );
-    });
+    );
   }
 }

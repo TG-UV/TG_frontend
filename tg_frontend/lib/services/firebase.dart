@@ -6,11 +6,11 @@ import 'package:tg_frontend/services/travel_notification_provider.dart';
 
 class FirebaseService {
   // Singleton pattern
-  static final FirebaseService _instance = FirebaseService._internal();
+  // static final FirebaseService _instance = FirebaseService._internal();
 
-  factory FirebaseService() => _instance;
+  // factory FirebaseService() => _instance;
 
-  FirebaseService._internal();
+  // FirebaseService._internal();
 
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
@@ -94,42 +94,3 @@ class FirebaseService {
     print("Handling a background message: ${message.messageId}");
   }
 }
-
-
-  // // Inicializar Firebase
-  // Future<void> initializeFirebase() async {
-  //   await Firebase.initializeApp();
-  //   _configureFirebaseMessaging();
-  // }
-
-  // // Configurar Firebase Messaging
-  // void _configureFirebaseMessaging() {
-  //   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-  //     print('Got a message whilst in the foreground!');
-  //     print('Message data: ${message.data}');
-
-  //     if (message.notification != null) {
-  //       print('Message also contained a notification: ${message.notification}');
-  //     }
-  //   });
-  // }
-
-
-//   // Método para enviar una notificación a un dispositivo específico
-//   Future<void> sendNotificationToDevice(String deviceToken, String title, String body) async {
-//     try {
-//       await FirebaseMessaging.instance.send(
-//         Message(
-//           notification: Notification(
-//             title: title,
-//             body: body,
-//           ),
-//           token: deviceToken,
-//         ),
-//       );
-//       print("Notification sent successfully!");
-//     } catch (e) {
-//       print("Failed to send notification: $e");
-//     }
-//   }
-// }
