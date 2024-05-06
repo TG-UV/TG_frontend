@@ -14,9 +14,21 @@ class FirebaseService {
 
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
-  Future<void> initializeFirebaseMessaging(context) async {
-    _firebaseMessaging.requestPermission();
+  Future<void> initializeFirebaseMessaging() async {
+    _firebaseMessaging.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
     final fCMToken = await _firebaseMessaging.getToken();
+    final TravelNotificationProvider travelNotificationProvider =
+        TravelNotificationProvider();
+    print("firebase token: $fCMToken");
+
     // _firebaseMessaging.getToken().then((token) {
 
     // });
@@ -24,19 +36,19 @@ class FirebaseService {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       print("onMessage: $message");
       final notificationType = message.data['notification_type'];
-      final notificationProvider =
-          Provider.of<TravelNotificationProvider>(context, listen: false);
+      // final notificationProvider =
+      //    Provider.of<TravelNotificationProvider>(context, listen: false);
       final notificationBody = message.notification?.body ?? "";
       final notificationAdditionalInfo =
           message.data['additional_info']["travelId"] ?? "";
 
       if (notificationType == 'travel_notification') {
-        notificationProvider.setTravelNotification(true);
-        notificationProvider
+        travelNotificationProvider.setTravelNotification(true);
+        travelNotificationProvider
             .setIdTravelNotification(notificationAdditionalInfo);
       } else if (notificationType == 'current_travel') {
-        notificationProvider.setCurrentTravelNotification(true);
-        notificationProvider.setCurrentTravel(notificationBody);
+        travelNotificationProvider.setCurrentTravelNotification(true);
+        travelNotificationProvider.setCurrentTravel(notificationBody);
       }
       // else if (notificationType == 'travel_notification') {
       //   notificationProvider.setTravelCardNotification(true);
@@ -51,25 +63,25 @@ class FirebaseService {
       // onNotificationTypeReceived(message.data['notification_type']);
       FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
         final notificationType = message.data['notification_type'];
-        final notificationProvider =
-            Provider.of<TravelNotificationProvider>(context, listen: false);
+        // final notificationProvider =
+        //     Provider.of<TravelNotificationProvider>(context, listen: false);
         final notificationBody = message.notification?.body ?? "";
         final notificationAdditionalInfo =
             message.data['additional_info']["travelId"] ?? "";
 
-        if (notificationType == 'travel_notification') {
-          notificationProvider.setTravelNotification(true);
-          notificationProvider
-              .setIdTravelNotification(notificationAdditionalInfo);
-          // Navegar a una pantalla específica aquí
-          Navigator.of(context).pushNamed('/travel_details',
-              arguments: notificationAdditionalInfo);
-        } else if (notificationType == 'current_travel') {
-          notificationProvider.setCurrentTravelNotification(true);
-          notificationProvider.setCurrentTravel(notificationBody);
-          // Navegar a una pantalla específica aquí
-          Navigator.of(context).pushNamed('/current_travel');
-        }
+        // if (notificationType == 'travel_notification') {
+        //   travelNotificationProvider.setTravelNotification(true);
+        //   travelNotificationProvider
+        //       .setIdTravelNotification(notificationAdditionalInfo);
+        //   // Navegar a una pantalla específica aquí
+        //   Navigator.of(context).pushNamed('/travel_details',
+        //       arguments: notificationAdditionalInfo);
+        // } else if (notificationType == 'current_travel') {
+        //   travelNotificationProvider.setCurrentTravelNotification(true);
+        //   travelNotificationProvider.setCurrentTravel(notificationBody);
+        //   // Navegar a una pantalla específica aquí
+        //   Navigator.of(context).pushNamed('/current_travel');
+        // }
       });
     });
 

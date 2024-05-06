@@ -51,7 +51,8 @@ class _HomeState extends State<Home> {
   void initState() {
     userDatasourceImpl.initDatabase();
     travelDatasourceImpl.initDatabase();
-    //_hasNotifications = Provider.of<TravelNotificationProvider>(context).isNewPassengerNotification;
+    // _hasNotifications =
+    //     Provider.of<TravelNotificationProvider>(context).isTavelNotification;
     super.initState();
   }
 

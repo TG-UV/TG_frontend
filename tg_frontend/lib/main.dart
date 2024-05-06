@@ -1,8 +1,8 @@
-import 'dart:js';
-
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 //import 'package:tg_frontend/screens/home.dart';
 import 'package:tg_frontend/screens/loginAndRegister/splash.dart';
 //import 'package:tg_frontend/screens/welcome.dart';
@@ -10,15 +10,32 @@ import 'package:tg_frontend/device/environment.dart';
 import 'package:tg_frontend/screens/theme.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:tg_frontend/services/firebase.dart';
+import 'package:tg_frontend/services/travel_notification_provider.dart';
+import 'firebase_options.dart';
+
+// @pragma('vm:entry-point')
+// Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+//   // If you're going to use other Firebase services in the background, such as Firestore,
+//   // make sure you call `initializeApp` before using other Firebase services.
+//   // await Firebase.initializeApp();
+
+//   print("Handling a background message: ${message.messageId}");
+// }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   //await FirebaseService().initializeFirebaseMessaging(context)
   // WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  await FirebaseService().initializeFirebaseMessaging(context);
+  //await Firebase.initializeApp();
+  // _initFirebase( context);
   final environment = Environment();
   await environment.startEnvironment();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  await FirebaseMessaging.instance.setAutoInitEnabled(true);
+  // FirebaseService().initializeFirebaseMessaging();
+
   runApp(MyApp());
 }
 
@@ -28,15 +45,20 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      locale: const Locale('es', 'ES'),
-      debugShowCheckedModeBanner: false,
-      title: 'Rayo',
-      theme: myTheme,
-      builder: EasyLoading.init(),
-      home: const Splash(),
-      //home: const Home(),
-    );
+    return MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => TravelNotificationProvider()),
+          // Otros proveedores si los necesitas
+        ],
+        child: GetMaterialApp(
+          locale: const Locale('es', 'ES'),
+          debugShowCheckedModeBanner: false,
+          title: 'Rayo',
+          theme: myTheme,
+          builder: EasyLoading.init(),
+          home: const Splash(),
+          //home: const Home(),
+        ));
   }
 
   final ThemeData myTheme = ThemeData.light().copyWith(

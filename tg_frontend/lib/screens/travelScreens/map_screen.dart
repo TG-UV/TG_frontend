@@ -44,7 +44,7 @@ class _MapScreenState extends State<MapScreen> {
   void initState() {
     super.initState();
     _requestLocationPermission();
-    FirebaseService().initializeFirebaseMessaging(context);
+    //FirebaseService().initializeFirebaseMessaging(context);
     // FirebaseService().initializeFirebaseMessaging(
     //   onMessageReceived: (RemoteMessage message) {
     //     travelNotification = Travel.fromJson(message.data);
