@@ -201,134 +201,6 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
     );
   }
 
-  // Widget buildPassengerInfo(Passenger myPassenger) {
-  //   return SizedBox(
-  //       height: 30,
-  //       width: 210,
-  //       child: Card(
-  //           color: ColorManager.thirdColor,
-  //           borderOnForeground: false,
-  //           child: Column(
-  //               // mainAxisSize: MainAxisSize.min,
-  //               children: [
-  //                 Text(
-  //                   ' ${myPassenger.firstName} ${myPassenger.lastName} ',
-  //                   style: Theme.of(context).textTheme.titleSmall,
-  //                 ),
-  //                 Row(
-  //                     mainAxisAlignment: MainAxisAlignment.center,
-  //                     children: <Widget>[
-  //                       IconButton(
-  //                           onPressed: () {
-  //                             // Mostrar el AlertDialog con el mapa
-  //                             showDialog(
-  //                               context: context,
-  //                               builder: (BuildContext context) {
-  //                                 return _mapDialog(
-  //                                     const LatLng(3.3765821, -76.5334617));
-  //                               },
-  //                             );
-  //                           },
-  //                           icon: const Icon(Icons.location_on_outlined)),
-  //                       const SizedBox(width: 2),
-  //                       IconButton(
-  //                         icon: const Icon(Icons.phone_enabled),
-  //                         onPressed: _hasCallSupport
-  //                             ? () => setState(() {
-  //                                   _launched =
-  //                                       _makePhoneCall(myPassenger.phoneNumber);
-  //                                 })
-  //                             : null,
-  //                       ),
-  //                     ])
-  //               ])));
-  // }
-
-  // Widget buildPassengerCard(
-  //     Passenger myPassenger, Function onAccept, Function onDelete) {
-  //   return SizedBox(
-  //       height: 170,
-  //       width: 230,
-  //       child: Card(
-  //         elevation: 0.9,
-  //         // color: ColorManager.thirdColor,
-  //         //shadowColor: ColorManager.primaryColor,
-  //         child: Column(
-  //           // mainAxisSize: MainAxisSize.min,
-  //           crossAxisAlignment: CrossAxisAlignment.center,
-  //           // mainAxisAlignment: MainAxisAlignment.start,
-  //           children: [
-  //             Center(
-  //               child: Text(
-  //                   '  ${myPassenger.firstName} ${myPassenger.lastName}',
-  //                   style: Theme.of(context)
-  //                       .textTheme
-  //                       .titleSmall!
-  //                       .copyWith(fontWeight: FontWeight.bold)),
-  //             ),
-  //             Text('  ${myPassenger.seats} asiento',
-  //                 style: Theme.of(context)
-  //                     .textTheme
-  //                     .titleSmall!
-  //                     .copyWith(fontSize: 15)),
-  //             Row(
-  //               mainAxisAlignment: MainAxisAlignment.center,
-  //               children: [
-  //                 Text(
-  //                   ' Coordenadas: ',
-  //                   style: Theme.of(context)
-  //                       .textTheme
-  //                       .titleSmall!
-  //                       .copyWith(fontSize: 15),
-  //                 ),
-  //                 IconButton(
-  //                     onPressed: () {
-  //                       // Mostrar el AlertDialog con el mapa
-  //                       showDialog(
-  //                         context: context,
-  //                         builder: (BuildContext context) {
-  //                           return _mapDialog(LatLng(3.3765821, -76.5334617));
-  //                         },
-  //                       );
-  //                     },
-  //                     icon: const Icon(
-  //                       Icons.location_on_outlined,
-  //                       size: 20,
-  //                     )),
-  //               ],
-  //             ),
-  //             Row(
-  //               mainAxisAlignment: MainAxisAlignment.spaceAround,
-  //               children: [
-  //                 TextButton(
-  //                     onPressed: () {
-  //                       onDelete();
-  //                       _cancelPassenger(myPassenger.idPassenger);
-  //                     },
-  //                     child: Text(
-  //                       "rechazar",
-  //                       style: Theme.of(context).textTheme.titleSmall!.copyWith(
-  //                           color: ColorManager.fourthColor,
-  //                           fontSize: 15,
-  //                           fontWeight: FontWeight.bold),
-  //                     )),
-  //                 TextButton(
-  //                     onPressed: () {
-  //                       onAccept();
-  //                       _confirmPassenger(myPassenger.idPassenger, true);
-  //                     },
-  //                     child: Text(
-  //                       "aceptar",
-  //                       style: Theme.of(context).textTheme.titleSmall!.copyWith(
-  //                           color: Colors.white, fontWeight: FontWeight.bold),
-  //                     ))
-  //               ],
-  //             ),
-  //           ],
-  //         ),
-  //       ));
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -417,31 +289,23 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                         textAlign: TextAlign.end,
                       ),
                       const SizedBox(height: 10),
-                      Row(
-                          //mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.people_alt_rounded),
-                              onPressed: () {
-                                showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return RouteInfoCard(
-                                          passengersList:
-                                              confirmedPassengersList,
-                                          travel: widget.travel);
-                                    });
-                              },
-                            ),
-                            const SizedBox(width: 10),
-                            Column(children: [
-                              Text('Pasajeros',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleMedium!
-                                      .copyWith(fontWeight: FontWeight.w800)),
-                            ])
-                          ]),
+                      Row(children: [
+                        Text('Ver ruta con pasajeros',
+                            style: Theme.of(context).textTheme.titleMedium),
+                        const SizedBox(width: 10),
+                        IconButton(
+                          icon: const Icon(Icons.people_alt_rounded),
+                          onPressed: () {
+                            showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return RouteInfoCard(
+                                      passengersList: confirmedPassengersList,
+                                      travel: widget.travel);
+                                });
+                          },
+                        ),
+                      ]),
                       // confirmedPassengersList.isNotEmpty
                       //     ? SizedBox(
                       //         //width: 300,
@@ -483,8 +347,7 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                             itemBuilder: (context, index) {
                               return Padding(
                                   padding: const EdgeInsets.symmetric(
-                                      horizontal:
-                                          8.0), // Espacio horizontal entre cada elemento
+                                      horizontal: 8.0),
                                   child: PassengerRequestCard(
                                       myPassenger: pendingPassengersList[index],
                                       onAccept: () => setState(() {

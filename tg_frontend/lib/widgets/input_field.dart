@@ -10,6 +10,7 @@ class InputField extends StatelessWidget {
       required this.textInputType,
       this.icon,
       this.onChange,
+      this.onPressed,
       this.foco,
       required this.obscure,
       this.color});
@@ -20,6 +21,7 @@ class InputField extends StatelessWidget {
   final bool obscure;
   final Icon? icon;
   final Function(String)? onChange;
+  final Function()? onPressed;
   final FocusNode? foco;
   final Color? color;
 
@@ -40,7 +42,12 @@ class InputField extends StatelessWidget {
           hintStyle: const TextStyle(
               color: Color.fromARGB(255, 71, 71, 71), fontSize: 12),
           filled: true,
-          suffixIcon: icon,
+          suffixIcon: icon != null
+              ? (IconButton(
+                  icon: icon!,
+                  onPressed: onPressed,
+                ))
+              : null,
           //fillColor: Colors.grey.shade200,
           fillColor: ColorManager.thirdColor,
           border: OutlineInputBorder(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:tg_frontend/datasource/endPoints/end_point.dart';
 import 'package:tg_frontend/models/travel_model.dart';
 import 'package:tg_frontend/screens/theme.dart';
@@ -12,11 +13,10 @@ import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/device/environment.dart';
 
 class AvailableTravels extends StatefulWidget {
-  final Key? key;
-
-  const AvailableTravels({
-    this.key,
-  }) : super(key: key);
+  const AvailableTravels(
+      {super.key, required this.startingPoint, required this.arrivalPoint});
+  final LatLng startingPoint;
+  final LatLng arrivalPoint;
 
   @override
   State<AvailableTravels> createState() => _ListedTravelsState();

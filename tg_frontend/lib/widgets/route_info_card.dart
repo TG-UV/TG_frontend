@@ -119,6 +119,7 @@ class _RouteInfoCardState extends State<RouteInfoCard> {
     );
 
     return AlertDialog(
+      backgroundColor: ColorManager.staticColor,
       title: Text(
         'Tu ruta',
         textAlign: TextAlign.center,

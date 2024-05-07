@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:tg_frontend/datasource/endPoints/end_point.dart';
 import 'package:tg_frontend/models/travel_model.dart';
-import 'package:tg_frontend/screens/home.dart';
 import 'package:tg_frontend/screens/theme.dart';
 import 'package:tg_frontend/widgets/travel_card.dart';
 import 'package:http/http.dart' as http;
 import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/datasource/travel_data.dart';
 import 'package:tg_frontend/device/environment.dart';
-import 'package:get_it/get_it.dart';
 
 class ListedTravels extends StatefulWidget {
   const ListedTravels({super.key, required this.pastTravel});
@@ -45,7 +42,6 @@ class _ListedTravelsState extends State<ListedTravels> {
             : currentEndPoint = endPoints.getTravelPlannedPassenger;
   }
 
-  
   Stream<List<Travel>> _fetchTravelsStream() async* {
     _selectEndpoint();
     final value = await travelDatasourceImpl.getTravelsRemote(
@@ -140,7 +136,8 @@ class _ListedTravelsState extends State<ListedTravels> {
                                               bottom: 16.0),
                                           child: TravelCard(
                                             travel: travelsList[index],
-                                            pastTravel: widget.pastTravel,//true
+                                            pastTravel:
+                                                widget.pastTravel, //true
                                           ));
                                     });
                               }

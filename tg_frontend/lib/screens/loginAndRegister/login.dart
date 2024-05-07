@@ -33,6 +33,8 @@ class _LoginState extends State<Login> {
   DatabaseProvider databaseProvider = DatabaseProvider.db;
   late Database database;
   late Future<String> user;
+  bool _obscureText = true;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -52,6 +54,9 @@ class _LoginState extends State<Login> {
           ? saveAuthInformation(token, username, password)
           : showErrorMessage('Contraseña incorrecta');
     }
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   Future<void> reSetPassword(String email) async {
@@ -128,12 +133,20 @@ class _LoginState extends State<Login> {
                                 ),
                                 const SizedBox(height: 15),
                                 InputField(
-                                  controller: passwordLoginController,
-                                  textInput: 'Contraseña',
-                                  textInputType: TextInputType.text,
-                                  obscure: true,
-                                  icon: const Icon(Icons.key),
-                                ),
+                                    controller: passwordLoginController,
+                                    textInput: 'Contraseña',
+                                    textInputType: TextInputType.text,
+                                    obscure: _obscureText,
+                                    icon: Icon(
+                                      _obscureText
+                                          ? Icons.visibility
+                                          : Icons.visibility_off,
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        _obscureText = !_obscureText;
+                                      });
+                                    }),
                                 TextButton(
                                   onPressed: () {
                                     showDialog(
@@ -181,19 +194,27 @@ class _LoginState extends State<Login> {
                                   ),
                                 ),
                                 const SizedBox(height: 50),
-                                MainButton(
-                                    text: 'Iniciar sesión',
-                                    large: true,
-                                    buttonColor: ColorManager.fourthColor,
-                                    onPressed: () async {
-                                      const CircularProgressIndicator(
-                                        valueColor:
-                                            AlwaysStoppedAnimation<Color>(
-                                                Colors.red),
-                                      );
-                                      loginUser(mailLoginController.text,
-                                          passwordLoginController.text);
-                                    }),
+                                _isLoading
+                                    ? const SizedBox(
+                                        height: 50.0,
+                                        width: 50.0,
+                                        child: CircularProgressIndicator(
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                                  Colors.red),
+                                        ),
+                                      )
+                                    : MainButton(
+                                        text: 'Iniciar sesión',
+                                        large: true,
+                                        buttonColor: ColorManager.fourthColor,
+                                        onPressed: () async {
+                                          setState(() {
+                                            _isLoading = true;
+                                          });
+                                          loginUser(mailLoginController.text,
+                                              passwordLoginController.text);
+                                        }),
                                 const SizedBox(height: 80),
                                 Row(
                                   children: <Widget>[

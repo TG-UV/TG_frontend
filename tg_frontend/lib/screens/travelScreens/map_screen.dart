@@ -7,7 +7,6 @@ import 'package:tg_frontend/screens/theme.dart';
 import 'package:tg_frontend/screens/travelScreens/available_travels.dart';
 import 'package:tg_frontend/screens/travelScreens/new_travel.dart';
 import 'package:tg_frontend/screens/travelScreens/travel_details.dart';
-import 'package:tg_frontend/services/firebase.dart';
 import 'package:tg_frontend/services/travel_notification_provider.dart';
 import 'package:tg_frontend/widgets/lateral_bar.dart';
 import 'package:tg_frontend/widgets/main_button.dart';
@@ -35,9 +34,10 @@ class _MapScreenState extends State<MapScreen> {
   late loc.LocationData currentLocation;
   User user = Environment.sl.get<User>();
 
-  // LatLng? myPosition = const LatLng(3.3765821, -76.5334617);
   late LatLng myPosition;
   LatLng universityPosition = const LatLng(3.3765821, -76.5334617);
+  LatLng defaultLocation = const LatLng(3.3765821, -76.5334617);
+
   late Travel travelNotification;
 
   @override
@@ -62,6 +62,7 @@ class _MapScreenState extends State<MapScreen> {
     if (await Permission.locationWhenInUse.request().isGranted) {
       await _getLocation();
     } else {
+      myPosition = const LatLng(0.0, 0.0);
       await EasyLoading.showInfo("permiso denegado");
     }
   }
@@ -75,8 +76,8 @@ class _MapScreenState extends State<MapScreen> {
 
   Future<LatLng> _getCenterPosition() async {
     //_getLocation();
-    if (myPosition != null) {
-      return myPosition!;
+    if (myPosition != defaultLocation) {
+      return myPosition;
     } else {
       return universityPosition;
     }
@@ -184,8 +185,14 @@ class _MapScreenState extends State<MapScreen> {
                             buttonColor: ColorManager.fourthColor,
                             onPressed: () {
                               user.type == 2
-                                  ? Get.to(() => const NewTravel())
-                                  : Get.to(() => const AvailableTravels());
+                                  ? Get.to(() => NewTravel(
+                                        startingPoint: myPosition,
+                                        arrivalPoint: universityPosition,
+                                      ))
+                                  : Get.to(() => AvailableTravels(
+                                        startingPoint: myPosition,
+                                        arrivalPoint: universityPosition,
+                                      ));
                             },
                             large: true,
                           ),
@@ -199,8 +206,13 @@ class _MapScreenState extends State<MapScreen> {
                             buttonColor: ColorManager.fourthColor,
                             onPressed: () {
                               user.type == 2
-                                  ? Get.to(() => const NewTravel())
-                                  : Get.to(() => const AvailableTravels());
+                                  ? Get.to(() => NewTravel(
+                                        startingPoint: universityPosition,
+                                        arrivalPoint: myPosition,
+                                      ))
+                                  : Get.to(() => AvailableTravels(
+                                      startingPoint: universityPosition,
+                                      arrivalPoint: myPosition));
                             },
                             large: true,
                           ),

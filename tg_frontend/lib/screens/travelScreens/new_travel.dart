@@ -17,7 +17,10 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class NewTravel extends StatefulWidget {
-  const NewTravel({super.key});
+  const NewTravel(
+      {super.key, required this.startingPoint, required this.arrivalPoint});
+  final LatLng startingPoint;
+  final LatLng arrivalPoint;
 
   @override
   State<NewTravel> createState() => _NewTravelState();
@@ -56,12 +59,28 @@ class _NewTravelState extends State<NewTravel> {
   @override
   void initState() {
     initializeDateFormatting();
+    _fetchDirections();
     _fetchVehicles();
     super.initState();
   }
 
   void initializeDateFormat() {
     initializeDateFormatting('es_ES', null);
+  }
+
+  void _fetchDirections() async {
+    latLngArrivalPoint = widget.arrivalPoint;
+    latLngStartingPoint = widget.startingPoint;
+    startingPointController.text =
+        await travelDatasourceMethods.getTextDirection(
+            lat: latLngStartingPoint.latitude,
+            long: latLngStartingPoint.longitude);
+
+    arrivalPointController.text =
+        await travelDatasourceMethods.getTextDirection(
+            lat: latLngArrivalPoint.latitude,
+            long: latLngArrivalPoint.longitude);
+    setState(() {});
   }
 
   void _fetchVehicles() async {
@@ -188,13 +207,11 @@ class _NewTravelState extends State<NewTravel> {
     });
   }
 
-  Future<void> _getMapCoordinates(String value, FocusNode foco) async {
-    var response =
+  Future<void> _getMapCoordinates(String value, LatLng point) async {
+    LatLng response =
         await travelDatasourceMethods.getMapCoordinates(address: value);
     setState(() {
-      foco == _focusNodeArrivalPoint
-          ? latLngArrivalPoint = response
-          : latLngStartingPoint = response;
+      point = response;
     });
   }
 
@@ -244,7 +261,7 @@ class _NewTravelState extends State<NewTravel> {
                             .copyWith(fontSize: 23),
                       )
                     ]),
-                    const SizedBox(height: 60),
+                    const SizedBox(height: 20),
                     Align(
                         alignment: Alignment.topLeft,
                         child: Text(
@@ -255,7 +272,7 @@ class _NewTravelState extends State<NewTravel> {
                     InputField(
                       foco: _focusNodeStartingPoint,
                       controller: startingPointController,
-                      textInput: 'Universidad del Valle',
+                      textInput: startingPointController.text,
                       textInputType: TextInputType.text,
                       obscure: false,
                       onChange: (value) {
@@ -263,6 +280,12 @@ class _NewTravelState extends State<NewTravel> {
                         _getSuggestion(value);
                       },
                       icon: const Icon(Icons.edit),
+                      onPressed: () {
+                        setState(() {
+                          _currentFoco.unfocus();
+                          // _focusNodeStartingPoint.unfocus();
+                        });
+                      },
                     ),
                     if (_suggestions.isNotEmpty &&
                         _currentFoco == _focusNodeStartingPoint)
@@ -291,10 +314,13 @@ class _NewTravelState extends State<NewTravel> {
                                 onTap: () {
                                   startingPointController.text =
                                       _suggestions[index];
-                                  _getMapCoordinates(_suggestions[index],
-                                      _focusNodeStartingPoint);
+                                  _getMapCoordinates(
+                                      _suggestions[index], latLngStartingPoint);
                                   _suggestions.clear();
-                                  _focusNodeStartingPoint.unfocus();
+                                  setState(() {
+                                    _currentFoco.unfocus();
+                                    //_focusNodeStartingPoint.unfocus();
+                                  });
                                 },
                               );
                             },
@@ -312,7 +338,7 @@ class _NewTravelState extends State<NewTravel> {
                     InputField(
                       foco: _focusNodeStartingPoint,
                       controller: arrivalPointController,
-                      textInput: 'Home',
+                      textInput: arrivalPointController.text,
                       textInputType: TextInputType.text,
                       obscure: false,
                       onChange: (value) {
@@ -320,6 +346,12 @@ class _NewTravelState extends State<NewTravel> {
                         _getSuggestion(value);
                       },
                       icon: const Icon(Icons.edit),
+                      onPressed: () {
+                        setState(() {
+                          _currentFoco.unfocus();
+                          // _focusNodeArrivalPoint.unfocus();
+                        });
+                      },
                     ),
                     if (_suggestions.isNotEmpty &&
                         _currentFoco == _focusNodeArrivalPoint)
@@ -348,10 +380,12 @@ class _NewTravelState extends State<NewTravel> {
                                 onTap: () {
                                   arrivalPointController.text =
                                       _suggestions[index];
-                                  _getMapCoordinates(_suggestions[index],
-                                      _focusNodeArrivalPoint);
+                                  _getMapCoordinates(
+                                      _suggestions[index], latLngArrivalPoint);
                                   _suggestions.clear();
-                                  _focusNodeArrivalPoint.unfocus();
+                                  setState(() {
+                                    _focusNodeArrivalPoint.unfocus();
+                                  });
                                 },
                               );
                             },

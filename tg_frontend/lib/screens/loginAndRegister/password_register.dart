@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_pw_validator/Resource/Strings.dart';
 import 'package:get/get.dart';
 import 'package:tg_frontend/models/vehicle_model.dart';
 import 'package:tg_frontend/screens/home.dart';
@@ -21,6 +22,25 @@ class PasswordRegister extends StatefulWidget {
 
   @override
   State<PasswordRegister> createState() => _PasswordRegisterState();
+}
+
+class SpanishPwValidator implements FlutterPwValidatorStrings {
+  @override
+  final String atLeast = 'Longitud mínima';
+  @override
+  final String uppercaseLetters = 'Mayúscula';
+  @override
+  final String numericCharacters = 'Carácter númerico ';
+  @override
+  final String specialCharacters = 'Carácter especial';
+
+  @override
+  // TODO: implement lowercaseLetters
+  String get lowercaseLetters => throw UnimplementedError();
+
+  @override
+  // TODO: implement normalLetters
+  String get normalLetters => throw UnimplementedError();
 }
 
 class _PasswordRegisterState extends State<PasswordRegister> {
@@ -161,14 +181,16 @@ class _PasswordRegisterState extends State<PasswordRegister> {
                               icon: const Icon(null),
                             ),
                             FlutterPwValidator(
-                                controller: passwordConfirmationController,
-                                minLength: 6,
-                                uppercaseCharCount: 1,
-                                numericCharCount: 1,
-                                specialCharCount: 1,
-                                width: 400,
-                                height: 175,
-                                onSuccess: () {}),
+                              controller: passwordConfirmationController,
+                              minLength: 6,
+                              uppercaseCharCount: 1,
+                              numericCharCount: 1,
+                              specialCharCount: 1,
+                              width: 400,
+                              height: 175,
+                              onSuccess: () {},
+                              strings: SpanishPwValidator(),
+                            ),
                             const SizedBox(height: 200),
                             Visibility(
                                 visible: emailCheckAdvice,
