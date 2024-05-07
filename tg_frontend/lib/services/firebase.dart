@@ -91,6 +91,6 @@ class FirebaseService {
   // Función que maneja los mensajes en segundo plano
   Future<void> _firebaseMessagingBackgroundHandler(
       RemoteMessage message) async {
-    print("Handling a background message: ${message.messageId}");
+    print("Handling a background message: ${message.data}");
   }
 }
