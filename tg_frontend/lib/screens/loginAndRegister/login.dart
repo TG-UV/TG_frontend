@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
@@ -7,6 +8,7 @@ import 'package:tg_frontend/device/environment.dart';
 import 'package:tg_frontend/screens/home.dart';
 import 'package:tg_frontend/screens/loginAndRegister/sign_up.dart';
 import 'package:tg_frontend/screens/theme.dart';
+import 'package:tg_frontend/services/firebase.dart';
 import 'package:tg_frontend/widgets/input_field.dart';
 import 'package:tg_frontend/widgets/main_button.dart';
 import 'package:tg_frontend/services/auth_services.dart';
@@ -46,9 +48,10 @@ class _LoginState extends State<Login> {
   }
 
   Future<void> loginUser(String username, String password) async {
-    if (_formKey.currentState!.validate()) {
+    String? deviceToken = await FirebaseMessaging.instance.getToken();
+    if (_formKey.currentState!.validate() && deviceToken is String) {
       final token = await userDatasourceImpl.getUserAuth(
-          username: username, password: password);
+          username: username, password: password, idDevice: deviceToken);
 
       token != null
           ? saveAuthInformation(token, username, password)

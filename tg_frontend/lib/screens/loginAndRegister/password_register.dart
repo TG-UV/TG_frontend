@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_pw_validator/Resource/Strings.dart';
@@ -6,13 +7,13 @@ import 'package:tg_frontend/models/vehicle_model.dart';
 import 'package:tg_frontend/screens/home.dart';
 import 'package:tg_frontend/screens/loginAndRegister/login.dart';
 import 'package:tg_frontend/screens/theme.dart';
+import 'package:tg_frontend/services/firebase.dart';
 import 'package:tg_frontend/widgets/input_field.dart';
 import 'package:tg_frontend/widgets/main_button.dart';
 import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/datasource/user_data.dart';
 import 'package:tg_frontend/device/environment.dart';
 import 'package:tg_frontend/services/auth_services.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_pw_validator/flutter_pw_validator.dart';
 
 class PasswordRegister extends StatefulWidget {
@@ -24,15 +25,15 @@ class PasswordRegister extends StatefulWidget {
   State<PasswordRegister> createState() => _PasswordRegisterState();
 }
 
-class SpanishPwValidator implements FlutterPwValidatorStrings {
+class FrenchStrings implements FlutterPwValidatorStrings {
   @override
-  final String atLeast = 'Longitud mínima';
+  final String atLeast = 'Au moins - caractères';
   @override
-  final String uppercaseLetters = 'Mayúscula';
+  final String uppercaseLetters = '- Lettres majuscules';
   @override
-  final String numericCharacters = 'Carácter númerico ';
+  final String numericCharacters = '- Chiffres';
   @override
-  final String specialCharacters = 'Carácter especial';
+  final String specialCharacters = '- Caractères spéciaux';
 
   @override
   // TODO: implement lowercaseLetters
@@ -41,6 +42,14 @@ class SpanishPwValidator implements FlutterPwValidatorStrings {
   @override
   // TODO: implement normalLetters
   String get normalLetters => throw UnimplementedError();
+
+  // @override
+  // // TODO: implement lowercaseLetters
+  // final String lowercaseLetters = throw 'Minúscula';
+
+  // @override
+  // // TODO: implement normalLetters
+  // String get normalLetters => throw "Letras normales";
 }
 
 class _PasswordRegisterState extends State<PasswordRegister> {
@@ -55,6 +64,7 @@ class _PasswordRegisterState extends State<PasswordRegister> {
       GlobalKey<FlutterPwValidatorState>();
 
   bool emailCheckAdvice = false;
+  //String? deviceToken = FirebaseService().fCMToken;
 
   Future<dynamic> submitForm(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
@@ -113,17 +123,21 @@ class _PasswordRegisterState extends State<PasswordRegister> {
   }
 
   void saveAuthInformation(user, username, password) async {
-    final token = await userDatasourceImpl.getUserAuth(
-        username: username, password: password);
+    late final String? token;
+    String? deviceToken = await FirebaseMessaging.instance.getToken();
+    if (deviceToken is String) {
+      token = await userDatasourceImpl.getUserAuth(
+          username: username, password: password, idDevice: deviceToken!);
+    }
     if (token != null) {
       await AuthStorage().saveToken(token);
       await AuthStorage().saveNickname(username);
       await AuthStorage().savePassword(password);
 
       Environment.sl.registerSingleton<User>(user);
-      //Get.to(() => const Home());
+      Get.to(() => const Home());
     } else {
-      print('Error al intentar registrar el user');
+      print('Error al intentar registrar el usuario');
     }
   }
 
@@ -139,7 +153,7 @@ class _PasswordRegisterState extends State<PasswordRegister> {
         child: Scaffold(
             resizeToAvoidBottomInset: false,
             body: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
                 alignment: Alignment.center,
                 child: Form(
                     key: _formKey,
@@ -148,6 +162,7 @@ class _PasswordRegisterState extends State<PasswordRegister> {
                       Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
+                            SizedBox(height: 60),
                             Row(children: [
                               IconButton(
                                   onPressed: () {
@@ -180,17 +195,17 @@ class _PasswordRegisterState extends State<PasswordRegister> {
                               obscure: false,
                               icon: const Icon(null),
                             ),
-                            FlutterPwValidator(
-                              controller: passwordConfirmationController,
-                              minLength: 6,
-                              uppercaseCharCount: 1,
-                              numericCharCount: 1,
-                              specialCharCount: 1,
-                              width: 400,
-                              height: 175,
-                              onSuccess: () {},
-                              strings: SpanishPwValidator(),
-                            ),
+                            // FlutterPwValidator(
+                            //   controller: passwordConfirmationController,
+                            //   minLength: 6,
+                            //   uppercaseCharCount: 1,
+                            //   numericCharCount: 1,
+                            //   specialCharCount: 1,
+                            //   width: 400,
+                            //   height: 175,
+                            //   onSuccess: () {},
+                            //   //strings: FrenchStrings(),
+                            // ),
                             const SizedBox(height: 200),
                             Visibility(
                                 visible: emailCheckAdvice,

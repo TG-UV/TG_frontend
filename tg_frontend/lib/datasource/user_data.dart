@@ -23,7 +23,9 @@ abstract class UserDatasource {
   Future<Map<String, dynamic>?> getVehicleOptionsRemote();
   Future<List<Vehicle>?> getVehiclesDriver();
   Future<String?> getUserAuth(
-      {required String username, required String password});
+      {required String username,
+      required String password,
+      required String idDevice});
   Future<void> postReSetPassword({required String email});
   Future<User> getUserLocal(int idUser);
   Future<List<dynamic>?> getUserCitiesRemote();
@@ -247,12 +249,14 @@ class UserDatasourceMethods implements UserDatasource {
 
   @override
   Future<String?> getUserAuth(
-      {required String username, required String password}) async {
+      {required String username,
+      required String password,
+      required String idDevice}) async {
     String? token;
     try {
       var response = await dio.post(
         _endPoints.baseUrl + _endPoints.getUserAuth,
-        data: {"password": password, "email": username},
+        data: {"password": password, "email": username, "id_device": idDevice},
       );
 
       if (response.statusCode == 200) {
@@ -276,8 +280,6 @@ class UserDatasourceMethods implements UserDatasource {
       print('Error al reSetPassword: $error');
     }
   }
-
-
 
   @override
   Future<List<dynamic>?> getUserCitiesRemote() async {

@@ -264,7 +264,7 @@ class _DetailsCardState extends State<AssociatesDetailsCard>
                                       borderRadius: BorderRadius.all(
                                         Radius.circular(20),
                                       ),
-                                      color: Color.fromARGB(69, 127, 127, 127),
+                                      color: Color.fromARGB(42, 135, 135, 135),
                                     ),
                                     child: Column(
                                       children: [

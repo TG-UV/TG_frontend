@@ -108,13 +108,12 @@ class _SearchTravelsState extends State<SearchTravels> {
   }
 
   Future<void> _fetchTravels(Map<String, dynamic> requestData) async {
-    List<Travel> value = await travelDatasourceMethods.getTravelSuggestions(
-        searchData: requestData);
-    if (value.isNotEmpty) {
-      setState(() {
-        travelsList = value;
-      });
-    }
+    List<Travel> travelsResponse = await travelDatasourceMethods
+        .getTravelSuggestions(searchData: requestData);
+
+    setState(() {
+      travelsList = travelsResponse;
+    });
   }
 
   DateTime _parseTimeString(String timeString) {
@@ -170,17 +169,18 @@ class _SearchTravelsState extends State<SearchTravels> {
     }
   }
 
-  Future<void> _getSuggestion(String value) async {
-    var response =
-        await travelDatasourceMethods.getMapSuggestions(address: value);
+  Future<void> _getSuggestion(String travelsResponse) async {
+    var response = await travelDatasourceMethods.getMapSuggestions(
+        address: travelsResponse);
     setState(() {
       _suggestions = response;
     });
   }
 
-  Future<void> _getMapCoordinates(String value, LatLng latLngPoint) async {
-    var response =
-        await travelDatasourceMethods.getMapCoordinates(address: value);
+  Future<void> _getMapCoordinates(
+      String travelsResponse, LatLng latLngPoint) async {
+    var response = await travelDatasourceMethods.getMapCoordinates(
+        address: travelsResponse);
     setState(() {
       latLngPoint = response;
       // foco == _focusNodeArrivalPoint
@@ -235,9 +235,9 @@ class _SearchTravelsState extends State<SearchTravels> {
                             textInput: startingPointController.text,
                             textInputType: TextInputType.text,
                             obscure: false,
-                            onChange: (value) {
+                            onChange: (travelsResponse) {
                               _currentFoco = _focusNodeStartingPoint;
-                              _getSuggestion(value);
+                              _getSuggestion(travelsResponse);
                             },
                             icon: const Icon(Icons.edit),
                           ),
@@ -296,9 +296,9 @@ class _SearchTravelsState extends State<SearchTravels> {
                             textInput: arrivalPointController.text,
                             textInputType: TextInputType.text,
                             obscure: false,
-                            onChange: (value) {
+                            onChange: (travelsResponse) {
                               _currentFoco = _focusNodeArrivalPoint;
-                              _getSuggestion(value);
+                              _getSuggestion(travelsResponse);
                             },
                             icon: const Icon(Icons.edit),
                           ),
@@ -397,51 +397,42 @@ class _SearchTravelsState extends State<SearchTravels> {
                         ],
                       ),
                     ),
-                    travelsList.isNotEmpty
-                        ? DraggableScrollableSheet(
-                            initialChildSize: 0.35,
-                            minChildSize: 0.25,
-                            maxChildSize: 0.75,
-                            builder: (context, scrollController) {
-                              return Padding(
-                                  padding: const EdgeInsets.all(10),
-                                  child: Container(
-                                      decoration: BoxDecoration(
-                                          color: Colors.red,
-                                          borderRadius:
-                                              BorderRadius.circular(15)),
-                                      child:
-                                          //  Flex(direction: Axis.vertical, children: [
-                                          //     Text(
-                                          //       "Tu mejor opción",
-                                          //       style: Theme.of(context)
-                                          //           .textTheme
-                                          //           .titleSmall,
-                                          //       textAlign: TextAlign.left,
-                                          //     ),
-                                          //     //TravelCard(travel: perfectTravel),
-                                          //     TravelCard(travel: travelsList[0]),
-                                          //     const SizedBox(height: 30),
-                                          //     Text(
-                                          //       "Revisa otras opciones",
-                                          //       style: Theme.of(context)
-                                          //           .textTheme
-                                          //           .titleSmall,
-                                          //       textAlign: TextAlign.left,
-                                          //     ),
-                                          ListView.builder(
-                                              controller: scrollController,
-                                              itemCount: travelsList.length,
-                                              itemBuilder: (context, index) {
-                                                return TravelCard(
-                                                  travel: travelsList[index],
-                                                  pastTravel: false,
-                                                );
-                                              })));
-                            })
-                        : Center(
-                            child: Text("",
-                                style: Theme.of(context).textTheme.titleMedium))
+                    DraggableScrollableSheet(
+                        initialChildSize: 0.35,
+                        minChildSize: 0.25,
+                        maxChildSize: 0.75,
+                        builder: (context, scrollController) {
+                          return Padding(
+                              padding: const EdgeInsets.all(10),
+                              child: Container(
+                                  decoration: BoxDecoration(
+                                      color: Colors.red,
+                                      borderRadius: BorderRadius.circular(15)),
+                                  child:
+                                      //travelsList.isNotEmpty?
+                                      ListView.builder(
+                                          controller: scrollController,
+                                          itemCount: travelsList.length,
+                                          itemBuilder: (context, index) {
+                                            return TravelCard(
+                                              travel: travelsList[index],
+                                              pastTravel: false,
+                                            );
+                                          })
+                                  // : Center(
+                                  //     child: Text(
+                                  //       "Lastimosamente no encontramos viajes para esta solicitud, intentalo más tarde o intenta modificar el horario",
+                                  //       style: Theme.of(context)
+                                  //           .textTheme
+                                  //           .titleSmall!
+                                  //           .copyWith(
+                                  //               overflow:
+                                  //                   TextOverflow.ellipsis),
+                                  //       maxLines: 3,
+                                  //     ),
+                                  //   )
+                                  ));
+                        })
                   ],
                 ))));
   }

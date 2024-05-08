@@ -289,52 +289,46 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                         textAlign: TextAlign.end,
                       ),
                       //const SizedBox(height: 10),
-                      Row(children: [
-                        TextButton.icon(
-                          onPressed: () {
-                            showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return RouteInfoCard(
-                                      passengersList: confirmedPassengersList,
-                                      travel: widget.travel);
-                                });
-                          },
-                          icon: Icon(
-                            Icons.people_alt_rounded,
-                            color: ColorManager.fourthColor,
-                          ),
-                          label: Text('Ver ruta con pasajeros',
+                      confirmedPassengersList.isNotEmpty
+                          ? Row(children: [
+                              TextButton.icon(
+                                onPressed: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return RouteInfoCard(
+                                            passengersList:
+                                                confirmedPassengersList,
+                                            travel: widget.travel);
+                                      });
+                                },
+                                icon: Icon(
+                                  Icons.people_alt_rounded,
+                                  color: ColorManager.fourthColor,
+                                ),
+                                label: Text('Ver ruta con pasajeros',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium!
+                                        .copyWith(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.bold)),
+                              ),
+                              const SizedBox(width: 10),
+                            ])
+                          :
+                          //AnimatedIcon(icon: AnimatedIcons.list_view, progress: progress)
+                          Text(
+                              "...Aún no tienes pasajeros en tu viaje... ",
                               style: Theme.of(context)
                                   .textTheme
-                                  .titleMedium!
+                                  .titleSmall!
                                   .copyWith(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold)),
-                        ),
-                        const SizedBox(width: 10),
-                      ]),
-                      // confirmedPassengersList.isNotEmpty
-                      //     ? SizedBox(
-                      //         //width: 300,
-                      //         height: 100,
-                      //         child: Container(
-                      //             alignment: Alignment.topLeft,
-                      //             child: ListView.builder(
-                      //                 scrollDirection: Axis.horizontal,
-                      //                 // scrollDirection: Axis.horizontal,
-                      //                 // shrinkWrap: true,
-                      //                 //physics: const NeverScrollableScrollPhysics(),
-                      //                 itemCount: confirmedPassengersList.length,
-                      //                 itemBuilder: (context, index) {
-                      //                   return buildPassengerInfo(
-                      //                       confirmedPassengersList[index]);
-                      //                 })))
-                      //     : Text(
-                      //         "...Aún no tienes pasajeros en tu viaje ",
-                      //         style: Theme.of(context).textTheme.titleSmall,
-                      //       ),
-                      Divider(),
+                                      overflow: TextOverflow.ellipsis,
+                                      fontWeight: FontWeight.bold),
+                              maxLines: 2,
+                            ),
+                      const Divider(),
                       if (pendingPassengersList.isNotEmpty)
                         Text(
                           'Están solicitando un cupo',

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:tg_frontend/datasource/endPoints/end_point.dart';
 import 'package:tg_frontend/models/travel_model.dart';
 import 'package:tg_frontend/screens/theme.dart';
 import 'package:tg_frontend/screens/travelScreens/search_travels.dart';
@@ -81,7 +80,10 @@ class _ListedTravelsState extends State<AvailableTravels> {
               text: 'Buscar',
               large: false,
               onPressed: () {
-                Get.to(() => const SearchTravels());
+                Get.to(() => SearchTravels(
+                      arrivalPoint: widget.arrivalPoint,
+                      startingPoint: widget.startingPoint,
+                    ));
               },
             ),
             const SizedBox(height: 30),

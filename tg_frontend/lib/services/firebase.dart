@@ -5,14 +5,20 @@ import 'package:provider/provider.dart';
 import 'package:tg_frontend/services/travel_notification_provider.dart';
 
 class FirebaseService {
-  // Singleton pattern
-  // static final FirebaseService _instance = FirebaseService._internal();
+  //Singleton pattern
+  static final FirebaseService _instance = FirebaseService._internal();
 
-  // factory FirebaseService() => _instance;
+  factory FirebaseService() => _instance;
 
-  // FirebaseService._internal();
+  FirebaseService._internal();
 
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+  String? fCMToken;
+  //String? get idDevice => fCMToken;
+
+  String? getFCMToken() {
+    return fCMToken;
+  }
 
   Future<void> initializeFirebaseMessaging() async {
     _firebaseMessaging.requestPermission(
@@ -24,14 +30,15 @@ class FirebaseService {
       provisional: false,
       sound: true,
     );
-    final fCMToken = await _firebaseMessaging.getToken();
+    //fCMToken = await _firebaseMessaging.getToken();
+
     final TravelNotificationProvider travelNotificationProvider =
         TravelNotificationProvider();
     print("firebase token: $fCMToken");
 
-    // _firebaseMessaging.getToken().then((token) {
-
-    // });
+    _firebaseMessaging.getToken().then((token) {
+      fCMToken = token;
+    });
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       print("onMessage: $message");

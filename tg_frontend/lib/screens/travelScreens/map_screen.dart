@@ -83,7 +83,7 @@ class _MapScreenState extends State<MapScreen> {
     } else {
       return universityPosition;
     }
-   // return myPosition;
+    // return myPosition;
   }
 
   @override

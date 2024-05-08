@@ -1,9 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter_pw_validator/Resource/Strings.dart';
 import 'package:tg_frontend/models/vehicle_model.dart';
-import 'package:tg_frontend/screens/home.dart';
 import 'package:tg_frontend/screens/theme.dart';
 import 'package:tg_frontend/widgets/input_field.dart';
 import 'package:tg_frontend/models/user_model.dart';
@@ -19,6 +18,24 @@ class SetUserInformation extends StatefulWidget {
 
   @override
   State<SetUserInformation> createState() => _SetUserInformationState();
+}
+
+class SpanishPWValidator implements FlutterPwValidatorStrings {
+  @override
+  final String atLeast = 'Longitud mínima';
+  @override
+  final String uppercaseLetters = 'Mayúscula';
+  @override
+  final String numericCharacters = 'Carácter númerico ';
+  @override
+  final String specialCharacters = 'Carácter especial';
+  @override
+  // TODO: implement lowercaseLetters
+  String get lowercaseLetters => throw "Minúscula";
+
+  @override
+  // TODO: implement normalLetters
+  String get normalLetters => throw "Letras normales";
 }
 
 class _SetUserInformationState extends State<SetUserInformation> {
@@ -139,18 +156,20 @@ class _SetUserInformationState extends State<SetUserInformation> {
                           obscure: false,
                           icon: const Icon(null),
                           onChange: _changeVisbilityParameter(true)),
-                      Visibility(
-                        visible: isVisible,
-                        child: FlutterPwValidator(
-                            controller: newPasswordController,
-                            minLength: 6,
-                            uppercaseCharCount: 1,
-                            numericCharCount: 1,
-                            specialCharCount: 1,
-                            width: 400,
-                            height: 180,
-                            onSuccess: () {}),
-                      ),
+                      // Visibility(
+                      //   visible: isVisible,
+                      //   child: FlutterPwValidator(
+                      //     controller: newPasswordController,
+                      //     minLength: 6,
+                      //     uppercaseCharCount: 1,
+                      //     numericCharCount: 1,
+                      //     specialCharCount: 1,
+                      //     width: 400,
+                      //     height: 180,
+                      //     onSuccess: () {},
+                      //     strings: SpanishPWValidator(),
+                      //   ),
+                      // ),
                       //  const Spacer(),
                       MainButton(
                           text: "guardar",
