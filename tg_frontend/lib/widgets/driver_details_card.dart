@@ -207,7 +207,7 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
         child: Card(
             color: Colors.white,
             child: Padding(
-                padding: const EdgeInsets.all(18.0),
+                padding: const EdgeInsets.all(10.0),
                 child: Column(
                     // mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -288,13 +288,9 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                             .copyWith(fontSize: 14),
                         textAlign: TextAlign.end,
                       ),
-                      const SizedBox(height: 10),
+                      //const SizedBox(height: 10),
                       Row(children: [
-                        Text('Ver ruta con pasajeros',
-                            style: Theme.of(context).textTheme.titleMedium),
-                        const SizedBox(width: 10),
-                        IconButton(
-                          icon: const Icon(Icons.people_alt_rounded),
+                        TextButton.icon(
                           onPressed: () {
                             showDialog(
                                 context: context,
@@ -304,7 +300,19 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                                       travel: widget.travel);
                                 });
                           },
+                          icon: Icon(
+                            Icons.people_alt_rounded,
+                            color: ColorManager.fourthColor,
+                          ),
+                          label: Text('Ver ruta con pasajeros',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium!
+                                  .copyWith(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold)),
                         ),
+                        const SizedBox(width: 10),
                       ]),
                       // confirmedPassengersList.isNotEmpty
                       //     ? SizedBox(
@@ -326,7 +334,7 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                       //         "...Aún no tienes pasajeros en tu viaje ",
                       //         style: Theme.of(context).textTheme.titleSmall,
                       //       ),
-                      // Divider(),
+                      Divider(),
                       if (pendingPassengersList.isNotEmpty)
                         Text(
                           'Están solicitando un cupo',
@@ -334,7 +342,7 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                               .textTheme
                               .titleMedium!
                               .copyWith(
-                                  fontWeight: FontWeight.w800, fontSize: 19),
+                                  fontWeight: FontWeight.w800, fontSize: 17),
                         ),
                       SizedBox(
                         height: 255,
@@ -385,7 +393,7 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                         ),
                       ),
                       const SizedBox(
-                        height: 5,
+                        height: 3,
                       ),
                       Center(
                           child: MainButton(

@@ -139,8 +139,8 @@ class _LoginState extends State<Login> {
                                     obscure: _obscureText,
                                     icon: Icon(
                                       _obscureText
-                                          ? Icons.visibility
-                                          : Icons.visibility_off,
+                                          ? Icons.visibility_off
+                                          : Icons.visibility,
                                     ),
                                     onPressed: () {
                                       setState(() {

@@ -15,7 +15,10 @@ import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 class SearchTravels extends StatefulWidget {
-  const SearchTravels({super.key});
+  const SearchTravels(
+      {super.key, required this.startingPoint, required this.arrivalPoint});
+  final LatLng startingPoint;
+  final LatLng arrivalPoint;
 
   @override
   State<SearchTravels> createState() => _SearchTravelsState();
@@ -46,16 +49,34 @@ class _SearchTravelsState extends State<SearchTravels> {
 
   final FocusNode _focusNodeArrivalPoint = FocusNode();
   final FocusNode _focusNodeStartingPoint = FocusNode();
-  late FocusNode _currentFoco;
+  late FocusNode _currentFoco = FocusNode();
+  late FocusNode emptyFocus = FocusNode();
 
   @override
   void initState() {
     initializeDateFormat();
+    _fetchDirections();
+
     super.initState();
   }
 
   void initializeDateFormat() {
     initializeDateFormatting('es_ES', null);
+  }
+
+  void _fetchDirections() async {
+    latLngArrivalPoint = widget.arrivalPoint;
+    latLngStartingPoint = widget.startingPoint;
+    startingPointController.text =
+        await travelDatasourceMethods.getTextDirection(
+            lat: latLngStartingPoint.latitude,
+            long: latLngStartingPoint.longitude);
+
+    arrivalPointController.text =
+        await travelDatasourceMethods.getTextDirection(
+            lat: latLngArrivalPoint.latitude,
+            long: latLngArrivalPoint.longitude);
+    setState(() {});
   }
 
   void _submitForm(BuildContext context) async {
@@ -211,7 +232,7 @@ class _SearchTravelsState extends State<SearchTravels> {
                           InputField(
                             foco: _focusNodeStartingPoint,
                             controller: startingPointController,
-                            textInput: 'Universidad del Valle',
+                            textInput: startingPointController.text,
                             textInputType: TextInputType.text,
                             obscure: false,
                             onChange: (value) {
@@ -250,7 +271,11 @@ class _SearchTravelsState extends State<SearchTravels> {
                                         _getMapCoordinates(_suggestions[index],
                                             latLngStartingPoint);
                                         _suggestions.clear();
-                                        _focusNodeStartingPoint.unfocus();
+                                        // _focusNodeStartingPoint.unfocus();
+                                        setState(() {
+                                          _currentFoco = emptyFocus;
+                                          _focusNodeStartingPoint.unfocus();
+                                        });
                                       },
                                     );
                                   },
@@ -268,7 +293,7 @@ class _SearchTravelsState extends State<SearchTravels> {
                           InputField(
                             foco: _focusNodeStartingPoint,
                             controller: arrivalPointController,
-                            textInput: 'Home',
+                            textInput: arrivalPointController.text,
                             textInputType: TextInputType.text,
                             obscure: false,
                             onChange: (value) {
@@ -307,7 +332,10 @@ class _SearchTravelsState extends State<SearchTravels> {
                                         _getMapCoordinates(_suggestions[index],
                                             latLngArrivalPoint);
                                         _suggestions.clear();
-                                        _focusNodeArrivalPoint.unfocus();
+                                        setState(() {
+                                          _currentFoco = emptyFocus;
+                                          _focusNodeArrivalPoint.unfocus();
+                                        });
                                       },
                                     );
                                   },

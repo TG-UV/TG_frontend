@@ -39,8 +39,10 @@ class InputField extends StatelessWidget {
           contentPadding:
               const EdgeInsets.symmetric(vertical: 9.0, horizontal: 7.0),
           hintText: textInput,
-          hintStyle: const TextStyle(
-              color: Color.fromARGB(255, 71, 71, 71), fontSize: 12),
+          hintStyle: Theme.of(context)
+              .textTheme
+              .titleMedium!
+              .copyWith(fontSize: 12, fontWeight: FontWeight.bold),
           filled: true,
           suffixIcon: icon != null
               ? (IconButton(

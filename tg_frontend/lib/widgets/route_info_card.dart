@@ -120,12 +120,12 @@ class _RouteInfoCardState extends State<RouteInfoCard> {
 
     return AlertDialog(
       backgroundColor: ColorManager.staticColor,
-      title: Text(
-        'Tu ruta',
-        textAlign: TextAlign.center,
-        style: TextStyle(
-            color: ColorManager.primaryColor, fontFamily: 'Jost', fontSize: 18),
-      ),
+      title: Text('Mira tus pasajeros',
+          textAlign: TextAlign.center,
+          style: Theme.of(context)
+              .textTheme
+              .titleMedium!
+              .copyWith(fontSize: 15, fontWeight: FontWeight.bold)),
       content: SizedBox(
         width: double.maxFinite,
         height: 300.0,

@@ -36,7 +36,7 @@ class _MapScreenState extends State<MapScreen> {
 
   late LatLng myPosition;
   LatLng universityPosition = const LatLng(3.3765821, -76.5334617);
-  LatLng defaultLocation = const LatLng(3.3765821, -76.5334617);
+  LatLng defaultLocation = const LatLng(3.435878, -76.520330);
 
   late Travel travelNotification;
 
@@ -59,12 +59,14 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   Future<void> _requestLocationPermission() async {
+    await Permission.locationWhenInUse.request();
     if (await Permission.locationWhenInUse.request().isGranted) {
       await _getLocation();
     } else {
-      myPosition = const LatLng(0.0, 0.0);
-      await EasyLoading.showInfo("permiso denegado");
+      myPosition = defaultLocation;
+      await EasyLoading.showInfo("permiso de ubicación denegado");
     }
+    setState(() {});
   }
 
   Future<void> _getLocation() async {
@@ -75,12 +77,13 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   Future<LatLng> _getCenterPosition() async {
-    //_getLocation();
+    _getLocation();
     if (myPosition != defaultLocation) {
       return myPosition;
     } else {
       return universityPosition;
     }
+   // return myPosition;
   }
 
   @override

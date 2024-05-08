@@ -37,7 +37,6 @@ class _NewTravelState extends State<NewTravel> {
   String _selectedDate = DateTime.now().toString();
   String _selectedTime = TimeOfDay.now().toString();
   List<String> _suggestions = [];
-  String inputAddress = "Universidad del valle";
   late LatLng latLngArrivalPoint;
   late LatLng latLngStartingPoint;
   List<Vehicle> driverVehicles = [];
@@ -47,7 +46,8 @@ class _NewTravelState extends State<NewTravel> {
 
   final FocusNode _focusNodeArrivalPoint = FocusNode();
   final FocusNode _focusNodeStartingPoint = FocusNode();
-  late FocusNode _currentFoco;
+  late FocusNode _currentFoco = FocusNode();
+  late FocusNode emptyFocus = FocusNode();
 
   final TextEditingController startingPointController = TextEditingController();
   final TextEditingController arrivalPointController = TextEditingController();
@@ -282,8 +282,9 @@ class _NewTravelState extends State<NewTravel> {
                       icon: const Icon(Icons.edit),
                       onPressed: () {
                         setState(() {
-                          _currentFoco.unfocus();
-                          // _focusNodeStartingPoint.unfocus();
+                          // _currentFoco.unfocus();
+                          _focusNodeStartingPoint.unfocus();
+                          _currentFoco = emptyFocus;
                         });
                       },
                     ),
@@ -319,7 +320,7 @@ class _NewTravelState extends State<NewTravel> {
                                   _suggestions.clear();
                                   setState(() {
                                     _currentFoco.unfocus();
-                                    //_focusNodeStartingPoint.unfocus();
+                                    _focusNodeStartingPoint.unfocus();
                                   });
                                 },
                               );
@@ -336,7 +337,7 @@ class _NewTravelState extends State<NewTravel> {
                           textAlign: TextAlign.left,
                         )),
                     InputField(
-                      foco: _focusNodeStartingPoint,
+                      foco: _focusNodeArrivalPoint,
                       controller: arrivalPointController,
                       textInput: arrivalPointController.text,
                       textInputType: TextInputType.text,
@@ -348,8 +349,9 @@ class _NewTravelState extends State<NewTravel> {
                       icon: const Icon(Icons.edit),
                       onPressed: () {
                         setState(() {
-                          _currentFoco.unfocus();
-                          // _focusNodeArrivalPoint.unfocus();
+                          //  _currentFoco.unfocus();
+                          _focusNodeArrivalPoint.unfocus();
+                          _currentFoco = emptyFocus;
                         });
                       },
                     ),
@@ -384,6 +386,7 @@ class _NewTravelState extends State<NewTravel> {
                                       _suggestions[index], latLngArrivalPoint);
                                   _suggestions.clear();
                                   setState(() {
+                                    _currentFoco = emptyFocus;
                                     _focusNodeArrivalPoint.unfocus();
                                   });
                                 },
