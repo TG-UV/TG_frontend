@@ -77,7 +77,8 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    var _hasNotifications = Provider.of<TravelNotificationProvider>(context);
+    var _hasNotifications =
+        Provider.of<TravelNotificationProvider>(context).isTavelNotification;
 
     if (_pages.isEmpty) {
       return const Scaffold(
@@ -100,8 +101,8 @@ class _HomeState extends State<Home> {
             color: Colors.black,
           )),
           TabItem(
-              icon: _buildIconWithBadge(Icons.time_to_leave_sharp,
-                  _hasNotifications.isTavelNotification)),
+              icon: _buildIconWithBadge(
+                  Icons.time_to_leave_sharp, _hasNotifications)),
           const TabItem(icon: Icon(Icons.timelapse_sharp, color: Colors.black)),
         ],
         onTap: (int index) {

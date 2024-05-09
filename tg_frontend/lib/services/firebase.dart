@@ -3,6 +3,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tg_frontend/services/travel_notification_provider.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class FirebaseService {
   //Singleton pattern
@@ -15,7 +16,7 @@ class FirebaseService {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   String? fCMToken;
   //String? get idDevice => fCMToken;
-
+  // https://pub.dev/packages/firebase_messaging/versions/11.4.4/example
   String? getFCMToken() {
     return fCMToken;
   }
@@ -41,22 +42,22 @@ class FirebaseService {
     });
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print("onMessage: $message");
-      final notificationType = message.data['notification_type'];
-      // final notificationProvider =
-      //    Provider.of<TravelNotificationProvider>(context, listen: false);
-      final notificationBody = message.notification?.body ?? "";
-      final notificationAdditionalInfo =
-          message.data['additional_info']["travelId"] ?? "";
+      print("onMessageee: ${message.data}");
+      // final notificationType = message.data['notification_type'];
+      // // final notificationProvider =
+      // //    Provider.of<TravelNotificationProvider>(context, listen: false);
+      // final notificationBody = message.notification?.body ?? "";
+      // final notificationAdditionalInfo =
+      //     message.data['additional_info']["travelId"] ?? "";
 
-      if (notificationType == 'travel_notification') {
-        travelNotificationProvider.setTravelNotification(true);
-        travelNotificationProvider
-            .setIdTravelNotification(notificationAdditionalInfo);
-      } else if (notificationType == 'current_travel') {
-        travelNotificationProvider.setCurrentTravelNotification(true);
-        travelNotificationProvider.setCurrentTravel(notificationBody);
-      }
+      // if (notificationType == 'travel_notification') {
+      //   travelNotificationProvider.setTravelNotification(true);
+      //   travelNotificationProvider
+      //       .setIdTravelNotification(notificationAdditionalInfo);
+      // } else if (notificationType == 'current_travel') {
+      //   travelNotificationProvider.setCurrentTravelNotification(true);
+      //   travelNotificationProvider.setCurrentTravel(notificationBody);
+      // }
       // else if (notificationType == 'travel_notification') {
       //   notificationProvider.setTravelCardNotification(true);
       // }
