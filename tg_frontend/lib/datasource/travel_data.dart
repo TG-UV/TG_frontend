@@ -272,8 +272,8 @@ class TravelDatasourceMethods implements TravelDatasource {
       response = await dio.post(
           _endPoints.baseUrl + _endPoints.getGeneralTravels,
           data: searchData);
-
-      for (var data in response.data) {
+      //print(" response data------------- ${response.data}");
+      for (var data in response.data[0]["results"]) {
         Travel travel = Travel.fromJson(data);
         travelList.add(travel);
       }

@@ -49,6 +49,7 @@ class _LoginState extends State<Login> {
 
   Future<void> loginUser(String username, String password) async {
     String? deviceToken = await FirebaseMessaging.instance.getToken();
+    print("device token------- $deviceToken");
     if (_formKey.currentState!.validate() && deviceToken is String) {
       final token = await userDatasourceImpl.getUserAuth(
           username: username, password: password, idDevice: deviceToken);

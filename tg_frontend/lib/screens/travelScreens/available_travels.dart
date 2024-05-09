@@ -36,10 +36,14 @@ class _ListedTravelsState extends State<AvailableTravels> {
 
   void _initRequestData() {
     requestData = {
-      "starting_point_lat": widget.startingPoint.latitude,
-      "starting_point_long": widget.startingPoint.longitude,
-      "arrival_point_lat": widget.arrivalPoint.latitude,
-      "arrival_point_long": widget.arrivalPoint.longitude,
+      "starting_point_lat":
+          double.parse(widget.startingPoint.latitude.toStringAsFixed(6)),
+      "starting_point_long":
+          double.parse(widget.startingPoint.longitude.toStringAsFixed(6)),
+      "arrival_point_lat":
+          double.parse(widget.arrivalPoint.latitude.toStringAsFixed(6)),
+      "arrival_point_long":
+          double.parse(widget.arrivalPoint.longitude.toStringAsFixed(6)),
       "seats": "1",
       // "start_time": "5:25:00",
       // "start_date": "2024-04-29"

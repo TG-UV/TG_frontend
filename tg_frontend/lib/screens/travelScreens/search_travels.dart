@@ -52,6 +52,9 @@ class _SearchTravelsState extends State<SearchTravels> {
   late FocusNode _currentFoco = FocusNode();
   late FocusNode emptyFocus = FocusNode();
 
+  final DraggableScrollableController sheetController =
+      DraggableScrollableController();
+
   @override
   void initState() {
     initializeDateFormat();
@@ -80,9 +83,11 @@ class _SearchTravelsState extends State<SearchTravels> {
   }
 
   void _submitForm(BuildContext context) async {
-    if (_formKey.currentState!.validate() &&
-        dateController.text.isNotEmpty &&
-        timeController.text.isNotEmpty) {
+    if (true
+        // _formKey.currentState!.validate() &&
+        //   dateController.text.isNotEmpty &&
+        //   timeController.text.isNotEmpty
+        ) {
       // Map<String, dynamic> requestData = {
       //   'starting_point_lat': latLngStartingPoint.latitude,
       //   "starting_point_long": latLngStartingPoint.longitude,
@@ -94,7 +99,7 @@ class _SearchTravelsState extends State<SearchTravels> {
 
       Map<String, dynamic> requestData = {
         "starting_point_lat": "3.370051",
-        "starting_point_long": "-76.532661",
+        "starting_point_long": "-76.53266",
         "arrival_point_lat": "3.391652",
         "arrival_point_long": "-76.551000",
         "seats": "1",
@@ -193,247 +198,309 @@ class _SearchTravelsState extends State<SearchTravels> {
   Widget build(BuildContext context) {
     return Scaffold(
         resizeToAvoidBottomInset: false,
-        body: SingleChildScrollView(
-            child: Form(
-                key: _formKey,
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                child: Stack(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                      alignment: Alignment.center,
-                      child: Column(
-                        children: [
-                          SizedBox(
-                              height: MediaQuery.of(context).size.height / 16),
-                          Row(children: [
-                            IconButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                icon: const Icon(Icons.arrow_back)),
-                            const SizedBox(width: 10),
-                            Text(
-                              "Busca un viaje",
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleLarge!
-                                  .copyWith(fontSize: 26),
-                            )
-                          ]),
-                          const SizedBox(height: 30),
-                          Align(
-                              alignment: Alignment.topLeft,
-                              child: Text(
-                                "Desde",
-                                style: Theme.of(context).textTheme.titleSmall,
-                                textAlign: TextAlign.left,
-                              )),
-                          InputField(
-                            foco: _focusNodeStartingPoint,
-                            controller: startingPointController,
-                            textInput: startingPointController.text,
-                            textInputType: TextInputType.text,
-                            obscure: false,
-                            onChange: (travelsResponse) {
-                              _currentFoco = _focusNodeStartingPoint;
-                              _getSuggestion(travelsResponse);
+        body: Stack(
+          children: [
+            Container(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                alignment: Alignment.center,
+                child: Form(
+                  key: _formKey,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  child: Column(
+                    children: [
+                      SizedBox(height: MediaQuery.of(context).size.height / 16),
+                      Row(children: [
+                        IconButton(
+                            onPressed: () {
+                              Navigator.pop(context);
                             },
-                            icon: const Icon(Icons.edit),
-                          ),
-                          if (_suggestions.isNotEmpty &&
-                              _currentFoco == _focusNodeStartingPoint)
-                            Positioned(
-                              top: 50.0,
-                              left: 0.0,
-                              right: 0.0,
-                              child: Container(
-                                height: 200.0,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.withOpacity(0.5),
-                                      spreadRadius: 1,
-                                      blurRadius: 3,
-                                      offset: const Offset(0, 2),
-                                    ),
-                                  ],
-                                ),
-                                child: ListView.builder(
-                                  itemCount: _suggestions.length,
-                                  itemBuilder: (context, index) {
-                                    return ListTile(
-                                      title: Text(_suggestions[index]),
-                                      onTap: () {
-                                        startingPointController.text =
-                                            _suggestions[index];
-                                        _getMapCoordinates(_suggestions[index],
-                                            latLngStartingPoint);
-                                        _suggestions.clear();
-                                        // _focusNodeStartingPoint.unfocus();
-                                        setState(() {
-                                          _currentFoco = emptyFocus;
-                                          _focusNodeStartingPoint.unfocus();
-                                        });
-                                      },
-                                    );
-                                  },
-                                ),
-                              ),
-                            ),
-                          const SizedBox(height: 7),
-                          Align(
-                              alignment: Alignment.topLeft,
-                              child: Text(
-                                "Hacia",
-                                style: Theme.of(context).textTheme.titleSmall,
-                                textAlign: TextAlign.left,
-                              )),
-                          InputField(
-                            foco: _focusNodeStartingPoint,
-                            controller: arrivalPointController,
-                            textInput: arrivalPointController.text,
-                            textInputType: TextInputType.text,
-                            obscure: false,
-                            onChange: (travelsResponse) {
-                              _currentFoco = _focusNodeArrivalPoint;
-                              _getSuggestion(travelsResponse);
-                            },
-                            icon: const Icon(Icons.edit),
-                          ),
-                          if (_suggestions.isNotEmpty &&
-                              _currentFoco == _focusNodeArrivalPoint)
-                            Positioned(
-                              top: 100.0,
-                              left: 0.0,
-                              right: 0.0,
-                              child: Container(
-                                height: 200.0,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.withOpacity(0.5),
-                                      spreadRadius: 1,
-                                      blurRadius: 3,
-                                      offset: const Offset(0, 2),
-                                    ),
-                                  ],
-                                ),
-                                child: ListView.builder(
-                                  itemCount: _suggestions.length,
-                                  itemBuilder: (context, index) {
-                                    return ListTile(
-                                      title: Text(_suggestions[index]),
-                                      onTap: () {
-                                        arrivalPointController.text =
-                                            _suggestions[index];
-                                        _getMapCoordinates(_suggestions[index],
-                                            latLngArrivalPoint);
-                                        _suggestions.clear();
-                                        setState(() {
-                                          _currentFoco = emptyFocus;
-                                          _focusNodeArrivalPoint.unfocus();
-                                        });
-                                      },
-                                    );
-                                  },
-                                ),
-                              ),
-                            ),
-                          const SizedBox(height: 40),
-                          Align(
-                              alignment: Alignment.topLeft,
-                              child: Text(
-                                "Cuándo",
-                                style: Theme.of(context).textTheme.titleSmall,
-                                textAlign: TextAlign.left,
-                              )),
-                          Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                //BotonPersonalizado('Botón 1'),
-                                SquareButton(
-                                    text: '10',
-                                    isSelected: _selectedTimeButtonIndex == 0,
-                                    onPressed: () {
-                                      setState(() {
-                                        timeController.text = '0';
-                                        _selectedTimeButtonIndex = 0;
-                                      });
-                                    }),
-                                SquareButton(
-                                    text: '30',
-                                    isSelected: _selectedTimeButtonIndex == 1,
-                                    onPressed: () {
-                                      setState(() {
-                                        timeController.text = '1';
-                                        _selectedTimeButtonIndex = 1;
-                                      });
-                                    }),
-                                SquareButton(
-                                    text: '60',
-                                    isSelected: _selectedTimeButtonIndex == 2,
-                                    onPressed: () {
-                                      setState(() {
-                                        timeController.text = '2';
-                                        _selectedTimeButtonIndex = 2;
-                                      });
-                                    }),
-                                SquareButton(
-                                  isSelected: _selectedTimeButtonIndex == 3,
-                                  myIcon: Icons.edit,
-                                  text: '',
-                                  onPressed: () => _selectDate(context),
-                                ),
-                              ]),
-                          const SizedBox(height: 20),
-                          MainButton(
-                              text: "buscar",
-                              large: false,
-                              buttonColor: ColorManager.fourthColor,
-                              onPressed: () => _submitForm(context)),
-                        ],
+                            icon: const Icon(Icons.arrow_back)),
+                        const SizedBox(width: 10),
+                        Text(
+                          "Busca un viaje",
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleLarge!
+                              .copyWith(fontSize: 26),
+                        )
+                      ]),
+                      const SizedBox(height: 30),
+                      Align(
+                          alignment: Alignment.topLeft,
+                          child: Text(
+                            "Desde",
+                            style: Theme.of(context).textTheme.titleSmall,
+                            textAlign: TextAlign.left,
+                          )),
+                      InputField(
+                        foco: _focusNodeStartingPoint,
+                        controller: startingPointController,
+                        textInput: startingPointController.text,
+                        textInputType: TextInputType.text,
+                        obscure: false,
+                        onChange: (travelsResponse) {
+                          _currentFoco = _focusNodeStartingPoint;
+                          _getSuggestion(travelsResponse);
+                        },
+                        icon: const Icon(Icons.edit),
                       ),
-                    ),
-                    DraggableScrollableSheet(
-                        initialChildSize: 0.35,
-                        minChildSize: 0.25,
-                        maxChildSize: 0.75,
-                        builder: (context, scrollController) {
-                          return Padding(
-                              padding: const EdgeInsets.all(10),
-                              child: Container(
-                                  decoration: BoxDecoration(
-                                      color: Colors.red,
-                                      borderRadius: BorderRadius.circular(15)),
-                                  child:
-                                      //travelsList.isNotEmpty?
-                                      ListView.builder(
-                                          controller: scrollController,
-                                          itemCount: travelsList.length,
-                                          itemBuilder: (context, index) {
-                                            return TravelCard(
-                                              travel: travelsList[index],
-                                              pastTravel: false,
-                                            );
-                                          })
-                                  // : Center(
-                                  //     child: Text(
-                                  //       "Lastimosamente no encontramos viajes para esta solicitud, intentalo más tarde o intenta modificar el horario",
-                                  //       style: Theme.of(context)
-                                  //           .textTheme
-                                  //           .titleSmall!
-                                  //           .copyWith(
-                                  //               overflow:
-                                  //                   TextOverflow.ellipsis),
-                                  //       maxLines: 3,
-                                  //     ),
-                                  //   )
-                                  ));
-                        })
-                  ],
-                ))));
+                      if (_suggestions.isNotEmpty &&
+                          _currentFoco == _focusNodeStartingPoint)
+                        Positioned(
+                          top: 50.0,
+                          left: 0.0,
+                          right: 0.0,
+                          child: Container(
+                            height: 200.0,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.5),
+                                  spreadRadius: 1,
+                                  blurRadius: 3,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: ListView.builder(
+                              itemCount: _suggestions.length,
+                              itemBuilder: (context, index) {
+                                return ListTile(
+                                  title: Text(_suggestions[index]),
+                                  onTap: () {
+                                    startingPointController.text =
+                                        _suggestions[index];
+                                    _getMapCoordinates(_suggestions[index],
+                                        latLngStartingPoint);
+                                    _suggestions.clear();
+                                    // _focusNodeStartingPoint.unfocus();
+                                    setState(() {
+                                      _currentFoco = emptyFocus;
+                                      _focusNodeStartingPoint.unfocus();
+                                    });
+                                  },
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                      const SizedBox(height: 7),
+                      Align(
+                          alignment: Alignment.topLeft,
+                          child: Text(
+                            "Hacia",
+                            style: Theme.of(context).textTheme.titleSmall,
+                            textAlign: TextAlign.left,
+                          )),
+                      InputField(
+                        foco: _focusNodeStartingPoint,
+                        controller: arrivalPointController,
+                        textInput: arrivalPointController.text,
+                        textInputType: TextInputType.text,
+                        obscure: false,
+                        onChange: (travelsResponse) {
+                          _currentFoco = _focusNodeArrivalPoint;
+                          _getSuggestion(travelsResponse);
+                        },
+                        icon: const Icon(Icons.edit),
+                      ),
+                      if (_suggestions.isNotEmpty &&
+                          _currentFoco == _focusNodeArrivalPoint)
+                        Positioned(
+                          top: 100.0,
+                          left: 0.0,
+                          right: 0.0,
+                          child: Container(
+                            height: 200.0,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.5),
+                                  spreadRadius: 1,
+                                  blurRadius: 3,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: ListView.builder(
+                              itemCount: _suggestions.length,
+                              itemBuilder: (context, index) {
+                                return ListTile(
+                                  title: Text(_suggestions[index]),
+                                  onTap: () {
+                                    arrivalPointController.text =
+                                        _suggestions[index];
+                                    _getMapCoordinates(_suggestions[index],
+                                        latLngArrivalPoint);
+                                    _suggestions.clear();
+                                    setState(() {
+                                      _currentFoco = emptyFocus;
+                                      _focusNodeArrivalPoint.unfocus();
+                                    });
+                                  },
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                      const SizedBox(height: 40),
+                      Align(
+                          alignment: Alignment.topLeft,
+                          child: Text(
+                            "Cuándo",
+                            style: Theme.of(context).textTheme.titleSmall,
+                            textAlign: TextAlign.left,
+                          )),
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            //BotonPersonalizado('Botón 1'),
+                            SquareButton(
+                                text: '10',
+                                isSelected: _selectedTimeButtonIndex == 0,
+                                onPressed: () {
+                                  setState(() {
+                                    timeController.text = '0';
+                                    _selectedTimeButtonIndex = 0;
+                                  });
+                                }),
+                            SquareButton(
+                                text: '30',
+                                isSelected: _selectedTimeButtonIndex == 1,
+                                onPressed: () {
+                                  setState(() {
+                                    timeController.text = '1';
+                                    _selectedTimeButtonIndex = 1;
+                                  });
+                                }),
+                            SquareButton(
+                                text: '60',
+                                isSelected: _selectedTimeButtonIndex == 2,
+                                onPressed: () {
+                                  setState(() {
+                                    timeController.text = '2';
+                                    _selectedTimeButtonIndex = 2;
+                                  });
+                                }),
+                            SquareButton(
+                              isSelected: _selectedTimeButtonIndex == 3,
+                              myIcon: Icons.edit,
+                              text: '',
+                              onPressed: () => _selectDate(context),
+                            ),
+                          ]),
+                      const SizedBox(height: 20),
+                      MainButton(
+                          text: "buscar",
+                          large: false,
+                          buttonColor: ColorManager.fourthColor,
+                          onPressed: () => _submitForm(context)),
+                    ],
+                  ),
+                )),
+            if (travelsList.isNotEmpty)
+              DraggableScrollableSheet(
+                  initialChildSize: 0.5,
+                  minChildSize: 0.2,
+                  maxChildSize: 0.75,
+                  snapSizes: [0.2, 0.75],
+                  snap: true,
+                  builder: (BuildContext context, scrollSheetController) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 15),
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: ColorManager.primaryColor,
+                            borderRadius: BorderRadius.circular(10)),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Aquí puedes agregar tu encabezado
+                            Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 15),
+                                child: Center(
+                                  child: Icon(
+                                    Icons.keyboard_arrow_up_rounded,
+                                    color: ColorManager.staticColor,
+                                  ),
+                                )),
+                            Expanded(
+                              child: ListView.builder(
+                                padding: EdgeInsets.zero,
+                                physics: const ClampingScrollPhysics(),
+                                controller: scrollSheetController,
+                                itemCount: travelsList.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  return TravelCard(
+                                    travel: travelsList[index],
+                                    pastTravel: false,
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  })
+          ],
+
+          // SliverList.list(children: [
+          //   FilledButton.tonal(
+          //     onPressed: () {
+          //       sheetController.animateTo(
+          //         0.8,
+          //         duration: const Duration(milliseconds: 200),
+          //         curve: Curves.bounceIn,
+          //       );
+          //     },
+          //     child: const Text('Scrool to 0.8'),
+          //   ),
+
+          // DraggableScrollableSheet(
+          //     initialChildSize: 0.35,
+          //     minChildSize: 0.25,
+          //     maxChildSize: 0.75,
+          //     builder: (BuildContext context,
+          //         ScrollController scrollController) {
+          //       return Padding(
+          //           padding: const EdgeInsets.all(10),
+          //           child: Container(
+          //               width: 200,
+          //               height: 600,
+          //               decoration: BoxDecoration(
+          //                   color: Colors.red,
+          //                   borderRadius: BorderRadius.circular(15)),
+          //               child:
+          //                   //travelsList.isNotEmpty?
+          //                   Container(
+          //                       child: ListView.builder(
+          //                           controller: scrollController,
+          //                           itemCount: travelsList.length,
+          //                           itemBuilder: (context, index) {
+          //                             return TravelCard(
+          //                               travel: travelsList[index],
+          //                               pastTravel: false,
+          //                             );
+          //                           }))
+          //               // : Center(
+          //               //     child: Text(
+          //               //       "Lastimosamente no encontramos viajes para esta solicitud, intentalo más tarde o intenta modificar el horario",
+          //               //       style: Theme.of(context)
+          //               //           .textTheme
+          //               //           .titleSmall!
+          //               //           .copyWith(
+          //               //               overflow:
+          //               //                   TextOverflow.ellipsis),
+          //               //       maxLines: 3,
+          //               //     ),
+          //               //   )
+          //               ));
+          //     })
+        ));
   }
 }

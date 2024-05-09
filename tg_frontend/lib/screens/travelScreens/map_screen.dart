@@ -73,7 +73,7 @@ class _MapScreenState extends State<MapScreen> {
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
     myPosition = LatLng(position.latitude, position.longitude);
-    setState(() {});
+    //setState(() {});
   }
 
   Future<LatLng> _getCenterPosition() async {
@@ -88,7 +88,7 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // bool showNotificationCard = Provider.of<MapScreenProvider>(context).showNotificationCard;
+    // bool showNotificationCard = Provider.of<MapScreenProviderhttps://{s}.tile.openstreetmap.org/%7Bz%7D/%7Bx%7D/%7By%7D.png>(context).showNotificationCard;
 
     return Consumer<TravelNotificationProvider>(
         builder: (context, notificationProvider, _) {
@@ -123,10 +123,16 @@ class _MapScreenState extends State<MapScreen> {
                             TileLayer(
                               urlTemplate:
                                   'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}',
+                              // fallbackUrl:
+                              //     "https://a.tile.openstreetmap.org/15/${myPosition.latitude}/${myPosition.longitude}.png",
+
+                              fallbackUrl:
+                                  "https://www.openstreetmap.org/#map=15/${universityPosition.latitude}/${universityPosition.longitude}.png",
                               additionalOptions: const {
                                 'accessToken': mapboxAccessToken,
                                 'id': 'mapbox/streets-v11',
                               },
+                              //tileProvider: CachedNetworkTileProvider()
                             ),
                             MarkerLayer(markers: [
                               Marker(
