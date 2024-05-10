@@ -31,6 +31,8 @@ class _LateralBarState extends State<LateralBar> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          backgroundColor: ColorManager.staticColor,
+          surfaceTintColor: Colors.transparent,
           title: const Text('Confirmación'),
           content: const Text('¿Estás seguro de que quieres cerrar sesión?'),
           actions: <Widget>[

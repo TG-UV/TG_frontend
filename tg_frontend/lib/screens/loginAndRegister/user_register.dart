@@ -74,7 +74,8 @@ class _UserRegisterState extends State<UserRegister> {
   }
 
   dynamic submitForm(BuildContext context) async {
-    if (_formKey.currentState!.validate() && dateController.text != "") {
+    //if (_formKey.currentState!.validate() && dateController.text != "") {
+    if (true) {
       user = User(
         idUser: 0,
         identityDocument: identifactionController.text,
@@ -119,7 +120,11 @@ class _UserRegisterState extends State<UserRegister> {
             future: _fetchCities(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
+                return Center(
+                  child: CircularProgressIndicator(
+                    color: ColorManager.fourthColor,
+                  ),
+                );
               } else if (snapshot.hasError) {
                 return Center(
                     child:

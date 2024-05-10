@@ -69,13 +69,11 @@ class _PasswordRegisterState extends State<PasswordRegister> {
   Future<dynamic> submitForm(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       widget.user.password = passwordConfirmationController.text;
-      Response userInsertResponse =
+      dynamic userInsertResponse =
           await userDatasourceImpl.insertUserRemote(user: widget.user);
       if (userInsertResponse is int) {
         User newUser =
             await userDatasourceImpl.getUserLocal(userInsertResponse as int);
-        saveAuthInformation(
-            newUser, newUser.email, passwordConfirmationController.text);
 
         if (widget.vehicle != null) {
           Vehicle newVehicle = Vehicle(
@@ -87,19 +85,21 @@ class _PasswordRegisterState extends State<PasswordRegister> {
             vehicleType: widget.vehicle!.vehicleType,
             licensePlate: widget.vehicle!.licensePlate,
           );
-          Response vehicleRegisterResponse =
+          dynamic vehicleRegisterResponse =
               await userDatasourceImpl.insertVehicleRemote(vehicle: newVehicle);
           if (vehicleRegisterResponse is int) {
-            setState(() {
-              emailCheckAdvice = true;
-            });
-            return EasyLoading.showInfo("registro exitoso");
+            return EasyLoading.showInfo("registro de vehículo exitoso");
           } else {
             return EasyLoading.showInfo(vehicleRegisterResponse.toString());
           }
         }
+        setState(() {
+          emailCheckAdvice = true;
+        });
+        saveAuthInformation(
+            newUser, newUser.email, passwordConfirmationController.text);
       } else {
-        return EasyLoading.showInfo(userInsertResponse.toString());
+        return EasyLoading.showInfo(userInsertResponse);
       }
     } else {
       return AlertDialog(
@@ -127,7 +127,7 @@ class _PasswordRegisterState extends State<PasswordRegister> {
     String? deviceToken = await FirebaseMessaging.instance.getToken();
     if (deviceToken is String) {
       token = await userDatasourceImpl.getUserAuth(
-          username: username, password: password, idDevice: deviceToken!);
+          username: username, password: password, idDevice: deviceToken);
     }
     if (token != null) {
       await AuthStorage().saveToken(token);
@@ -135,7 +135,7 @@ class _PasswordRegisterState extends State<PasswordRegister> {
       await AuthStorage().savePassword(password);
 
       Environment.sl.registerSingleton<User>(user);
-      Get.to(() => const Home());
+      // Get.to(() => const Home());
     } else {
       print('Error al intentar registrar el usuario');
     }
@@ -143,14 +143,18 @@ class _PasswordRegisterState extends State<PasswordRegister> {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-        canPop: true,
-        onPopInvoked: (bool isRegistered) {
-          emailCheckAdvice
-              ? Get.to(() => const Login())
-              : Navigator.pop(context);
-        },
-        child: Scaffold(
+    return
+        // PopScope(
+        //     canPop: true,
+        //     onPopInvoked: (bool isRegistered) {
+        //       Navigator.pop(context);
+        //       // if (emailCheckAdvice) {
+        //       //   Get.to(() => const Login());
+        //       // } else
+        //       //   Navigator.pop(context);
+        //     },child:
+
+        Scaffold(
             resizeToAvoidBottomInset: false,
             body: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -270,6 +274,6 @@ class _PasswordRegisterState extends State<PasswordRegister> {
                                   }),
                             )
                           ]),
-                    ])))));
+                    ]))));
   }
 }

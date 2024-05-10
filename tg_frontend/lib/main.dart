@@ -63,6 +63,7 @@ class MyApp extends StatelessWidget {
 
   final ThemeData myTheme = ThemeData.light().copyWith(
     cardColor: ColorManager.fourthColor,
+
     cardTheme: CardTheme(
         color: ColorManager.thirdColor,
         surfaceTintColor: Color.fromARGB(162, 239, 239, 239)),

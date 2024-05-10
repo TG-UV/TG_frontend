@@ -1,6 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:tg_frontend/datasource/endPoints/end_point.dart';
 import 'package:tg_frontend/device/local_tables.dart';
+import 'package:tg_frontend/errors.dart/exceptions.dart';
 import 'package:tg_frontend/models/user_model.dart';
 import 'package:dio/dio.dart';
 import 'package:tg_frontend/models/vehicle_model.dart';
@@ -52,16 +53,18 @@ class UserDatasourceMethods implements UserDatasource {
 
   @override
   Future<dynamic> insertUserRemote({required User user}) async {
-    var response;
+    Response response;
     User userResponse;
     try {
       Map<String, dynamic> jsonUser = user.toJson();
       response = await dio.post(_endPoints.baseUrl + _endPoints.getAndPostUser,
           data: jsonUser);
       userResponse = User.fromJson(response.data);
+      //response = userResponse;
       insertUserLocal(user: userResponse);
-    } catch (e) {
-      return response!.statusMessage;
+    } on DioException catch (e) {
+      print(e.response!.data.toString());
+      return e.response!.data.toString();
     }
     return userResponse.idUser;
   }
