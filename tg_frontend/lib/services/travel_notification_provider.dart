@@ -5,7 +5,7 @@ class TravelNotificationProvider extends ChangeNotifier {
   bool _isTravelNotification = false;
   bool _isCurrentTravelNotification = false;
   late Travel _currentTravel;
-  late int _idTravelNotification;
+  late int _idTravelNotification = -1;
   // bool _isTravelCardNotification = false;
 
   bool get isTavelNotification => _isTravelNotification;
@@ -22,6 +22,7 @@ class TravelNotificationProvider extends ChangeNotifier {
 
   void setTravelNotification(bool value) {
     _isTravelNotification = value;
+    print(_isTravelNotification);
     notifyListeners();
   }
 

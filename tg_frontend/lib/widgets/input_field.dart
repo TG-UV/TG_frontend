@@ -1,5 +1,3 @@
-import 'dart:html';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:tg_frontend/screens/theme.dart';
@@ -41,9 +39,25 @@ class InputField extends StatelessWidget {
         return false;
       }
     }
-    String? _validator(String value) {
 
-    } 
+    String? _validator(String? value) {
+      if (textInput != "Contraseña" || textInput != "Contraseña actual") {
+        if (value == null || value.isEmpty) {
+          return 'Este campo no puede estar vacio';
+        }
+      } else {
+        if (value!.isEmpty) {
+          return "Este campo no puede estar vacio";
+        } else {
+          bool result = validatePassword(value);
+          if (result) {
+            return null;
+          } else {
+            return "La constraseña debe tener al menos un \nnúmero, un carácter especial y una\nmayúscula";
+          }
+        }
+      }
+    }
 
     return TextFormField(
         inputFormatters: [LengthLimitingTextInputFormatter(40)],
@@ -83,10 +97,6 @@ class InputField extends StatelessWidget {
                 width: 2.0,
               ),
             )),
-        validator: _validator(value);
-        
-        
-              
-              );
+        validator: _validator);
   }
 }

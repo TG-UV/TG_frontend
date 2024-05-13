@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
@@ -44,6 +45,7 @@ class _MapScreenState extends State<MapScreen> {
   void initState() {
     super.initState();
     _requestLocationPermission();
+    print(FirebaseMessaging.instance.getToken().toString());
     //FirebaseService().initializeFirebaseMessaging(context);
     // FirebaseService().initializeFirebaseMessaging(
     //   onMessageReceived: (RemoteMessage message) {

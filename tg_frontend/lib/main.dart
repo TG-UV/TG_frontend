@@ -22,12 +22,10 @@ import 'firebase_options.dart';
 //   print("Handling a background message: ${message.messageId}");
 // }
 
+final navigatorKey = GlobalKey<NavigatorState>();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  //await FirebaseService().initializeFirebaseMessaging(context)
-  // WidgetsFlutterBinding.ensureInitialized();
-  //await Firebase.initializeApp();
-  // _initFirebase( context);
   final environment = Environment();
   await environment.startEnvironment();
   await Firebase.initializeApp(
@@ -36,7 +34,12 @@ void main() async {
   await FirebaseMessaging.instance.setAutoInitEnabled(true);
   FirebaseService().initializeFirebaseMessaging();
 
-  runApp(MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => TravelNotificationProvider(),
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -45,20 +48,15 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (_) => TravelNotificationProvider()),
-          // Otros proveedores si los necesitas
-        ],
-        child: GetMaterialApp(
-          locale: const Locale('es', 'ES'),
-          debugShowCheckedModeBanner: false,
-          title: 'Rayo',
-          theme: myTheme,
-          builder: EasyLoading.init(),
-          home: const Splash(),
-          //home: const Home(),
-        ));
+    return GetMaterialApp(
+      locale: const Locale('es', 'ES'),
+      debugShowCheckedModeBanner: false,
+      title: 'Rayo',
+      theme: myTheme,
+      builder: EasyLoading.init(),
+      home: const Splash(),
+      //home: const Home(),
+    );
   }
 
   final ThemeData myTheme = ThemeData.light().copyWith(

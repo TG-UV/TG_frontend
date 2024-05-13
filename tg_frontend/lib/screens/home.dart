@@ -29,7 +29,6 @@ class _HomeState extends State<Home> {
       Environment.sl.get<TravelDatasourceMethods>();
   late Database database;
   Dio dio = Dio();
-  bool _varHasNotifications = false;
 
   final List<Widget> _pages = [
     // Home (Index = 0)
@@ -49,37 +48,34 @@ class _HomeState extends State<Home> {
   void initState() {
     userDatasourceImpl.initDatabase();
     travelDatasourceImpl.initDatabase();
-    // _hasNotifications =
+    // _varHasNotifications =
     //     Provider.of<TravelNotificationProvider>(context).isTavelNotification;
     super.initState();
   }
 
-  Widget _buildIconWithBadge(IconData iconData, bool _hasNotifications) {
-    return Stack(
-      alignment: Alignment.topRight,
-      children: [
-        Icon(
-          iconData,
-          color: Colors.black,
-        ),
-        if (_hasNotifications)
-          Container(
-            width: 10,
-            height: 10,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.red,
-            ),
-          ),
-      ],
-    );
-  }
+  // Widget _buildIconWithBadge(IconData iconData, bool _hasNotifications) {
+  //   return Stack(
+  //     alignment: Alignment.topRight,
+  //     children: [
+  //       Icon(
+  //         iconData,
+  //         color: Colors.black,
+  //       ),
+  //       if (_hasNotifications)
+  //         Container(
+  //           width: 10,
+  //           height: 10,
+  //           decoration: const BoxDecoration(
+  //             shape: BoxShape.circle,
+  //             color: Colors.red,
+  //           ),
+  //         ),
+  //     ],
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
-    var _hasNotifications =
-        Provider.of<TravelNotificationProvider>(context).isTavelNotification;
-
     if (_pages.isEmpty) {
       return const Scaffold(
         body: Center(
@@ -100,9 +96,37 @@ class _HomeState extends State<Home> {
             Icons.home,
             color: Colors.black,
           )),
-          TabItem(
-              icon: _buildIconWithBadge(
-                  Icons.time_to_leave_sharp, _hasNotifications)),
+          TabItem(icon: Consumer<TravelNotificationProvider>(
+              builder: (context, travelNotificationProvider, _) {
+            bool hasNotifications =
+                travelNotificationProvider.isTavelNotification;
+            print("provider ${travelNotificationProvider.isTavelNotification}");
+            return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    // Aquí podrías agregar la lógica para marcar las notificaciones como leídas
+                    travelNotificationProvider.setTravelNotification(false);
+                  });
+                },
+                child: Stack(
+                  alignment: Alignment.topRight,
+                  children: [
+                    const Icon(
+                      Icons.time_to_leave_sharp,
+                      color: Colors.black,
+                    ),
+                    if (hasNotifications)
+                      Container(
+                        width: 10,
+                        height: 10,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.red,
+                        ),
+                      ),
+                  ],
+                ));
+          })),
           const TabItem(icon: Icon(Icons.timelapse_sharp, color: Colors.black)),
         ],
         onTap: (int index) {

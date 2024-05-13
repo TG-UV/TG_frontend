@@ -8,7 +8,6 @@ import 'package:tg_frontend/device/environment.dart';
 import 'package:tg_frontend/screens/home.dart';
 import 'package:tg_frontend/screens/loginAndRegister/sign_up.dart';
 import 'package:tg_frontend/screens/theme.dart';
-import 'package:tg_frontend/services/firebase.dart';
 import 'package:tg_frontend/widgets/input_field.dart';
 import 'package:tg_frontend/widgets/main_button.dart';
 import 'package:tg_frontend/services/auth_services.dart';
@@ -49,9 +48,9 @@ class _LoginState extends State<Login> {
 
   Future<void> loginUser(String username, String password) async {
     String? deviceToken = await FirebaseMessaging.instance.getToken();
-    if (_formKey.currentState!.validate() && deviceToken is String) {
+    if (_validateFormData(_formKey.currentState!.validate(), deviceToken)) {
       final token = await userDatasourceImpl.getUserAuth(
-          username: username, password: password, idDevice: deviceToken);
+          username: username, password: password, idDevice: deviceToken!);
 
       token != null
           ? saveAuthInformation(token, username, password)
@@ -60,6 +59,14 @@ class _LoginState extends State<Login> {
     setState(() {
       _isLoading = false;
     });
+  }
+
+  bool _validateFormData(bool formValidate, dynamic deviceToken) {
+    if (formValidate && deviceToken is String) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   Future<void> reSetPassword(String email) async {

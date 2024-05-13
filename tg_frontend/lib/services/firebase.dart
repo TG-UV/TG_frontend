@@ -1,7 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
+import 'package:tg_frontend/main.dart';
+import 'package:tg_frontend/screens/home.dart';
 import 'package:tg_frontend/services/travel_notification_provider.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
@@ -21,6 +24,18 @@ class FirebaseService {
     return fCMToken;
   }
 
+  Future<void> _firebaseMessagingBackgroundHandler(
+      RemoteMessage message) async {
+    print("Handling a background message: ${message.data}");
+  }
+
+  void handleMessage(RemoteMessage? message) {
+    if (message == null) return;
+
+    navigatorKey.currentState
+        ?.pushNamed('/screens/home.dart', arguments: message);
+  }
+
   Future<void> initializeFirebaseMessaging() async {
     _firebaseMessaging.requestPermission(
       alert: true,
@@ -35,14 +50,19 @@ class FirebaseService {
 
     final TravelNotificationProvider travelNotificationProvider =
         TravelNotificationProvider();
-    print("firebase token: $fCMToken");
 
     _firebaseMessaging.getToken().then((token) {
       fCMToken = token;
     });
+    print("firebase token: $fCMToken");
 
+    FirebaseMessaging.instance.getInitialMessage().then(handleMessage);
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print("onMessageee: ${message.data}");
+      if (message.data.isEmpty) {
+        travelNotificationProvider.setTravelNotification(true);
+        print("onMessageee: ${message.data}");
+      }
+
       // final notificationType = message.data['notification_type'];
       // // final notificationProvider =
       // //    Provider.of<TravelNotificationProvider>(context, listen: false);
@@ -51,7 +71,7 @@ class FirebaseService {
       //     message.data['additional_info']["travelId"] ?? "";
 
       // if (notificationType == 'travel_notification') {
-      //   travelNotificationProvider.setTravelNotification(true);
+
       //   travelNotificationProvider
       //       .setIdTravelNotification(notificationAdditionalInfo);
       // } else if (notificationType == 'current_travel') {
@@ -97,8 +117,4 @@ class FirebaseService {
   }
 
   // Función que maneja los mensajes en segundo plano
-  Future<void> _firebaseMessagingBackgroundHandler(
-      RemoteMessage message) async {
-    print("Handling a background message: ${message.data}");
-  }
 }

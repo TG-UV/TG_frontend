@@ -33,21 +33,33 @@ class _LateralBarState extends State<LateralBar> {
         return AlertDialog(
           backgroundColor: ColorManager.staticColor,
           surfaceTintColor: Colors.transparent,
-          title: const Text('Confirmación'),
-          content: const Text('¿Estás seguro de que quieres cerrar sesión?'),
+          title: Text(
+            'Confirmación',
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
+          content: Text(
+            '¿Estás seguro de que quiere cerrar sesión?',
+            style: Theme.of(context).textTheme.titleSmall,
+            maxLines: 2,
+          ),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text('Cancelar'),
+              child: Text('Cancelar',
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleSmall!
+                      .copyWith(color: ColorManager.fourthColor)),
             ),
             TextButton(
               onPressed: () {
                 AuthStorage().removeValues();
                 Get.to(() => const Login());
               },
-              child: const Text('Salir'),
+              child:
+                  Text('Salir', style: Theme.of(context).textTheme.titleSmall),
             ),
           ],
         );
