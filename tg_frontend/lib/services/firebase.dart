@@ -1,120 +1,133 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:provider/provider.dart';
-import 'package:tg_frontend/main.dart';
-import 'package:tg_frontend/screens/home.dart';
+import 'package:tg_frontend/models/travel_model.dart';
 import 'package:tg_frontend/services/travel_notification_provider.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class FirebaseService {
-  //Singleton pattern
-  static final FirebaseService _instance = FirebaseService._internal();
-
-  factory FirebaseService() => _instance;
-
-  FirebaseService._internal();
-
+  late dynamic notificationType;
+  final travel = Travel(
+      id: 1,
+      startingPointLat: 0.0,
+      startingPointLong: 0.0,
+      arrivalPointLat: 1.0,
+      arrivalPointLong: 1.0,
+      date: '2024-05-12',
+      hour: '12:00',
+      driver: 0,
+      price: 3000,
+      seats: 1,
+      currentTrip: 0);
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
-  String? fCMToken;
-  //String? get idDevice => fCMToken;
-  // https://pub.dev/packages/firebase_messaging/versions/11.4.4/example
-  String? getFCMToken() {
-    return fCMToken;
+
+  final TravelNotificationProvider travelNotificationProvider =
+      TravelNotificationProvider();
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
+  Future<String> getDeviceToken() async {
+    String? token = await _firebaseMessaging.getToken();
+    return token!;
   }
 
-  Future<void> _firebaseMessagingBackgroundHandler(
-      RemoteMessage message) async {
-    print("Handling a background message: ${message.data}");
-  }
-
-  void handleMessage(RemoteMessage? message) {
-    if (message == null) return;
-
-    navigatorKey.currentState
-        ?.pushNamed('/screens/home.dart', arguments: message);
-  }
-
-  Future<void> initializeFirebaseMessaging() async {
-    _firebaseMessaging.requestPermission(
+  void requestNotificationPermission() async {
+    NotificationSettings settings = await _firebaseMessaging.requestPermission(
       alert: true,
-      announcement: false,
+      announcement: true,
       badge: true,
-      carPlay: false,
-      criticalAlert: false,
-      provisional: false,
+      carPlay: true,
+      criticalAlert: true,
+      provisional: true,
       sound: true,
     );
-    //fCMToken = await _firebaseMessaging.getToken();
 
-    final TravelNotificationProvider travelNotificationProvider =
-        TravelNotificationProvider();
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      print('El usuario otorgó permisos de notificación');
+    } else if (settings.authorizationStatus ==
+        AuthorizationStatus.provisional) {
+      print('El usuario otorgó permisos de notificación provisionales');
+    } else {
+      print('El usuario denegó permisos de notificación');
+    }
+  }
 
-    _firebaseMessaging.getToken().then((token) {
-      fCMToken = token;
-    });
-    print("firebase token: $fCMToken");
+  void initializeFirebaseMessaging(BuildContext context) {
+    Future<void> firebaseMessagingBackgroundHandler(
+        RemoteMessage message) async {
+      print("Handling a background message: ${message.data}");
+    }
 
-    FirebaseMessaging.instance.getInitialMessage().then(handleMessage);
+    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      if (message.data.isEmpty) {
-        travelNotificationProvider.setTravelNotification(true);
-        print("onMessageee: ${message.data}");
+      if (message.data.isNotEmpty) {
+        print("onMessage on listen: ${message.data}");
+        _handleMessage(context, message);
+        _showNotification(message);
       }
-
-      // final notificationType = message.data['notification_type'];
-      // // final notificationProvider =
-      // //    Provider.of<TravelNotificationProvider>(context, listen: false);
-      // final notificationBody = message.notification?.body ?? "";
-      // final notificationAdditionalInfo =
-      //     message.data['additional_info']["travelId"] ?? "";
-
-      // if (notificationType == 'travel_notification') {
-
-      //   travelNotificationProvider
-      //       .setIdTravelNotification(notificationAdditionalInfo);
-      // } else if (notificationType == 'current_travel') {
-      //   travelNotificationProvider.setCurrentTravelNotification(true);
-      //   travelNotificationProvider.setCurrentTravel(notificationBody);
-      // }
-      // else if (notificationType == 'travel_notification') {
-      //   notificationProvider.setTravelCardNotification(true);
-      // }
-      // print("onMessage: $message");
-      // onMessageReceived(message);
-      // onNotificationTypeReceived(message.data['notification_type']);
+      travelNotificationProvider.setTravelNotification(true);
+      _showNotification(message);
+      print("onMessage on listen: ${message.data}");
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print("onMessageOpenedApp: $message");
-      // onNotificationTypeReceived(message.data['notification_type']);
-      FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-        final notificationType = message.data['notification_type'];
-        // final notificationProvider =
-        //     Provider.of<TravelNotificationProvider>(context, listen: false);
-        final notificationBody = message.notification?.body ?? "";
-        final notificationAdditionalInfo =
-            message.data['additional_info']["travelId"] ?? "";
-
-        // if (notificationType == 'travel_notification') {
-        //   travelNotificationProvider.setTravelNotification(true);
-        //   travelNotificationProvider
-        //       .setIdTravelNotification(notificationAdditionalInfo);
-        //   // Navegar a una pantalla específica aquí
-        //   Navigator.of(context).pushNamed('/travel_details',
-        //       arguments: notificationAdditionalInfo);
-        // } else if (notificationType == 'current_travel') {
-        //   travelNotificationProvider.setCurrentTravelNotification(true);
-        //   travelNotificationProvider.setCurrentTravel(notificationBody);
-        //   // Navegar a una pantalla específica aquí
-        //   Navigator.of(context).pushNamed('/current_travel');
-        // }
-      });
+      print("onMessage OpenedApp: $message");
+      _handleMessage(context, message);
     });
-
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   }
 
-  // Función que maneja los mensajes en segundo plano
+  void _showNotification(RemoteMessage message) async {
+    // Obtener los datos de la notificación
+    final notificationData = message.data;
+
+    // Configurar la notificación
+    const androidPlatformChannelSpecifics = AndroidNotificationDetails(
+      'your channel id',
+      'your channel name',
+       //'your channel description',
+      importance: Importance.max,
+      priority: Priority.high,
+    );
+    // final iOSPlatformChannelSpecifics = IOSNotificationDetails();
+    const platformChannelSpecifics = NotificationDetails(
+      android: androidPlatformChannelSpecifics,
+      // iOS: iOSPlatformChannelSpecifics,
+    );
+
+    // Mostrar la notificación
+    await flutterLocalNotificationsPlugin.show(
+      0, // Notification ID
+      notificationData['title'] ?? 'Notification', // Title
+      notificationData['body'] ?? 'Notification Body', // Body
+      platformChannelSpecifics,
+      payload: 'New Payload',
+    );
+  }
+
+  void _handleMessage(BuildContext context, RemoteMessage message) {
+    final notificationType = message.data['notification_type'];
+    final notificationAdditionalInfo = Travel.fromJson(message.data);
+    final idTravel = message.data['additional_info']["travelId"];
+
+    switch (notificationType) {
+      case 'travel_notification':
+        travelNotificationProvider.setTravelNotification(true);
+        travelNotificationProvider.setCurrentTravel(travel);
+        travelNotificationProvider.setIdTravelNotification(1);
+        break;
+      case 'current_travel':
+        travelNotificationProvider.setCurrentTravelNotification(true);
+        travelNotificationProvider.setCurrentTravel(travel);
+        break;
+      case 'travel_deny':
+        travelNotificationProvider.setTravelNotification(true);
+        break;
+      case 'travel_canceled':
+        travelNotificationProvider.setTravelNotification(true);
+        break;
+      // default:
+      //   // Manejar el caso en el que notificationType no coincida con ninguno de los casos anteriores
+      //   break;
+    }
+  }
 }

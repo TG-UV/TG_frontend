@@ -3,12 +3,11 @@ import 'package:tg_frontend/models/travel_model.dart';
 import 'package:tg_frontend/screens/theme.dart';
 import 'package:tg_frontend/screens/travelScreens/travel_details.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:tg_frontend/datasource/travel_data.dart';
 import 'package:tg_frontend/device/environment.dart';
 import 'package:provider/provider.dart';
 import 'package:tg_frontend/services/travel_notification_provider.dart';
+import 'package:tg_frontend/utils/date_Formatter.dart';
 
 class TravelCard extends StatefulWidget {
   const TravelCard({
@@ -17,15 +16,13 @@ class TravelCard extends StatefulWidget {
     this.pastTravel,
   });
 
-  // final TextEditingController controller;
-
   final Travel travel;
   final bool? pastTravel;
   @override
   State<TravelCard> createState() => _TravelCardState();
 }
 
-class _TravelCardState extends State<TravelCard> {
+class _TravelCardState extends State<TravelCard> with TickerProviderStateMixin {
   TravelDatasourceMethods travelDatasourceImpl =
       Environment.sl.get<TravelDatasourceMethods>();
   String startingPointTextDirection = "";
@@ -35,7 +32,10 @@ class _TravelCardState extends State<TravelCard> {
   @override
   void initState() {
     _getTextDirections();
-    initializeDateFormatting();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    )..repeat(reverse: true);
     super.initState();
   }
 
@@ -49,28 +49,7 @@ class _TravelCardState extends State<TravelCard> {
     setState(() {});
   }
 
-  DateTime _parseTimeString(String timeString) {
-    List<String> parts = timeString.split(':');
-    int hour = int.parse(parts[0]);
-    int minute = int.parse(parts[1]);
-    return DateTime(1, 1, 1, hour, minute);
-  }
-
-  void initializeDateFormat() {
-    initializeDateFormatting('es_ES', null);
-  }
-
-  String _dayOfWeekFormated() {
-    String dayOfWeekFormated = "";
-    String dayOfWeek =
-        DateFormat('EEEE', 'es_ES').format(DateTime.parse(widget.travel.date));
-    dayOfWeekFormated =
-        "${dayOfWeek.substring(0, 1).toUpperCase()}${dayOfWeek.substring(1)}";
-    return dayOfWeekFormated;
-  }
-
   Future<dynamic>? _onTapHandle() {
-    print("llega a on tap");
     if (widget.pastTravel != null) {
       if (!widget.pastTravel!) {
         return Get.to(() => TravelDetails(
@@ -81,18 +60,17 @@ class _TravelCardState extends State<TravelCard> {
     } else {
       return Get.to(() => TravelDetails(selectedTravel: widget.travel));
     }
+    return null;
   }
 
   @override
   Widget build(BuildContext context) {
     //bool isTravelNotification = Provider.of<TravelNotificationProvider>(context).isNewPassengerNotification;
-    initializeDateFormat();
     return Consumer<TravelNotificationProvider>(
         builder: (context, notificationProvider, _) {
       return InkWell(
           onTap: _onTapHandle,
           child: Card(
-              //color: const Color.fromARGB(255, 252, 252, 252),
               elevation: 8,
               shadowColor: ColorManager.secondaryColor,
               child: Padding(
@@ -117,12 +95,13 @@ class _TravelCardState extends State<TravelCard> {
                                   },
                                 ),
                               Text(
-                                _dayOfWeekFormated(),
+                                DateFormatter()
+                                    .dayOfWeekFormated(widget.travel.date),
                                 style: Theme.of(context).textTheme.titleLarge,
                               ),
                               Text(
-                                DateFormat('hh:mm a').format(
-                                    _parseTimeString(widget.travel.hour)),
+                                DateFormatter().timeFormatedTextController(
+                                    widget.travel.hour),
                                 style: Theme.of(context)
                                     .textTheme
                                     .titleLarge!

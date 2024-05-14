@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tg_frontend/screens/theme.dart';
+import 'package:tg_frontend/utils/date_Formatter.dart';
 import 'package:tg_frontend/widgets/main_button.dart';
 import 'package:tg_frontend/widgets/square_button.dart';
 import 'package:tg_frontend/widgets/input_field.dart';
@@ -57,14 +58,8 @@ class _SearchTravelsState extends State<SearchTravels> {
 
   @override
   void initState() {
-    initializeDateFormat();
     _fetchDirections();
-
     super.initState();
-  }
-
-  void initializeDateFormat() {
-    initializeDateFormatting('es_ES', null);
   }
 
   void _fetchDirections() async {
@@ -121,21 +116,14 @@ class _SearchTravelsState extends State<SearchTravels> {
     });
   }
 
-  DateTime _parseTimeString(String timeString) {
-    List<String> parts = timeString.split(':');
-    int hour = int.parse(parts[0]);
-    int minute = int.parse(parts[1]);
-    return DateTime(1, 1, 1, hour, minute);
-  }
-
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
         context: context, firstDate: DateTime.now(), lastDate: DateTime(2025));
     if (pickedDate != null) {
       setState(() {
-        _selectedDate = DateFormat('yyyy-MM-dd').format(pickedDate);
+        _selectedDate = DateFormatter().dateFormatedToSend(pickedDate);
         dateController.text =
-            DateFormat('EEEE, d MMMM', 'es_ES').format(pickedDate);
+            DateFormatter().dateFormatedTextController(pickedDate);
       });
       _selectTime();
     }
@@ -144,12 +132,12 @@ class _SearchTravelsState extends State<SearchTravels> {
   Future<void> _selectTime({DateTime? dateTime}) async {
     if (dateTime != null) {
       setState(() {
-        _selectedTime = DateFormat('hh:mm:ss').format(dateTime);
-        _selectedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+        _selectedTime = DateFormatter().timeFormatedToSend(dateTime);
+        _selectedDate = DateFormatter().dateFormatedToSend(DateTime.now());
         timeController.text =
-            DateFormat('hh:mm a').format(_parseTimeString(_selectedTime));
+            DateFormatter().timeFormatedTextController(_selectedTime);
         dateController.text =
-            DateFormat('EEEE, d MMMM', 'es_ES').format(DateTime.now());
+            DateFormatter().dateFormatedTextController(DateTime.now());
       });
     } else {
       final TimeOfDay? pickedTime =
@@ -166,9 +154,9 @@ class _SearchTravelsState extends State<SearchTravels> {
           00,
         );
         setState(() {
-          _selectedTime = DateFormat('hh:mm:ss').format(day);
+          _selectedTime = DateFormatter().timeFormatedToSend(day);
           timeController.text =
-              DateFormat('hh:mm a').format(_parseTimeString(_selectedTime));
+              DateFormatter().timeFormatedTextController(_selectedTime);
         });
       }
     }

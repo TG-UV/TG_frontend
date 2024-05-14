@@ -32,7 +32,8 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await FirebaseMessaging.instance.setAutoInitEnabled(true);
-  FirebaseService().initializeFirebaseMessaging();
+  FirebaseMessaging.instance.requestPermission;
+  // FirebaseMessaging.onBackgroundMessage(myBackgroundMessageHandler);
 
   runApp(
     ChangeNotifierProvider(
@@ -48,6 +49,8 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    FirebaseService().initializeFirebaseMessaging(context);
+
     return GetMaterialApp(
       locale: const Locale('es', 'ES'),
       debugShowCheckedModeBanner: false,

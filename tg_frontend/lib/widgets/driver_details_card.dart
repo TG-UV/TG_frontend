@@ -1,25 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:tg_frontend/models/passenger_model.dart';
 import 'package:tg_frontend/models/travel_model.dart';
 import 'package:tg_frontend/screens/theme.dart';
+import 'package:tg_frontend/utils/date_Formatter.dart';
 import 'package:tg_frontend/widgets/main_button.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/datasource/travel_data.dart';
 import 'package:tg_frontend/device/environment.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:intl/intl.dart';
 import 'package:tg_frontend/widgets/route_info_card.dart';
 import 'package:tg_frontend/widgets/seat_request_card.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
-import 'package:intl/date_symbol_data_local.dart';
-
-const mapboxAccessToken =
-    'pk.eyJ1Ijoic2FybWFyaWUiLCJhIjoiY2xwYm15eTRrMGZyYjJtcGJ1bnJ0Y3hpciJ9.v5mHXrC66zG4x-dgZDdLSA';
 
 class DriverDetailsCard extends StatefulWidget {
   const DriverDetailsCard({
@@ -41,7 +31,7 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
   List<Passenger> confirmedPassengersList = [];
   List<Passenger> pendingPassengersList = [];
 
-  String dayOfWeekFormated = "Fecha";
+  String dayOfWeek = "Fecha";
   String startingPointTextDirection = "";
   String arrivalPointTextDirection = "";
 
@@ -49,13 +39,9 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
   void initState() {
     _getTextDirections();
     super.initState();
-
     _loadPassengers();
-    initializeDateFormat();
-    String dayOfWeek =
-        DateFormat('EEEE', 'es_ES').format(DateTime.parse(widget.travel.date));
-    dayOfWeekFormated =
-        "${dayOfWeek.substring(0, 1).toUpperCase()}${dayOfWeek.substring(1)}";
+
+    dayOfWeek = DateFormatter().dayOfWeekFormated(widget.travel.date);
   }
 
   void _getTextDirections() async {
@@ -66,17 +52,6 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
         lat: widget.travel.startingPointLat,
         long: widget.travel.startingPointLong);
     setState(() {});
-  }
-
-  void initializeDateFormat() {
-    initializeDateFormatting('es_ES', null);
-  }
-
-  DateTime _parseTimeString(String timeString) {
-    List<String> parts = timeString.split(':');
-    int hour = int.parse(parts[0]);
-    int minute = int.parse(parts[1]);
-    return DateTime(1, 1, 1, hour, minute);
   }
 
   Future<void> _loadPassengers() async {
@@ -134,6 +109,7 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                     .deleteTravelRemote(travelId: widget.travel.id.toString());
                 if (sendResponse != 0) {
                   await EasyLoading.showInfo("Se eliminó tu viaje..");
+                  // ignore: use_build_context_synchronously
                   Navigator.of(context).pop();
                 } else {
                   await EasyLoading.showInfo("Hubo un error");
@@ -145,59 +121,6 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
           ],
         );
       },
-    );
-  }
-
-  Widget _mapDialog(LatLng coordinates) {
-    return AlertDialog(
-      title: Text(
-        'Punto para recoger',
-        textAlign: TextAlign.center,
-        style: TextStyle(
-            color: ColorManager.primaryColor, fontFamily: 'Jost', fontSize: 18),
-      ),
-      content: SizedBox(
-        width: double.maxFinite,
-        height: 300.0,
-        child: FlutterMap(
-          options: MapOptions(
-              initialCenter: coordinates,
-              minZoom: 5,
-              maxZoom: 25,
-              initialZoom: 15),
-          children: [
-            TileLayer(
-              urlTemplate:
-                  'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}',
-              additionalOptions: const {
-                'accessToken': mapboxAccessToken,
-                'id': 'mapbox/streets-v11',
-              },
-            ),
-            MarkerLayer(markers: [
-              Marker(
-                point: coordinates,
-                child: Icon(
-                  Icons.location_on_sharp,
-                  color: ColorManager.fourthColor,
-                  size: 40,
-                ),
-              )
-            ]),
-          ],
-        ),
-      ),
-      actions: <Widget>[
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          child: const Text(
-            'Cerrar',
-            style: TextStyle(color: Colors.black),
-          ),
-        ),
-      ],
     );
   }
 
@@ -216,13 +139,13 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: <Widget>[
                             Text(
-                              dayOfWeekFormated,
+                              dayOfWeek,
                               style: Theme.of(context).textTheme.titleLarge,
                             ),
                             const SizedBox(width: 10),
                             Text(
-                              DateFormat('hh:mm a')
-                                  .format(_parseTimeString(widget.travel.hour)),
+                              DateFormatter().timeFormatedTextController(
+                                  widget.travel.hour),
                               style: Theme.of(context)
                                   .textTheme
                                   .titleLarge!

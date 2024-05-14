@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:tg_frontend/datasource/travel_data.dart';
@@ -48,9 +49,11 @@ class _HomeState extends State<Home> {
   void initState() {
     userDatasourceImpl.initDatabase();
     travelDatasourceImpl.initDatabase();
+
     // _varHasNotifications =
     //     Provider.of<TravelNotificationProvider>(context).isTavelNotification;
     super.initState();
+    //print("bool initi: ${widget.notificationMessage}");
   }
 
   // Widget _buildIconWithBadge(IconData iconData, bool _hasNotifications) {
@@ -98,34 +101,27 @@ class _HomeState extends State<Home> {
           )),
           TabItem(icon: Consumer<TravelNotificationProvider>(
               builder: (context, travelNotificationProvider, _) {
-            bool hasNotifications =
-                travelNotificationProvider.isTavelNotification;
-            print("provider ${travelNotificationProvider.isTavelNotification}");
-            return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    // Aquí podrías agregar la lógica para marcar las notificaciones como leídas
-                    travelNotificationProvider.setTravelNotification(false);
-                  });
-                },
-                child: Stack(
-                  alignment: Alignment.topRight,
-                  children: [
-                    const Icon(
-                      Icons.time_to_leave_sharp,
-                      color: Colors.black,
+            return Stack(
+              alignment: Alignment.topRight,
+              children: [
+                IconButton(
+                  onPressed: () {
+                    TravelNotificationProvider().setTravelNotification(false);
+                  },
+                  icon: Icon(Icons.time_to_leave_sharp),
+                  color: Colors.black,
+                ),
+                if (travelNotificationProvider.isTavelNotification)
+                  Container(
+                    width: 15,
+                    height: 15,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.red,
                     ),
-                    if (hasNotifications)
-                      Container(
-                        width: 10,
-                        height: 10,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.red,
-                        ),
-                      ),
-                  ],
-                ));
+                  ),
+              ],
+            );
           })),
           const TabItem(icon: Icon(Icons.timelapse_sharp, color: Colors.black)),
         ],

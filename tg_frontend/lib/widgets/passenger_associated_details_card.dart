@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:tg_frontend/datasource/endPoints/end_point.dart';
-import 'package:tg_frontend/models/passenger_model.dart';
 import 'package:tg_frontend/models/travel_model.dart';
 import 'package:tg_frontend/screens/theme.dart';
+import 'package:tg_frontend/utils/date_Formatter.dart';
 import 'package:tg_frontend/widgets/main_button.dart';
 import 'package:tg_frontend/datasource/travel_data.dart';
 import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/device/environment.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 class AssociatesDetailsCard extends StatefulWidget {
   const AssociatesDetailsCard({
@@ -28,12 +26,11 @@ class _DetailsCardState extends State<AssociatesDetailsCard>
     with SingleTickerProviderStateMixin {
   TravelDatasourceMethods travelDatasourceImpl =
       Environment.sl.get<TravelDatasourceMethods>();
-  User user = Environment.sl.get<User>();
   late Map<String, dynamic>? detailsList;
   final EndPoints _endPoints = EndPoints();
   bool _hasCallSupport = false;
   Future<void>? _launched;
-  late String dayOfWeekFormated;
+  late String dayOfWeek;
   late AnimationController _controller;
   String startingPointTextDirection = "";
   String arrivalPointTextDirection = "";
@@ -47,19 +44,11 @@ class _DetailsCardState extends State<AssociatesDetailsCard>
         _hasCallSupport = result;
       });
     });
-    initializeDateFormat();
     _controller = AnimationController(
-      duration: Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 500),
       vsync: this,
     )..repeat(reverse: true);
-    String dayOfWeek =
-        DateFormat('EEEE', 'es_ES').format(DateTime.parse(widget.travel.date));
-    dayOfWeekFormated =
-        "${dayOfWeek.substring(0, 1).toUpperCase()}${dayOfWeek.substring(1)}";
-  }
-
-  void initializeDateFormat() {
-    initializeDateFormatting('es_ES', null);
+    dayOfWeek = DateFormatter().dayOfWeekFormated(widget.travel.date);
   }
 
   void _getTextDirections() async {
@@ -70,13 +59,6 @@ class _DetailsCardState extends State<AssociatesDetailsCard>
         lat: widget.travel.startingPointLat,
         long: widget.travel.startingPointLong);
     setState(() {});
-  }
-
-  DateTime _parseTimeString(String timeString) {
-    List<String> parts = timeString.split(':');
-    int hour = int.parse(parts[0]);
-    int minute = int.parse(parts[1]);
-    return DateTime(1, 1, 1, hour, minute);
   }
 
   Stream<Map<String, dynamic>?> _loadTravelDetails() async* {
@@ -156,14 +138,14 @@ class _DetailsCardState extends State<AssociatesDetailsCard>
                                     MainAxisAlignment.spaceEvenly,
                                 children: <Widget>[
                                   Text(
-                                    dayOfWeekFormated,
+                                    dayOfWeek,
                                     style:
                                         Theme.of(context).textTheme.titleLarge,
                                   ),
                                   const SizedBox(width: 10),
                                   Text(
-                                    DateFormat('hh:mm a').format(
-                                        _parseTimeString(widget.travel.hour)),
+                                    DateFormatter().timeFormatedTextController(
+                                        widget.travel.hour),
                                     style: Theme.of(context)
                                         .textTheme
                                         .titleLarge!
@@ -216,7 +198,7 @@ class _DetailsCardState extends State<AssociatesDetailsCard>
                               ],
                             ),
                             Text(
-                              '    ${detailsList!["seats"]} cupos reservados',
+                              '    cupos reservados: ${detailsList!["seats"]}',
                               style: Theme.of(context).textTheme.titleSmall,
                             ),
                             const SizedBox(height: 45),
@@ -232,7 +214,7 @@ class _DetailsCardState extends State<AssociatesDetailsCard>
                                             MainAxisAlignment.spaceEvenly,
                                         children: [
                                           Text(
-                                            '\$ ${widget.travel.price}',
+                                            '\$ ${detailsList!["trip"]["fare"]}',
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .titleMedium,
@@ -282,8 +264,8 @@ class _DetailsCardState extends State<AssociatesDetailsCard>
                                               .textTheme
                                               .titleSmall!
                                               .copyWith(
-                                                  fontWeight:
-                                                      FontWeight.normal),
+                                                  fontWeight: FontWeight.normal,
+                                                  fontSize: 12),
                                           overflow: TextOverflow.ellipsis,
                                           maxLines: 2,
                                         ),

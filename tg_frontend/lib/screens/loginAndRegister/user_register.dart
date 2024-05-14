@@ -5,14 +5,13 @@ import 'package:get/get.dart';
 import 'package:tg_frontend/screens/loginAndRegister/password_register.dart';
 import 'package:tg_frontend/screens/loginAndRegister/vehicle_register.dart';
 import 'package:tg_frontend/screens/theme.dart';
+import 'package:tg_frontend/utils/date_Formatter.dart';
 import 'package:tg_frontend/widgets/input_field.dart';
 import 'package:tg_frontend/widgets/main_button.dart';
 import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/datasource/user_data.dart';
 import 'package:tg_frontend/device/environment.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 class UserRegister extends StatefulWidget {
   const UserRegister({super.key, required this.userType});
@@ -42,11 +41,6 @@ class _UserRegisterState extends State<UserRegister> {
   void initState() {
     super.initState();
     _fetchCities();
-    initializeDateFormat();
-  }
-
-  void initializeDateFormat() {
-    initializeDateFormatting('es_ES', null);
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -54,9 +48,9 @@ class _UserRegisterState extends State<UserRegister> {
         context: context, firstDate: DateTime(1950), lastDate: DateTime(2025));
     if (pickedDate != null) {
       setState(() {
-        _selectedDate = DateFormat('yyyy-MM-dd').format(pickedDate);
+        _selectedDate = DateFormatter().dateFormatedToSend(pickedDate);
         dateController.text =
-            DateFormat('d MMMM y', 'es_ES').format(pickedDate);
+            DateFormatter().dateFormatedTextControllerComplete(pickedDate);
         print(dateController.text);
       });
     }

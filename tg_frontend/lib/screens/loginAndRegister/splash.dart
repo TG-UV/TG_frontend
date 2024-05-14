@@ -7,6 +7,7 @@ import 'package:tg_frontend/services/auth_services.dart';
 import 'package:tg_frontend/datasource/user_data.dart';
 import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/device/environment.dart';
+import 'package:tg_frontend/services/travel_notification_provider.dart';
 
 class Splash extends StatefulWidget {
   // final Splash({Key? key}) : super(key: key);

@@ -3,15 +3,13 @@ import 'package:tg_frontend/datasource/endPoints/end_point.dart';
 import 'package:tg_frontend/models/passenger_model.dart';
 import 'package:tg_frontend/models/travel_model.dart';
 import 'package:tg_frontend/screens/theme.dart';
+import 'package:tg_frontend/utils/date_Formatter.dart';
 import 'package:tg_frontend/widgets/input_field.dart';
 import 'package:tg_frontend/widgets/main_button.dart';
 import 'package:tg_frontend/datasource/travel_data.dart';
 import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/device/environment.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:dio/dio.dart';
-import 'package:intl/intl.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:latlong2/latlong.dart';
 
 class GlobalDetailsCard extends StatefulWidget {
@@ -42,7 +40,7 @@ class _GlobalDetailsCardState extends State<GlobalDetailsCard> {
   late FocusNode _currentFoco;
   List<String> _suggestions = [];
   late LatLng latLngStartingPoint;
-  String dayOfWeekFormated = "Fecha";
+  String dayOfWeek = "Fecha";
   String startingPointTextDirection = "";
   String arrivalPointTextDirection = "";
 
@@ -51,11 +49,7 @@ class _GlobalDetailsCardState extends State<GlobalDetailsCard> {
     _getTextDirections();
     super.initState();
     _loadTravelDetails();
-    initializeDateFormat();
-    String dayOfWeek =
-        DateFormat('EEEE', 'es_ES').format(DateTime.parse(widget.travel.date));
-    dayOfWeekFormated =
-        "${dayOfWeek.substring(0, 1).toUpperCase()}${dayOfWeek.substring(1)}";
+    dayOfWeek = DateFormatter().dayOfWeekFormated(widget.travel.date);
   }
 
   void _getTextDirections() async {
@@ -79,17 +73,6 @@ class _GlobalDetailsCardState extends State<GlobalDetailsCard> {
     setState(() => _seats = newValue);
   }
 
-  void initializeDateFormat() {
-    initializeDateFormatting('es_ES', null);
-  }
-
-  DateTime _parseTimeString(String timeString) {
-    List<String> parts = timeString.split(':');
-    int hour = int.parse(parts[0]);
-    int minute = int.parse(parts[1]);
-    return DateTime(1, 1, 1, hour, minute);
-  }
-
   // Future<Map<String, dynamic>?> _loadTravelDetails() async {
   //   Map<String, dynamic>? value;
   //   final listResponse = await travelDatasourceImpl.getTravelDetails(
@@ -101,7 +84,6 @@ class _GlobalDetailsCardState extends State<GlobalDetailsCard> {
   //   return value;
   // }
   Future<void> _loadTravelDetails() async {
-    Map<String, dynamic>? value;
     final listResponse = await travelDatasourceImpl.getTravelDetails(
         travelId: widget.travel.id,
         finalUrl: _endPoints.getTravelDetailsPassenger);
@@ -177,16 +159,16 @@ class _GlobalDetailsCardState extends State<GlobalDetailsCard> {
                                               MainAxisAlignment.spaceEvenly,
                                           children: <Widget>[
                                             Text(
-                                              dayOfWeekFormated,
+                                              dayOfWeek,
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .titleLarge,
                                             ),
                                             const SizedBox(width: 10),
                                             Text(
-                                              DateFormat('hh:mm a').format(
-                                                  _parseTimeString(
-                                                      widget.travel.hour)),
+                                              DateFormatter()
+                                                  .timeFormatedTextController(
+                                                      widget.travel.hour),
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .titleLarge!

@@ -45,7 +45,6 @@ class _MapScreenState extends State<MapScreen> {
   void initState() {
     super.initState();
     _requestLocationPermission();
-    print(FirebaseMessaging.instance.getToken().toString());
     //FirebaseService().initializeFirebaseMessaging(context);
     // FirebaseService().initializeFirebaseMessaging(
     //   onMessageReceived: (RemoteMessage message) {
@@ -80,7 +79,7 @@ class _MapScreenState extends State<MapScreen> {
 
   Future<LatLng> _getCenterPosition() async {
     _getLocation();
-    if (myPosition != defaultLocation) {
+    if (myPosition == defaultLocation) {
       return myPosition;
     } else {
       return universityPosition;
@@ -91,7 +90,12 @@ class _MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
     // bool showNotificationCard = Provider.of<MapScreenProviderhttps://{s}.tile.openstreetmap.org/%7Bz%7D/%7Bx%7D/%7By%7D.png>(context).showNotificationCard;
+    // bool showNotificationCard =
+    //     Provider.of<TravelNotificationProvider>(context).isTavelNotification;
+    bool showNotificationCard =
+        TravelNotificationProvider().isTavelNotification;
 
+    print("build Map $showNotificationCard");
     return Consumer<TravelNotificationProvider>(
         builder: (context, notificationProvider, _) {
       return PopScope(
@@ -176,8 +180,10 @@ class _MapScreenState extends State<MapScreen> {
                             );
                           }),
                         ),
-                        if (notificationProvider.isCurrentTravelNotification)
-                          Center(
+                        if (showNotificationCard)
+                          Positioned(
+                            top: 200,
+                            right: 0,
                             child: NotificationCard(
                               onPressed: () {
                                 travelNotification =

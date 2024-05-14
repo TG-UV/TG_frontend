@@ -2,6 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:tg_frontend/models/travel_model.dart';
 
 class TravelNotificationProvider extends ChangeNotifier {
+  static final TravelNotificationProvider _instance =
+      TravelNotificationProvider._internal();
+
+  factory TravelNotificationProvider() {
+    return _instance;
+  }
+
+  TravelNotificationProvider._internal();
   bool _isTravelNotification = false;
   bool _isCurrentTravelNotification = false;
   late Travel _currentTravel;
@@ -13,7 +21,8 @@ class TravelNotificationProvider extends ChangeNotifier {
   Travel get currentTravel => _currentTravel;
   int get idTravelNotification => _idTravelNotification;
 
-  //bool get isTravelCardNotification => _isTravelCardNotification;
+  //bool get isTravelCardNotification => _isTravelCardNotification
+ 
 
   void setCurrentTravelNotification(bool value) {
     _isCurrentTravelNotification = value;
@@ -22,11 +31,12 @@ class TravelNotificationProvider extends ChangeNotifier {
 
   void setTravelNotification(bool value) {
     _isTravelNotification = value;
-    print(_isTravelNotification);
     notifyListeners();
   }
 
-  void setCurrentTravel(notificationBody) {}
+  void setCurrentTravel(notificationBody) {
+    
+  }
 
   void setIdTravelNotification(notificationAdditionalInfo) {
     _idTravelNotification = notificationAdditionalInfo;
