@@ -53,20 +53,22 @@ class UserDatasourceMethods implements UserDatasource {
 
   @override
   Future<dynamic> insertUserRemote({required User user}) async {
-    Response response;
-    User userResponse;
     try {
       Map<String, dynamic> jsonUser = user.toJson();
-      response = await dio.post(_endPoints.baseUrl + _endPoints.getAndPostUser,
-          data: jsonUser);
-      userResponse = User.fromJson(response.data);
-      //response = userResponse;
-      insertUserLocal(user: userResponse);
+      Response response = await dio
+          .post(_endPoints.baseUrl + _endPoints.getAndPostUser, data: jsonUser);
+      if (response.statusCode == 200) {
+        User userResponse = User.fromJson(response.data);
+        insertUserLocal(user: userResponse);
+        return userResponse.idUser;
+      } else {
+        return 'Error: Código de estado ${response.statusCode}';
+      }
     } on DioException catch (e) {
       print(e.response!.data.toString());
-      return e.response!.data.toString();
+      // return e.response!.data.toString();
+      return "Error de conexión ${e.response!.data.toString()}";
     }
-    return userResponse.idUser;
   }
 
   @override
