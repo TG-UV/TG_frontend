@@ -9,24 +9,23 @@ import 'package:tg_frontend/services/auth_services.dart';
 import 'package:tg_frontend/datasource/local_database_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
-import 'dart:convert';
-
 abstract class UserDatasource {
   Future<int> insertUserLocal({required User user});
   Future<dynamic> insertUserRemote({required User user});
   Future<void> postUserSendEmail({required String userEmail});
   Future<dynamic> postUserSetPassword(
       {required String currentPassword, required String newPassword});
-  Future<dynamic> insertVehicleRemote({required Vehicle vehicle});
+  Future<dynamic> insertVehicleRemote({required Vehicle vehicle, context});
   Future<dynamic> updateVehicelRemote(
       {required int vehicleId, required Vehicle vehicle});
   Future<void> getUserRemote();
-  Future<Map<String, dynamic>?> getVehicleOptionsRemote();
-  Future<List<Vehicle>?> getVehiclesDriver();
+  Future<Map<String, dynamic>?> getVehicleOptionsRemote(context);
+  Future<List<Vehicle>?> getVehiclesDriver(context);
   Future<String?> getUserAuth(
       {required String username,
       required String password,
-      required String idDevice});
+      required String idDevice,
+      context});
   Future<void> postReSetPassword({required String email});
   Future<User> getUserLocal(int idUser);
   Future<List<dynamic>?> getUserCitiesRemote();
@@ -37,6 +36,7 @@ class UserDatasourceMethods implements UserDatasource {
   DatabaseProvider databaseProvider = DatabaseProvider.db;
   final _endPoints = EndPoints();
   String? token;
+  String serverErrorString = "Lo sentimos, tenemos un error en el servidor: ";
 
   late Database database;
 
@@ -112,21 +112,29 @@ class UserDatasourceMethods implements UserDatasource {
   }
 
   @override
-  Future<dynamic> insertVehicleRemote({required Vehicle vehicle}) async {
+  Future<int?> insertVehicleRemote({required Vehicle vehicle, context}) async {
     Response? response;
-    int sent = 0;
+
     try {
       Map<String, dynamic> jsonUser = vehicle.toJson();
+
       dio.options.headers['Authorization'] = 'Token $token';
       response = await dio.post(_endPoints.baseUrl + _endPoints.postVehicle,
           data: jsonUser);
-      // User userResponse = User.fromJson(response.data);
-      // insertUserLocal(user: userResponse);
-      sent++;
-    } catch (e) {
-      return response!.statusMessage;
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return 1;
+      } else {
+        print("llega a 1");
+        ErrorHandler.showErrorAlert(context, response.data.toString());
+      }
+    } on DioException catch (e) {
+      print("llega a 2");
+
+      ErrorHandler.showErrorAlert(
+          context, serverErrorString + e.response!.data.toString());
     }
-    return sent;
+    // User userResponse = User.fromJson(response.data);
+    // insertUserLocal(user: userResponse);
   }
 
   @override
@@ -214,39 +222,55 @@ class UserDatasourceMethods implements UserDatasource {
   }
 
   @override
-  Future<Map<String, dynamic>?> getVehicleOptionsRemote() async {
+  Future<Map<String, dynamic>?> getVehicleOptionsRemote(context) async {
     Map<String, dynamic>? options;
 
     try {
       Response response =
           await dio.get(_endPoints.baseUrl + _endPoints.getVehicleOptions);
-      if (response.data is Map<String, dynamic>) {
+      if (response.statusCode == 200) {
         options = response.data;
+      } else {
+        ErrorHandler.showErrorAlert(context, response.data);
       }
-      print('response data $options');
-    } catch (error) {
-      print('Error al realizar la solicitud vehiclesOptions: $error');
+    } on DioException catch (e) {
+      ErrorHandler.showErrorAlert(
+          context, serverErrorString + e.response!.data["detail"]);
     }
+
+    // try {
+    //   Response response =
+    //       await dio.get(_endPoints.baseUrl + _endPoints.getVehicleOptions);
+    //   if (response.data is Map<String, dynamic>) {
+    //     options = response.data;
+    //   }
+    //   print('response data $options');
+    // } catch (error) {
+    //   print('Error al realizar la solicitud vehiclesOptions: $error');
+    // }
 
     return options;
   }
 
   @override
-  Future<List<Vehicle>?> getVehiclesDriver() async {
+  Future<List<Vehicle>?> getVehiclesDriver(context) async {
     List<Vehicle>? vehicles = [];
 
     try {
-      dio.options.headers['Authorization'] = 'Token $token';
+      //  dio.options.headers['Authorization'] = 'Token $token';
       Response response =
           await dio.get(_endPoints.baseUrl + _endPoints.getVehiclesDriver);
-      if (response.data != null) {
+      if (response.statusCode == 200) {
         for (var data in response.data) {
           Vehicle vehicle = Vehicle.fromJson(data);
           vehicles.add(vehicle);
         }
+      } else {
+        ErrorHandler.showErrorAlert(context, response.data);
       }
-    } catch (error) {
-      print('Error al realizar la solicitud vehiculos conductor: $error');
+    } on DioException catch (e) {
+      ErrorHandler.showErrorAlert(
+          context, serverErrorString + e.response!.data["detail"]);
     }
 
     return vehicles;
@@ -256,7 +280,8 @@ class UserDatasourceMethods implements UserDatasource {
   Future<String?> getUserAuth(
       {required String username,
       required String password,
-      required String idDevice}) async {
+      required String idDevice,
+      context}) async {
     String? token;
     try {
       var response = await dio.post(
@@ -267,11 +292,16 @@ class UserDatasourceMethods implements UserDatasource {
       if (response.statusCode == 200) {
         Map<String, dynamic> responseData = Map.from(response.data);
         token = responseData['auth_token'];
+        return token;
       }
-    } catch (error) {
-      print('Error al autenticar: $error');
+    } on DioException catch (e) {
+      if (e.response!.statusCode != 200) {
+        ErrorHandler.showErrorAlert(context, e.response!.data.toString());
+      } else {
+        ErrorHandler.showErrorAlert(
+            context, serverErrorString + e.response!.data["detail"]);
+      }
     }
-    return token;
   }
 
   @override

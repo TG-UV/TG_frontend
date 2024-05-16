@@ -1,11 +1,11 @@
-import org.gradle.api.GradleException
+//import org.gradle.api.GradleException
 
 plugins {
     id "com.android.application"
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
     id 'com.google.gms.google-services'
-}
+}       
 
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
@@ -113,6 +113,8 @@ dependencies {
   // https://firebase.google.com/docs/android/setup#available-libraries
 
   implementation 'com.google.firebase:firebase-messaging:23.2.1' 
+  implementation "androidx.multidex:multidex:2.0.1"
+
 
 }
 

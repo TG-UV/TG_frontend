@@ -48,18 +48,21 @@ class _LoginState extends State<Login> {
 
   Future<void> loginUser(String username, String password) async {
     String? deviceToken = await FirebaseMessaging.instance.getToken();
-    
+
     if (_validateFormData(_formKey.currentState!.validate(), deviceToken)) {
       final token = await userDatasourceImpl.getUserAuth(
-          username: username, password: password, idDevice: deviceToken!);
+          username: username,
+          password: password,
+          idDevice: deviceToken!,
+          context: context);
 
-      token != null
-          ? saveAuthInformation(token, username, password)
-          : showErrorMessage('Contraseña incorrecta');
+      if (token != null) {
+        saveAuthInformation(token, username, password);
+      }
+      setState(() {
+        _isLoading = false;
+      });
     }
-    setState(() {
-      _isLoading = false;
-    });
   }
 
   bool _validateFormData(bool formValidate, dynamic deviceToken) {

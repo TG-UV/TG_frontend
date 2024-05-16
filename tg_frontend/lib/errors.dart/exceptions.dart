@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:tg_frontend/screens/theme.dart';
 
-class ExceptionsHandle implements Exception {}
-
 class ErrorHandler {
   static void showErrorAlert(BuildContext context, String errorMessage) {
+    String finalMessage;
+    List<String> partes = errorMessage.split("[");
+    if (partes.length > 1) {
+      List<String> secondPart = partes[1].split("]");
+      finalMessage = secondPart.first.trim();
+    } else {
+      finalMessage = errorMessage;
+    }
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -19,7 +25,7 @@ class ErrorHandler {
                 .copyWith(color: ColorManager.fourthColor),
           ),
           content: Text(
-            errorMessage,
+            "  $finalMessage",
             style: Theme.of(context).textTheme.titleSmall,
             maxLines: 10,
           ),

@@ -85,8 +85,8 @@ class _PasswordRegisterState extends State<PasswordRegister> {
             vehicleType: widget.vehicle!.vehicleType,
             licensePlate: widget.vehicle!.licensePlate,
           );
-          dynamic vehicleRegisterResponse =
-              await userDatasourceImpl.insertVehicleRemote(vehicle: newVehicle);
+          dynamic vehicleRegisterResponse = await userDatasourceImpl
+              .insertVehicleRemote(vehicle: newVehicle, context: context);
           if (vehicleRegisterResponse is int) {
             return EasyLoading.showInfo("registro de vehículo exitoso");
           } else {

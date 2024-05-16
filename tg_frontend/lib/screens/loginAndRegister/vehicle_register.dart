@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:tg_frontend/models/vehicleOptions_model.dart';
 import 'package:tg_frontend/models/vehicle_model.dart';
 import 'package:tg_frontend/screens/home.dart';
 import 'package:tg_frontend/screens/loginAndRegister/password_register.dart';
@@ -9,7 +7,6 @@ import 'package:tg_frontend/screens/theme.dart';
 import 'package:tg_frontend/widgets/input_field.dart';
 import 'package:tg_frontend/widgets/main_button.dart';
 import 'package:tg_frontend/models/user_model.dart';
-import 'package:flutter_dropdown/flutter_dropdown.dart';
 import 'package:tg_frontend/datasource/user_data.dart';
 import 'package:tg_frontend/device/environment.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -56,7 +53,7 @@ class _VehicleRegisterState extends State<VehicleRegister> {
 
   Future<Map<String, dynamic>> fetchOptions() async {
     final Map<String, dynamic>? listResponse =
-        await userDatasourceImpl.getVehicleOptionsRemote();
+        await userDatasourceImpl.getVehicleOptionsRemote(context);
 
     if (listResponse != null) {
       return listResponse;
@@ -109,8 +106,8 @@ class _VehicleRegisterState extends State<VehicleRegister> {
       );
       //Get.to(() => const Home());
       if (widget.parent == "menu") {
-        var response =
-            await userDatasourceImpl.insertVehicleRemote(vehicle: vehicle);
+        var response = await userDatasourceImpl.insertVehicleRemote(
+            vehicle: vehicle, context: context);
         if (response is int) {
           await EasyLoading.showInfo("vehículo añadido");
           Get.to(() => const Home());

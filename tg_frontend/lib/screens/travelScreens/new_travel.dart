@@ -64,7 +64,6 @@ class _NewTravelState extends State<NewTravel> {
     super.initState();
   }
 
-
   void _fetchDirections() async {
     latLngArrivalPoint = widget.arrivalPoint;
     latLngStartingPoint = widget.startingPoint;
@@ -82,7 +81,7 @@ class _NewTravelState extends State<NewTravel> {
 
   void _fetchVehicles() async {
     final List<Vehicle>? listResponse =
-        await userDatasourceImpl.getVehiclesDriver();
+        await userDatasourceImpl.getVehiclesDriver(context);
     if (listResponse != null) {
       setState(() {
         driverVehicles = listResponse;
