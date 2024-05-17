@@ -1,4 +1,3 @@
-import 'package:get_it/get_it.dart';
 import 'package:tg_frontend/datasource/endPoints/end_point.dart';
 import 'package:tg_frontend/device/local_tables.dart';
 import 'package:tg_frontend/errors.dart/exceptions.dart';
@@ -10,15 +9,15 @@ import 'package:tg_frontend/datasource/local_database_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
 abstract class UserDatasource {
-  Future<int> insertUserLocal({required User user});
-  Future<dynamic> insertUserRemote({required User user});
-  Future<void> postUserSendEmail({required String userEmail});
-  Future<dynamic> postUserSetPassword(
-      {required String currentPassword, required String newPassword});
-  Future<dynamic> insertVehicleRemote({required Vehicle vehicle, context});
-  Future<dynamic> updateVehicelRemote(
+  Future<int> insertUserLocal({required User user, context});
+  Future<int?> insertUserRemote({required User user, context});
+  Future<void> postUserSendEmail({required String userEmail, context});
+  Future<int?> postUserSetPassword(
+      {required String currentPassword, required String newPassword, context});
+  Future<int?> insertVehicleRemote({required Vehicle vehicle, context});
+  Future<int?> updateVehicelRemote(
       {required int vehicleId, required Vehicle vehicle});
-  Future<void> getUserRemote();
+  Future<int> getUserRemote(context);
   Future<Map<String, dynamic>?> getVehicleOptionsRemote(context);
   Future<List<Vehicle>?> getVehiclesDriver(context);
   Future<String?> getUserAuth(
@@ -28,7 +27,7 @@ abstract class UserDatasource {
       context});
   Future<void> postReSetPassword({required String email});
   Future<User> getUserLocal(int idUser);
-  Future<List<dynamic>?> getUserCitiesRemote();
+  Future<List<dynamic>?> getUserCitiesRemote(conext);
 }
 
 class UserDatasourceMethods implements UserDatasource {
@@ -36,7 +35,7 @@ class UserDatasourceMethods implements UserDatasource {
   DatabaseProvider databaseProvider = DatabaseProvider.db;
   final _endPoints = EndPoints();
   String? token;
-  String serverErrorString = "Lo sentimos, tenemos un error en el servidor: ";
+  String serverErrorString = "Lo sentimos, tenemos un error en el servidor, ";
 
   late Database database;
 
@@ -52,46 +51,47 @@ class UserDatasourceMethods implements UserDatasource {
   }
 
   @override
-  Future<dynamic> insertUserRemote({required User user}) async {
+  Future<int?> insertUserRemote({required User user, context}) async {
     try {
       Map<String, dynamic> jsonUser = user.toJson();
       Response response = await dio
           .post(_endPoints.baseUrl + _endPoints.getAndPostUser, data: jsonUser);
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         User userResponse = User.fromJson(response.data);
         insertUserLocal(user: userResponse);
         return userResponse.idUser;
-      } else {
-        return 'Error: Código de estado ${response.statusCode}';
       }
     } on DioException catch (e) {
-      print(e.response!.data.toString());
-      // return e.response!.data.toString();
-      return "Error de conexión ${e.response!.data.toString()}";
+      ErrorHandler.showErrorAlert(
+          context, serverErrorString + e.response!.data.toString());
     }
+    return null;
   }
 
   @override
-  Future<void> postUserSendEmail({required String userEmail}) async {
+  Future<void> postUserSendEmail({required String userEmail, context}) async {
     var response;
     Map<String, dynamic> _data = {"email": userEmail};
 
     try {
       dio.options.headers['Authorization'] = 'Token $token';
       response = await dio.post(
-        _endPoints.baseUrl + _endPoints.postUserActivation,
-        data: _data,
-      );
-    } catch (e) {
-      print("error al reenviar el email de confirmación $response");
+          _endPoints.baseUrl + _endPoints.postUserActivation,
+          data: _data);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        ErrorHandler.showErrorAlert(context, "Correo enviado");
+      }
+    } on DioException catch (e) {
+      ErrorHandler.showErrorAlert(
+          context, serverErrorString + e.response!.data.toString());
     }
   }
 
   @override
-  Future<dynamic> postUserSetPassword(
-      {required String currentPassword, required String newPassword}) async {
-    var response;
-    int sent = 0;
+  Future<int?> postUserSetPassword(
+      {required String currentPassword,
+      required String newPassword,
+      context}) async {
     Map<String, dynamic> _data = {
       "new_password": newPassword,
       "current_password": currentPassword
@@ -99,66 +99,60 @@ class UserDatasourceMethods implements UserDatasource {
 
     try {
       dio.options.headers['Authorization'] = 'Token $token';
-      response = await dio.post(
+      Response response = await dio.post(
         _endPoints.baseUrl + _endPoints.postSetPassword,
         data: _data,
       );
-      sent++;
-    } catch (e) {
-      print("error al cambiar contraseña $response");
-      return response.toString();
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return 1;
+      }
+    } on DioException catch (e) {
+      ErrorHandler.showErrorAlert(
+          context, serverErrorString + e.response!.data.toString());
     }
-    return sent;
+    return null;
   }
 
   @override
   Future<int?> insertVehicleRemote({required Vehicle vehicle, context}) async {
-    Response? response;
-
     try {
       Map<String, dynamic> jsonUser = vehicle.toJson();
 
       dio.options.headers['Authorization'] = 'Token $token';
-      response = await dio.post(_endPoints.baseUrl + _endPoints.postVehicle,
-          data: jsonUser);
+      Response response = await dio
+          .post(_endPoints.baseUrl + _endPoints.postVehicle, data: jsonUser);
+
       if (response.statusCode == 200 || response.statusCode == 201) {
         return 1;
-      } else {
-        print("llega a 1");
-        ErrorHandler.showErrorAlert(context, response.data.toString());
       }
     } on DioException catch (e) {
-      print("llega a 2");
-
       ErrorHandler.showErrorAlert(
           context, serverErrorString + e.response!.data.toString());
     }
-    // User userResponse = User.fromJson(response.data);
-    // insertUserLocal(user: userResponse);
+    return null;
   }
 
   @override
-  Future<dynamic> updateVehicelRemote(
-      {required int vehicleId, required Vehicle vehicle}) async {
-    Response? response;
-    int sent = 0;
+  Future<int?> updateVehicelRemote(
+      {required int vehicleId, required Vehicle vehicle, context}) async {
     try {
       Map<String, dynamic> jsonUser = vehicle.toJson();
       String url =
           _endPoints.baseUrl + _endPoints.postVehicle + vehicleId.toString();
       dio.options.headers['Authorization'] = 'Token $token';
-      response = await dio.put(url, data: jsonUser);
-      // User userResponse = User.fromJson(response.data);
-      // insertUserLocal(user: userResponse);
-      sent++;
-    } catch (e) {
-      return response!.statusMessage;
+      Response response = await dio.put(url, data: jsonUser);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return 1;
+      }
+    } on DioException catch (e) {
+      ErrorHandler.showErrorAlert(
+          context, serverErrorString + e.response!.data.toString());
     }
-    return sent;
+    return null;
   }
 
   @override
-  Future<int> insertUserLocal({required User user}) async {
+  Future<int> insertUserLocal({required User user, context}) async {
     int sent = 0;
     try {
       //final database = await databaseProvider.database;
@@ -198,25 +192,22 @@ class UserDatasourceMethods implements UserDatasource {
   }
 
   @override
-  Future<int> getUserRemote() async {
-    String? token = await AuthStorage().getToken();
+  Future<int> getUserRemote(context) async {
     User user;
     int idUser = 0;
 
-    if (token != null) {
-      try {
-        dio.options.headers['Authorization'] = 'Token $token';
-        Response response =
-            await dio.get(_endPoints.baseUrl + _endPoints.getUserLogged);
+    try {
+      dio.options.headers['Authorization'] = 'Token $token';
+      Response response =
+          await dio.get(_endPoints.baseUrl + _endPoints.getUserLogged);
+      if (response.statusCode == 200 || response.statusCode == 201) {
         user = User.fromJson(response.data);
         idUser = user.idUser;
-        print(user);
         insertUserLocal(user: user);
-      } catch (error) {
-        print('Error al realizar la solicitud: $error');
       }
-    } else {
-      print('No se encontró ningún token.');
+    } on DioException catch (e) {
+      ErrorHandler.showErrorAlert(
+          context, serverErrorString + e.response!.data.toString());
     }
     return idUser;
   }
@@ -228,28 +219,15 @@ class UserDatasourceMethods implements UserDatasource {
     try {
       Response response =
           await dio.get(_endPoints.baseUrl + _endPoints.getVehicleOptions);
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         options = response.data;
-      } else {
-        ErrorHandler.showErrorAlert(context, response.data);
+        return options;
       }
     } on DioException catch (e) {
       ErrorHandler.showErrorAlert(
-          context, serverErrorString + e.response!.data["detail"]);
+          context, serverErrorString + e.response!.data.toString());
     }
-
-    // try {
-    //   Response response =
-    //       await dio.get(_endPoints.baseUrl + _endPoints.getVehicleOptions);
-    //   if (response.data is Map<String, dynamic>) {
-    //     options = response.data;
-    //   }
-    //   print('response data $options');
-    // } catch (error) {
-    //   print('Error al realizar la solicitud vehiclesOptions: $error');
-    // }
-
-    return options;
+    return null;
   }
 
   @override
@@ -257,23 +235,21 @@ class UserDatasourceMethods implements UserDatasource {
     List<Vehicle>? vehicles = [];
 
     try {
-      //  dio.options.headers['Authorization'] = 'Token $token';
+      dio.options.headers['Authorization'] = 'Token $token';
       Response response =
           await dio.get(_endPoints.baseUrl + _endPoints.getVehiclesDriver);
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         for (var data in response.data) {
           Vehicle vehicle = Vehicle.fromJson(data);
           vehicles.add(vehicle);
         }
-      } else {
-        ErrorHandler.showErrorAlert(context, response.data);
+        return vehicles;
       }
     } on DioException catch (e) {
       ErrorHandler.showErrorAlert(
-          context, serverErrorString + e.response!.data["detail"]);
+          context, serverErrorString + e.response!.data.toString());
     }
-
-    return vehicles;
+    return null;
   }
 
   @override
@@ -289,48 +265,50 @@ class UserDatasourceMethods implements UserDatasource {
         data: {"password": password, "email": username, "id_device": idDevice},
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         Map<String, dynamic> responseData = Map.from(response.data);
         token = responseData['auth_token'];
         return token;
       }
     } on DioException catch (e) {
-      if (e.response!.statusCode != 200) {
-        ErrorHandler.showErrorAlert(context, e.response!.data.toString());
-      } else {
-        ErrorHandler.showErrorAlert(
-            context, serverErrorString + e.response!.data["detail"]);
-      }
+      ErrorHandler.showErrorAlert(
+          context, serverErrorString + e.response!.data.toString());
     }
+    return null;
   }
 
   @override
-  Future<void> postReSetPassword({required String email}) async {
+  Future<void> postReSetPassword({required String email, context}) async {
     try {
-      await dio.post(
+      Response response = await dio.post(
         _endPoints.baseUrl + _endPoints.postReSetPassword,
         data: {"email": email},
       );
-    } catch (error) {
-      print('Error al reSetPassword: $error');
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        ErrorHandler.showErrorAlert(context, "Correo enviado con éxito");
+      }
+    } on DioException catch (e) {
+      ErrorHandler.showErrorAlert(
+          context, serverErrorString + e.response!.data.toString());
     }
+    return null;
   }
 
   @override
-  Future<List<dynamic>?> getUserCitiesRemote() async {
+  Future<List<dynamic>?> getUserCitiesRemote(context) async {
     List<dynamic>? citiesOptions;
     try {
       //dio.options.headers['Authorization'] = 'Token $token';
       Response response =
           await dio.get(_endPoints.baseUrl + _endPoints.getCities);
-      //citiesOptions = response.data;
-      if (response.data is List<dynamic>?) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         citiesOptions = response.data;
+        return citiesOptions;
       }
-    } catch (error) {
-      print('Error al realizar la solicitud vehiclesOptions: $error');
+    } on DioException catch (e) {
+      ErrorHandler.showErrorAlert(
+          context, serverErrorString + e.response!.data.toString());
     }
-
-    return citiesOptions;
+    return null;
   }
 }

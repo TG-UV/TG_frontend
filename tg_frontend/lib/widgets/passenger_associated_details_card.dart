@@ -54,10 +54,12 @@ class _DetailsCardState extends State<AssociatesDetailsCard>
   void _getTextDirections() async {
     arrivalPointTextDirection = await travelDatasourceImpl.getTextDirection(
         lat: widget.travel.arrivalPointLat,
-        long: widget.travel.arrivalPointLong);
+        long: widget.travel.arrivalPointLong,
+        context: context);
     startingPointTextDirection = await travelDatasourceImpl.getTextDirection(
         lat: widget.travel.startingPointLat,
-        long: widget.travel.startingPointLong);
+        long: widget.travel.startingPointLong,
+        context: context);
     setState(() {});
   }
 
@@ -65,7 +67,8 @@ class _DetailsCardState extends State<AssociatesDetailsCard>
     Map<String, dynamic>? value;
     final listResponse = await travelDatasourceImpl.getTravelDetails(
         travelId: widget.travel.id,
-        finalUrl: _endPoints.getTravelAssociatedPassenger);
+        finalUrl: _endPoints.getTravelAssociatedPassenger,
+        context: context);
     if (listResponse != null) {
       value = listResponse.data;
     }
@@ -74,7 +77,7 @@ class _DetailsCardState extends State<AssociatesDetailsCard>
 
   void _cancelSpot(int idPassengerTrip) async {
     int sendResponse = await travelDatasourceImpl.deleteSpotPassengerRemote(
-        tripId: widget.travel.id);
+        tripId: widget.travel.id, context: context);
     if (sendResponse == 1) {
       await EasyLoading.showInfo("reserva cancelada");
       Navigator.of(context).pop();
@@ -94,8 +97,9 @@ class _DetailsCardState extends State<AssociatesDetailsCard>
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-        color: Colors.grey.shade200,
+    return SizedBox(
+        width: double.infinity,
+        //color: Colors.grey.shade200,
         child: Padding(
             padding: const EdgeInsets.all(12.0),
             child: StreamBuilder<Map<String, dynamic>?>(
@@ -103,8 +107,14 @@ class _DetailsCardState extends State<AssociatesDetailsCard>
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else if (snapshot.hasError || snapshot.data == null) {
+                    return Image.asset(
+                      'assets/errorImage.PNG',
+                      // width: 500,
+                      // height: 800,
+                      // height: double.maxFinite,
+                      fit: BoxFit.fitHeight,
+                    );
                   } else {
                     detailsList = snapshot.data;
                     if (detailsList!.isEmpty) {

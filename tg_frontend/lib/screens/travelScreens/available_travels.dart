@@ -53,7 +53,7 @@ class _ListedTravelsState extends State<AvailableTravels> {
 
   Stream<List<Travel>> _fetchTravelsStream() async* {
     final value = await travelDatasourceImpl.getTravelSuggestions(
-        searchData: requestData);
+        searchData: requestData, context: context);
     yield value;
   }
 

@@ -42,10 +42,12 @@ class _TravelCardState extends State<TravelCard> with TickerProviderStateMixin {
   void _getTextDirections() async {
     arrivalPointTextDirection = await travelDatasourceImpl.getTextDirection(
         lat: widget.travel.arrivalPointLat,
-        long: widget.travel.arrivalPointLong);
+        long: widget.travel.arrivalPointLong,
+        context: context);
     startingPointTextDirection = await travelDatasourceImpl.getTextDirection(
         lat: widget.travel.startingPointLat,
-        long: widget.travel.startingPointLong);
+        long: widget.travel.startingPointLong,
+        context: context);
     setState(() {});
   }
 

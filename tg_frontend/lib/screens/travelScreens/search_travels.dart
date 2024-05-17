@@ -68,12 +68,12 @@ class _SearchTravelsState extends State<SearchTravels> {
     startingPointController.text =
         await travelDatasourceMethods.getTextDirection(
             lat: latLngStartingPoint.latitude,
-            long: latLngStartingPoint.longitude);
+            long: latLngStartingPoint.longitude, context: context);
 
     arrivalPointController.text =
         await travelDatasourceMethods.getTextDirection(
             lat: latLngArrivalPoint.latitude,
-            long: latLngArrivalPoint.longitude);
+            long: latLngArrivalPoint.longitude, context: context);
     setState(() {});
   }
 
@@ -109,7 +109,7 @@ class _SearchTravelsState extends State<SearchTravels> {
 
   Future<void> _fetchTravels(Map<String, dynamic> requestData) async {
     List<Travel> travelsResponse = await travelDatasourceMethods
-        .getTravelSuggestions(searchData: requestData);
+        .getTravelSuggestions(searchData: requestData, context: context);
 
     setState(() {
       travelsList = travelsResponse;
@@ -164,7 +164,7 @@ class _SearchTravelsState extends State<SearchTravels> {
 
   Future<void> _getSuggestion(String travelsResponse) async {
     var response = await travelDatasourceMethods.getMapSuggestions(
-        address: travelsResponse);
+        address: travelsResponse, context: context);
     setState(() {
       _suggestions = response;
     });
@@ -173,7 +173,7 @@ class _SearchTravelsState extends State<SearchTravels> {
   Future<void> _getMapCoordinates(
       String travelsResponse, LatLng latLngPoint) async {
     var response = await travelDatasourceMethods.getMapCoordinates(
-        address: travelsResponse);
+        address: travelsResponse, context: context);
     setState(() {
       latLngPoint = response;
       // foco == _focusNodeArrivalPoint

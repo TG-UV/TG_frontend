@@ -47,16 +47,16 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
   void _getTextDirections() async {
     arrivalPointTextDirection = await travelDatasourceImpl.getTextDirection(
         lat: widget.travel.arrivalPointLat,
-        long: widget.travel.arrivalPointLong);
+        long: widget.travel.arrivalPointLong, context: context);
     startingPointTextDirection = await travelDatasourceImpl.getTextDirection(
         lat: widget.travel.startingPointLat,
-        long: widget.travel.startingPointLong);
+        long: widget.travel.startingPointLong, context: context);
     setState(() {});
   }
 
   Future<void> _loadPassengers() async {
     List<Passenger> passengersList = await travelDatasourceImpl
-        .getPassangersRemote(travelId: widget.travel.id);
+        .getPassangersRemote(travelId: widget.travel.id, context: context);
     setState(() {
       confirmedPassengersList =
           passengersList.where((element) => element.isConfirmed == 1).toList();
@@ -68,7 +68,7 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
   Future<void> _confirmPassenger(
       int passengerTripId, bool valueConfirmed) async {
     int updatePassengers = await travelDatasourceImpl.updatePassengerRemote(
-        passengerTripId: passengerTripId, valueConfirmed: valueConfirmed);
+        passengerTripId: passengerTripId, valueConfirmed: valueConfirmed, context: context);
     if (updatePassengers != 0) {
       _loadPassengers();
     } else {
@@ -79,7 +79,7 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
 
   void _cancelPassenger(int passengerId) async {
     int sendResponse = await travelDatasourceImpl.deleteSpotDriverRemote(
-        idPassengerTrip: passengerId);
+        idPassengerTrip: passengerId, context: context);
     if (sendResponse != 0) {
       _loadPassengers();
     } else {
@@ -106,7 +106,7 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
             TextButton(
               onPressed: () async {
                 int sendResponse = await travelDatasourceImpl
-                    .deleteTravelRemote(travelId: widget.travel.id.toString());
+                    .deleteTravelRemote(travelId: widget.travel.id.toString(), context: context);
                 if (sendResponse != 0) {
                   await EasyLoading.showInfo("Se eliminó tu viaje..");
                   // ignore: use_build_context_synchronously

@@ -40,7 +40,7 @@ class _UserRegisterState extends State<UserRegister> {
   @override
   void initState() {
     super.initState();
-    _fetchCities();
+    //  _fetchCities();
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -56,9 +56,9 @@ class _UserRegisterState extends State<UserRegister> {
     }
   }
 
-  Future<List<dynamic>?> _fetchCities() async {
+  Future<List<dynamic>?> _fetchCities(BuildContext context) async {
     final List<dynamic>? jsonResponse =
-        await userDatasourceImpl.getUserCitiesRemote();
+        await userDatasourceImpl.getUserCitiesRemote(context);
     if (jsonResponse != null) {
       cities = jsonResponse;
     } else {
@@ -68,8 +68,9 @@ class _UserRegisterState extends State<UserRegister> {
   }
 
   dynamic submitForm(BuildContext context) async {
-    //if (_formKey.currentState!.validate() && dateController.text != "") {
-    if (true) {
+    if (_formKey.currentState!.validate() && dateController.text != "") {
+      //if (true)
+
       user = User(
         idUser: 0,
         identityDocument: identifactionController.text,
@@ -111,7 +112,7 @@ class _UserRegisterState extends State<UserRegister> {
     return Scaffold(
         resizeToAvoidBottomInset: true,
         body: FutureBuilder<List<dynamic>?>(
-            future: _fetchCities(),
+            future: _fetchCities(context),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Center(

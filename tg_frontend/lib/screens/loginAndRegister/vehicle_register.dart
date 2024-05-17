@@ -111,9 +111,7 @@ class _VehicleRegisterState extends State<VehicleRegister> {
         if (response is int) {
           await EasyLoading.showInfo("vehículo añadido");
           Get.to(() => const Home());
-        } else {
-          await EasyLoading.showInfo("Intentelo mas tarde");
-        }
+        } 
       } else {
         Get.to(() => PasswordRegister(user: widget.user, vehicle: vehicle));
       }

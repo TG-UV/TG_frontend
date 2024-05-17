@@ -1,5 +1,8 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:tg_frontend/device/local_tables.dart';
+import 'package:tg_frontend/errors.dart/exceptions.dart';
 import 'package:tg_frontend/models/passenger_model.dart';
 import 'package:tg_frontend/models/travel_model.dart';
 import 'package:dio/dio.dart';
@@ -13,33 +16,52 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 abstract class TravelDatasource {
-  Future<List<String>> getMapSuggestions({required String address});
-  Future<LatLng> getMapCoordinates({required String address});
-  Future<String> getTextDirection({required double lat, required double long});
-  //Future<void> insertTravelsLocal({required List<Travel> travels});
-  Future<void> insertTravelRemote({required Travel travel});
-  Future<void> deleteTravelRemote({required String travelId});
-  Future<void> getTravelLocal({required int travelId, String filter});
+  Future<List<String>> getMapSuggestions(
+      {required String address, required BuildContext context});
+  Future<LatLng> getMapCoordinates(
+      {required String address, required BuildContext context});
+  Future<String> getTextDirection(
+      {required double lat,
+      required double long,
+      required BuildContext context});
+  //Future<void> insertTravelsLocal({required List<Travel> travels, required BuildContext context});
+  Future<void> insertTravelRemote(
+      {required Travel travel, required BuildContext context});
+  Future<void> deleteTravelRemote(
+      {required String travelId, required BuildContext context});
+  // Future<void> getTravelLocal({required int travelId, String filter, required BuildContext context});
   Future<List<Travel>> getTravelsRemote(
-      {required String finalEndPoint, Map<String, dynamic> searchData});
+      {required String finalEndPoint,
+      Map<String, dynamic> searchData,
+      required BuildContext context});
   Future<List<Travel>> getTravelSuggestions(
-      {required Map<String, dynamic> searchData});
+      {required Map<String, dynamic> searchData,
+      required BuildContext context});
   Future<Response<Map<String, dynamic>>?> getTravelDetails(
-      {required int travelId, required String finalUrl});
-  Future<int?> updateTravelLocal(
       {required int travelId,
-      required List<String> fields,
-      required List<String> values});
+      required String finalUrl,
+      required BuildContext context});
+  // Future<int?> updateTravelLocal(
+  //     {required int travelId,
+  //     required List<String> fields,
+  //     required List<String> values, required BuildContext context});
   Future<int?> updateTravelRemote(
       {required int travelId,
       required List<String> fields,
-      required List<String> values});
-  Future<List<Passenger>> getPassangersRemote({required int travelId});
-  Future<int> insertPassengerRemote({required Passenger passenger});
+      required List<String> values,
+      required BuildContext context});
+  Future<List<Passenger>> getPassangersRemote(
+      {required int travelId, required BuildContext context});
+  Future<int> insertPassengerRemote(
+      {required Passenger passenger, required BuildContext context});
   Future<int> updatePassengerRemote(
-      {required int passengerTripId, required bool valueConfirmed});
-  Future<int> deleteSpotPassengerRemote({required int tripId});
-  Future<int> deleteSpotDriverRemote({required int idPassengerTrip});
+      {required int passengerTripId,
+      required bool valueConfirmed,
+      required BuildContext context});
+  Future<int> deleteSpotPassengerRemote(
+      {required int tripId, required BuildContext context});
+  Future<int> deleteSpotDriverRemote(
+      {required int idPassengerTrip, required BuildContext context});
 }
 
 class TravelDatasourceMethods implements TravelDatasource {
@@ -51,6 +73,7 @@ class TravelDatasourceMethods implements TravelDatasource {
   late User user = Environment.sl.get<User>();
   String apiKey =
       'pk.eyJ1Ijoic2FybWFyaWUiLCJhIjoiY2xwYm15eTRrMGZyYjJtcGJ1bnJ0Y3hpciJ9.v5mHXrC66zG4x-dgZDdLSA';
+  String serverErrorString = "Lo sentimos, tenemos un error en el servidor; ";
 
   TravelDatasourceMethods() {
     initDatabase();
@@ -62,29 +85,32 @@ class TravelDatasourceMethods implements TravelDatasource {
   }
 
   @override
-  Future<List<String>> getMapSuggestions({required String address}) async {
+  Future<List<String>> getMapSuggestions(
+      {required String address, required BuildContext context}) async {
     String url =
         'https://api.mapbox.com/geocoding/v5/mapbox.places/$address.json?access_token=$apiKey&country=CO&region=Valle%20del%20Cauca';
     List<String> suggestions = [];
 
     var response = await http.get(Uri.parse(url));
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       Map<String, dynamic> data = jsonDecode(response.body);
       List<dynamic> features = data['features'];
       suggestions =
           features.map((feature) => feature['place_name'] as String).toList();
     } else {
-      throw Exception('Error al obtener sugerencias de búsqueda');
+      ErrorHandler.showErrorAlert(context,
+          "lo sentimos estamos teniendo un problema para obtener las direcciones, intenta más tarde");
     }
     return suggestions;
   }
 
   @override
-  Future<LatLng> getMapCoordinates({required String address}) async {
+  Future<LatLng> getMapCoordinates(
+      {required String address, required BuildContext context}) async {
     String url =
         "https://api.mapbox.com/geocoding/v5/mapbox.places/$address.json?access_token=$apiKey";
-
+    LatLng coordinates = const LatLng(0.0, 0.0);
     //List<String> suggestions = [];
 
     final response = await http.get(Uri.parse(url));
@@ -93,18 +119,20 @@ class TravelDatasourceMethods implements TravelDatasource {
       Map<String, dynamic> data = json.decode(response.body);
       List<double> coordinatesValues =
           List<double>.from(data['features'][0]['geometry']['coordinates']);
-      //print('response coor: ${json.decode(response.body)}');
-      LatLng coordinates = LatLng(coordinatesValues[1], coordinatesValues[0]);
-      print('coordinates: $coordinates');
+      coordinates = LatLng(coordinatesValues[1], coordinatesValues[0]);
       return coordinates;
     } else {
-      throw Exception('Falló al obtener las coordenadas en Mapbox');
+      ErrorHandler.showErrorAlert(context,
+          "lo sentimos estamos teniendo un problema para obtener las direcciones, intenta más tarde");
+      return coordinates;
     }
   }
 
   @override
   Future<String> getTextDirection(
-      {required double lat, required double long}) async {
+      {required double lat,
+      required double long,
+      required BuildContext context}) async {
     String placeName = "";
     String url =
         'https://api.mapbox.com/geocoding/v5/mapbox.places/$long,$lat.json?access_token=$apiKey';
@@ -117,17 +145,19 @@ class TravelDatasourceMethods implements TravelDatasource {
       if (features != null && features.isNotEmpty) {
         final firstFeature = features[0];
         placeName = firstFeature['place_name'];
+        return placeName;
       } else {
         return 'No se encontraron resultados';
       }
     } else {
-      throw Exception('Error al obtener la dirección: ${response.statusCode}');
+      ErrorHandler.showErrorAlert(
+          context, "Estamos teniendo un inconveniente, intenta más tarde");
     }
     return placeName;
   }
 
   // @override
-  // Future<void> insertTravelsLocal({required List<Travel> travels}) async {
+  // Future<void> insertTravelsLocal({required List<Travel> travels, context}) async {
   //   var i = 0;
   //   Travel currentTravel;
   //   try {
@@ -152,90 +182,78 @@ class TravelDatasourceMethods implements TravelDatasource {
   // }
 
   @override
-  Future<int> insertTravelRemote({required Travel travel}) async {
-    Response? response;
-    int sent = 0;
+  Future<int> insertTravelRemote(
+      {required Travel travel, required BuildContext context}) async {
     try {
       String? token = await AuthStorage().getToken();
       Map<String, dynamic> jsonTravel = travel.toJson();
-      print(jsonTravel);
       dio.options.headers['Authorization'] = 'Token $token';
-      response = await dio.post(_endPoints.baseUrl + _endPoints.postTravel,
-          data: jsonTravel);
-      // String data = Travel.toJson(travels[sent] as Travel);
-
-      //  print(response.data);
-
-      // await updateTravelLocal(
-      //     travelId: int.parse(travels[sent].id),
-      //     fields: [Local.FIELD_SINCRONIZADO_ORDEN],
-      //     values: [SINCRONIZADO.toString()]);
-      sent++;
-    } catch (e) {
-      return sent;
+      Response response = await dio
+          .post(_endPoints.baseUrl + _endPoints.postTravel, data: jsonTravel);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return 1;
+      }
+    } on DioException catch (e) {
+      ErrorHandler.showErrorAlert(
+          context, serverErrorString + e.response!.data.toString());
     }
-    return sent;
+    return 0;
   }
 
   @override
-  Future<int> deleteTravelRemote({required String travelId}) async {
-    Response? response;
-    int sent = 0;
+  Future<int> deleteTravelRemote(
+      {required String travelId, required BuildContext context}) async {
     String url =
         "${_endPoints.baseUrl}${_endPoints.deleteTRavelDriver}$travelId/";
     try {
       dio.options.headers['Authorization'] = 'Token $token';
-      response = await dio.delete(url);
-
-      // String data = Travel.toJson(travels[sent] as Travel);
-
-      //  print(response.data);
-
-      // await updateTravelLocal(
-      //     travelId: int.parse(travels[sent].id),
-      //     fields: [Local.FIELD_SINCRONIZADO_ORDEN],
-      //     values: [SINCRONIZADO.toString()]);
-      sent++;
-    } catch (e) {
-      return sent;
-    }
-    return sent;
-  }
-
-  @override
-  Future<Travel?> getTravelLocal(
-      {required int travelId, String? filter}) async {
-    try {
-      List<Map<String, dynamic>> travelMaps = await database.query(
-        LocalDB.tbTravel,
-        where: '${LocalDB.idTravel} = ?',
-        whereArgs: [travelId],
-      ).timeout(const Duration(seconds: 300));
-
-      if (travelMaps.isNotEmpty) {
-        return Travel.fromJson(travelMaps.first);
-      } else {
-        return null;
+      Response response = await dio.delete(url);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return 1;
       }
-    } catch (e) {
-      print(e.toString());
-      return null;
+    } on DioException catch (e) {
+      ErrorHandler.showErrorAlert(
+          context, serverErrorString + e.response!.data.toString());
     }
+    return 0;
   }
+
+  // @override
+  // Future<Travel?> getTravelLocal(
+  //     {required int travelId, String? filter, required BuildContext context}) async {
+  //   try {
+  //     List<Map<String, dynamic>> travelMaps = await database.query(
+  //       LocalDB.tbTravel,
+  //       where: '${LocalDB.idTravel} = ?',
+  //       whereArgs: [travelId],
+  //     ).timeout(const Duration(seconds: 300));
+
+  //     if (travelMaps.isNotEmpty) {
+  //       return Travel.fromJson(travelMaps.first);
+  //     } else {
+  //       return null;
+  //     }
+  //   } catch (e) {
+  //     print(e.toString());
+  //     return null;
+  //   }
+  // }
 
   @override
   Future<List<Travel>> getTravelsRemote(
-      {required String finalEndPoint, Map<String, dynamic>? searchData}) async {
+      {required String finalEndPoint,
+      Map<String, dynamic>? searchData,
+      required BuildContext context}) async {
     String? token = await AuthStorage().getToken();
     List<Travel> travelList = [];
     Response<dynamic> response;
 
-    if (token != null) {
-      try {
-        dio.options.headers['Authorization'] = 'Token $token';
-        response = await dio.get(
-          _endPoints.baseUrl + finalEndPoint,
-        );
+    try {
+      dio.options.headers['Authorization'] = 'Token $token';
+      response = await dio.get(
+        _endPoints.baseUrl + finalEndPoint,
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
         if (finalEndPoint == _endPoints.getGeneralTravels) {
           for (var data in response.data) {
             Travel travel = Travel.fromJson(data);
@@ -247,23 +265,21 @@ class TravelDatasourceMethods implements TravelDatasource {
             travelList.add(travel);
           }
         }
-
         // travel = Travel.fromJson(response.data);
         // travelList.add(travel);
         //insertTravelsLocal(travels: travelList);
-      } catch (error) {
-        print('Error al realizar la solicitud viaje remoto: $error');
       }
-    } else {
-      print('No se encontró ningún token.');
+    } on DioException catch (e) {
+      ErrorHandler.showErrorAlert(
+          context, serverErrorString + e.response!.data.toString());
     }
-
     return travelList;
   }
 
   @override
   Future<List<Travel>> getTravelSuggestions(
-      {required Map<String, dynamic>? searchData}) async {
+      {required Map<String, dynamic>? searchData,
+      required BuildContext context}) async {
     List<Travel> travelList = [];
     Response<dynamic> response;
 
@@ -272,50 +288,54 @@ class TravelDatasourceMethods implements TravelDatasource {
       response = await dio.post(
           _endPoints.baseUrl + _endPoints.getGeneralTravels,
           data: searchData);
-      //print(" response data------------- ${response.data}");
-      for (var data in response.data[0]["results"]) {
-        Travel travel = Travel.fromJson(data);
-        travelList.add(travel);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        for (var data in response.data[0]["results"]) {
+          Travel travel = Travel.fromJson(data);
+          travelList.add(travel);
+        }
       }
-    } catch (error) {
-      print('Error al realizar la solicitud viaje remoto: $error');
+    } on DioException catch (e) {
+      ErrorHandler.showErrorAlert(
+          context, serverErrorString + e.response!.data.toString());
     }
 
     return travelList;
   }
 
-  @override
-  Future<int?> updateTravelLocal(
-      {required int travelId,
-      required List<String> fields,
-      required List<String> values}) async {
-    int request = 0;
-    try {
-      Map<String, Object?> updates = {};
-      for (var i = 0; i < fields.length; i++) {
-        updates[fields[i]] = values[i];
-      }
-      request = await database.update(LocalDB.tbTravel, updates, where: """
-          ${LocalDB.idTravel} = ?
-          """, whereArgs: [travelId]).timeout(const Duration(seconds: 300));
-    } catch (error) {
-      print('Error al realizar updateTRavelLocal: $error');
-    }
-    return request;
-  }
+  // @override
+  // Future<int?> updateTravelLocal(
+  //     {required int travelId,
+  //     required List<String> fields,
+  //     required List<String> values, required BuildContext context}) async {
+  //   int request = 0;
+  //   try {
+  //     Map<String, Object?> updates = {};
+  //     for (var i = 0; i < fields.length; i++) {
+  //       updates[fields[i]] = values[i];
+  //     }
+  //     request = await database.update(LocalDB.tbTravel, updates, where: """
+  //         ${LocalDB.idTravel} = ?
+  //         """, whereArgs: [travelId]).timeout(const Duration(seconds: 300));
+  //   } catch (error) {
+  //     print('Error al realizar updateTRavelLocal: $error');
+  //   }
+  //   return request;
+  // }
 
   @override
   Future<int> updateTravelRemote(
       {required int travelId,
       required List<String> fields,
-      required List<String> values}) async {
+      required List<String> values,
+      required BuildContext context}) async {
     int request = 0;
 
     return request;
   }
 
   @override
-  Future<List<Passenger>> getPassangersRemote({required int travelId}) async {
+  Future<List<Passenger>> getPassangersRemote(
+      {required int travelId, required BuildContext context}) async {
     List<Passenger> passengersList = [];
     Response<dynamic> response;
     String? token = await AuthStorage().getToken();
@@ -329,7 +349,7 @@ class TravelDatasourceMethods implements TravelDatasource {
         url,
         //  queryParameters: parameters,
       );
-      if (response.data != null) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         List<dynamic> passengersData = response.data['passengers'];
 
         for (var passengerData in passengersData) {
@@ -347,106 +367,113 @@ class TravelDatasourceMethods implements TravelDatasource {
           });
           passengersList.add(passenger);
         }
-      } else {
-        passengersList = [];
       }
-
-      // travel = Travel.fromJson(response.data);
-      // travelList.add(travel);
-      //insertTravelsLocal(travels: travelList);
-    } catch (error) {
-      print('Error al realizar get pasajeros remoto: $error');
+    } on DioException catch (e) {
+      ErrorHandler.showErrorAlert(
+          context, serverErrorString + e.response!.data.toString());
     }
-
     return passengersList;
   }
 
   @override
   Future<int> updatePassengerRemote(
-      {required int passengerTripId, required bool valueConfirmed}) async {
-    int sent = 0;
-    Map<String, dynamic> _data = {"is_confirmed": valueConfirmed};
+      {required int passengerTripId,
+      required bool valueConfirmed,
+      required BuildContext context}) async {
+    Map<String, dynamic> data = {"is_confirmed": valueConfirmed};
     String url =
         "${_endPoints.baseUrl}${_endPoints.patchPassengerTrip}${passengerTripId.toString()}/";
     try {
       dio.options.headers['Authorization'] = 'Token $token';
-      Response response = await dio.patch(url, data: _data);
-      print("$response");
-      sent++;
-    } catch (error) {
-      print('Error al actualizar un pasajero : $error');
-      return sent;
+      Response response = await dio.patch(url, data: data);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return 1;
+      }
+    } on DioException catch (e) {
+      ErrorHandler.showErrorAlert(
+          context, serverErrorString + e.response!.data.toString());
     }
-    return sent;
+    return 0;
   }
 
   @override
-  Future<int> insertPassengerRemote({required Passenger passenger}) async {
-    Response? response;
-    int sent = 0;
+  Future<int> insertPassengerRemote(
+      {required Passenger passenger, required BuildContext context}) async {
     try {
       Map<String, dynamic> jsonPassengerTrip = passenger.toJson();
-      print(jsonPassengerTrip);
       dio.options.headers['Authorization'] = 'Token $token';
-      response = await dio.post(
+      Response response = await dio.post(
           _endPoints.baseUrl + _endPoints.postPassengerTripBook,
           data: jsonPassengerTrip);
-      sent++;
-    } catch (e) {
-      return sent;
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return 1;
+      }
+    } on DioException catch (e) {
+      ErrorHandler.showErrorAlert(
+          context, serverErrorString + e.response!.data.toString());
     }
-    return sent;
+    return 0;
   }
 
   @override
-  Future<int> deleteSpotPassengerRemote({required int tripId}) async {
-    Response? response;
+  Future<int> deleteSpotPassengerRemote(
+      {required int tripId, required BuildContext context}) async {
     String url =
         "${_endPoints.baseUrl}${_endPoints.deleteSpotTripPassenger}${tripId.toString()}/";
-    int sent = 0;
+
     try {
       dio.options.headers['Authorization'] = 'Token $token';
-      response = await dio.delete(url);
-      print('response: --- $response');
-      sent++;
-    } catch (e) {
-      return sent;
+      Response response = await dio.delete(url);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return 1;
+      }
+    } on DioException catch (e) {
+      ErrorHandler.showErrorAlert(
+          context, serverErrorString + e.response!.data.toString());
     }
-    return sent;
+    return 0;
   }
 
   @override
-  Future<int> deleteSpotDriverRemote({required int idPassengerTrip}) async {
-    Response? response;
+  Future<int> deleteSpotDriverRemote(
+      {required int idPassengerTrip, required BuildContext context}) async {
     String url =
         "${_endPoints.baseUrl}${_endPoints.deleteSpotTripDriver}${idPassengerTrip.toString()}/";
-    int sent = 0;
+
     try {
       dio.options.headers['Authorization'] = 'Token $token';
-      response = await dio.delete(url);
-      print('response: --- $response');
-      sent++;
-    } catch (e) {
-      return sent;
+      Response response = await dio.delete(url);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return 1;
+      }
+    } on DioException catch (e) {
+      ErrorHandler.showErrorAlert(
+          context, serverErrorString + e.response!.data.toString());
     }
-    return sent;
+    return 0;
   }
 
   @override
   Future<Response<Map<String, dynamic>>?> getTravelDetails(
-      {required int travelId, required String finalUrl}) async {
+      {required int travelId,
+      required String finalUrl,
+      required BuildContext context}) async {
     Response<Map<String, dynamic>>? response;
     try {
       dio.options.headers['Authorization'] = 'Token $token';
       String url = "${_endPoints.baseUrl}$finalUrl${travelId.toString()}/";
-      print(url);
+
       response = await dio.get(
         url,
       );
-    } catch (error) {
-      print('Error al realizar get TravelDetails: $error');
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return response;
+      }
+    } on DioException catch (e) {
+      ErrorHandler.showErrorAlert(
+          context, serverErrorString + e.response!.data.toString());
     }
-
-    return response;
+    return null;
   }
 }

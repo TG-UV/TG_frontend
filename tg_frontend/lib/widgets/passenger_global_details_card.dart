@@ -55,10 +55,12 @@ class _GlobalDetailsCardState extends State<GlobalDetailsCard> {
   void _getTextDirections() async {
     arrivalPointTextDirection = await travelDatasourceImpl.getTextDirection(
         lat: widget.travel.arrivalPointLat,
-        long: widget.travel.arrivalPointLong);
+        long: widget.travel.arrivalPointLong,
+        context: context);
     startingPointTextDirection = await travelDatasourceImpl.getTextDirection(
         lat: widget.travel.startingPointLat,
-        long: widget.travel.startingPointLong);
+        long: widget.travel.startingPointLong,
+        context: context);
     setState(() {});
   }
 
@@ -86,7 +88,8 @@ class _GlobalDetailsCardState extends State<GlobalDetailsCard> {
   Future<void> _loadTravelDetails() async {
     final listResponse = await travelDatasourceImpl.getTravelDetails(
         travelId: widget.travel.id,
-        finalUrl: _endPoints.getTravelDetailsPassenger);
+        finalUrl: _endPoints.getTravelDetailsPassenger,
+        context: context);
     if (listResponse != null) {
       setState(() {
         detailsList = listResponse.data;
@@ -107,8 +110,8 @@ class _GlobalDetailsCardState extends State<GlobalDetailsCard> {
         firstName: user.firstName,
         lastName: user.lastName);
 
-    int sendResponse =
-        await travelDatasourceImpl.insertPassengerRemote(passenger: passenger);
+    int sendResponse = await travelDatasourceImpl.insertPassengerRemote(
+        passenger: passenger, context: context);
     if (sendResponse == 1) {
       await EasyLoading.showInfo("Cupo solicitado");
       Navigator.of(context).pop();
@@ -119,13 +122,15 @@ class _GlobalDetailsCardState extends State<GlobalDetailsCard> {
   }
 
   Future<void> _getSuggestion(String value) async {
-    var response = await travelDatasourceImpl.getMapSuggestions(address: value);
+    var response = await travelDatasourceImpl.getMapSuggestions(
+        address: value, context: context);
     _suggestions = response;
     setState(() {});
   }
 
   Future<void> _getMapCoordinates(String value, FocusNode foco) async {
-    var response = await travelDatasourceImpl.getMapCoordinates(address: value);
+    var response = await travelDatasourceImpl.getMapCoordinates(
+        address: value, context: context);
     setState(() {
       latLngStartingPoint = response;
     });

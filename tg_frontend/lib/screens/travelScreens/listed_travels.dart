@@ -45,7 +45,7 @@ class _ListedTravelsState extends State<ListedTravels> {
   Stream<List<Travel>> _fetchTravelsStream() async* {
     _selectEndpoint();
     final value = await travelDatasourceImpl.getTravelsRemote(
-        finalEndPoint: currentEndPoint);
+        finalEndPoint: currentEndPoint, context: context);
     yield value;
     // setState(() {
 

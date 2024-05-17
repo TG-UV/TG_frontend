@@ -82,7 +82,7 @@ class _LoginState extends State<Login> {
     await AuthStorage().saveToken(token);
     await AuthStorage().saveNickname(username);
     await AuthStorage().savePassword(password);
-    int idUser = await userDatasourceImpl.getUserRemote();
+    int idUser = await userDatasourceImpl.getUserRemote(context);
     User user = await userDatasourceImpl.getUserLocal(idUser);
     Environment.sl.registerSingleton<User>(user);
     Get.to(() => const Home());

@@ -70,12 +70,12 @@ class _NewTravelState extends State<NewTravel> {
     startingPointController.text =
         await travelDatasourceMethods.getTextDirection(
             lat: latLngStartingPoint.latitude,
-            long: latLngStartingPoint.longitude);
+            long: latLngStartingPoint.longitude, context: context);
 
     arrivalPointController.text =
         await travelDatasourceMethods.getTextDirection(
             lat: latLngArrivalPoint.latitude,
-            long: latLngArrivalPoint.longitude);
+            long: latLngArrivalPoint.longitude, context: context);
     setState(() {});
   }
 
@@ -113,7 +113,7 @@ class _NewTravelState extends State<NewTravel> {
       );
 
       int sentResponse =
-          await travelDatasourceMethods.insertTravelRemote(travel: travel);
+          await travelDatasourceMethods.insertTravelRemote(travel: travel,context: context);
       if (sentResponse != 0) {
         await EasyLoading.showInfo("Viaje registrado");
         Get.to(() => const Home());
@@ -190,7 +190,7 @@ class _NewTravelState extends State<NewTravel> {
 
   Future<void> _getSuggestion(String value) async {
     var response =
-        await travelDatasourceMethods.getMapSuggestions(address: value);
+        await travelDatasourceMethods.getMapSuggestions(address: value, context: context);
     setState(() {
       _suggestions = response;
     });
@@ -198,7 +198,7 @@ class _NewTravelState extends State<NewTravel> {
 
   Future<void> _getMapCoordinates(String value, LatLng point) async {
     LatLng response =
-        await travelDatasourceMethods.getMapCoordinates(address: value);
+        await travelDatasourceMethods.getMapCoordinates(address: value, context: context);
     setState(() {
       point = response;
     });

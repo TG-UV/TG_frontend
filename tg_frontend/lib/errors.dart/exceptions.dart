@@ -9,7 +9,13 @@ class ErrorHandler {
       List<String> secondPart = partes[1].split("]");
       finalMessage = secondPart.first.trim();
     } else {
-      finalMessage = errorMessage;
+      List<String> partes = errorMessage.split("{");
+      if (partes.length > 1) {
+        List<String> secondPart = partes[1].split("}");
+        finalMessage = partes[0] + secondPart.first.trim();
+      } else {
+        finalMessage = errorMessage;
+      }
     }
     showDialog(
       context: context,

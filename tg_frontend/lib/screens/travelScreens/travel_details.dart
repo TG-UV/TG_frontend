@@ -93,6 +93,7 @@ class _TravelDetailsState extends State<TravelDetails> {
                   child: Column(children: [
                     Flexible(
                       child: _detailsCardHandle(),
+                      fit: FlexFit.tight,
                     )
                   ])))),
       // Positioned(

@@ -48,7 +48,7 @@ class _LoginState extends State<Splash> {
   }
 
   Future<void> _saveToken() async {
-    int idUser = await userDatasourceImpl.getUserRemote();
+    int idUser = await userDatasourceImpl.getUserRemote(context);
     User user = await userDatasourceImpl.getUserLocal(idUser);
     Environment.sl.registerSingleton<User>(user);
     Get.to(() => const Home());
