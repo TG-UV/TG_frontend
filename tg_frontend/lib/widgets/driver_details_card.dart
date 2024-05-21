@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:tg_frontend/datasource/travel_data.dart';
+import 'package:tg_frontend/device/environment.dart';
 import 'package:tg_frontend/models/passenger_model.dart';
 import 'package:tg_frontend/models/travel_model.dart';
+import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/screens/theme.dart';
 import 'package:tg_frontend/utils/date_Formatter.dart';
 import 'package:tg_frontend/widgets/main_button.dart';
-import 'package:tg_frontend/models/user_model.dart';
-import 'package:tg_frontend/datasource/travel_data.dart';
-import 'package:tg_frontend/device/environment.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:tg_frontend/widgets/route_info_card.dart';
 import 'package:tg_frontend/widgets/seat_request_card.dart';
 
@@ -47,10 +47,12 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
   void _getTextDirections() async {
     arrivalPointTextDirection = await travelDatasourceImpl.getTextDirection(
         lat: widget.travel.arrivalPointLat,
-        long: widget.travel.arrivalPointLong, context: context);
+        long: widget.travel.arrivalPointLong,
+        context: context);
     startingPointTextDirection = await travelDatasourceImpl.getTextDirection(
         lat: widget.travel.startingPointLat,
-        long: widget.travel.startingPointLong, context: context);
+        long: widget.travel.startingPointLong,
+        context: context);
     setState(() {});
   }
 
@@ -68,7 +70,9 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
   Future<void> _confirmPassenger(
       int passengerTripId, bool valueConfirmed) async {
     int updatePassengers = await travelDatasourceImpl.updatePassengerRemote(
-        passengerTripId: passengerTripId, valueConfirmed: valueConfirmed, context: context);
+        passengerTripId: passengerTripId,
+        valueConfirmed: valueConfirmed,
+        context: context);
     if (updatePassengers != 0) {
       _loadPassengers();
     } else {
@@ -105,8 +109,10 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
             ),
             TextButton(
               onPressed: () async {
-                int sendResponse = await travelDatasourceImpl
-                    .deleteTravelRemote(travelId: widget.travel.id.toString(), context: context);
+                int sendResponse =
+                    await travelDatasourceImpl.deleteTravelRemote(
+                        travelId: widget.travel.id.toString(),
+                        context: context);
                 if (sendResponse != 0) {
                   await EasyLoading.showInfo("Se eliminó tu viaje..");
                   // ignore: use_build_context_synchronously
@@ -259,10 +265,10 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                               .textTheme
                               .titleMedium!
                               .copyWith(
-                                  fontWeight: FontWeight.w800, fontSize: 17),
+                                  fontWeight: FontWeight.w800, fontSize: 15),
                         ),
                       SizedBox(
-                        height: 255,
+                        height: 252,
                         child: Container(
                           alignment: Alignment.topLeft,
                           child: ListView.builder(

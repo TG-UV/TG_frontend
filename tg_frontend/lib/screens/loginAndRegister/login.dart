@@ -1,20 +1,19 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:tg_frontend/datasource/endPoints/end_point.dart';
 import 'package:tg_frontend/datasource/local_database_provider.dart';
+import 'package:tg_frontend/datasource/user_data.dart';
 import 'package:tg_frontend/device/environment.dart';
+import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/screens/home.dart';
 import 'package:tg_frontend/screens/loginAndRegister/sign_up.dart';
 import 'package:tg_frontend/screens/theme.dart';
+import 'package:tg_frontend/services/auth_services.dart';
 import 'package:tg_frontend/widgets/input_field.dart';
 import 'package:tg_frontend/widgets/main_button.dart';
-import 'package:tg_frontend/services/auth_services.dart';
-import 'package:tg_frontend/datasource/user_data.dart';
-import 'package:tg_frontend/models/user_model.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:flutter/services.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -47,13 +46,14 @@ class _LoginState extends State<Login> {
   }
 
   Future<void> loginUser(String username, String password) async {
-    String? deviceToken = await FirebaseMessaging.instance.getToken();
+    //String? deviceToken = await FirebaseMessaging.instance.getToken();
+    String deviceToken = "kncñsncunvñsfnv";
 
     if (_validateFormData(_formKey.currentState!.validate(), deviceToken)) {
       final token = await userDatasourceImpl.getUserAuth(
           username: username,
           password: password,
-          idDevice: deviceToken!,
+          idDevice: deviceToken,
           context: context);
 
       if (token != null) {

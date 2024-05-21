@@ -1,16 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:logger/logger.dart';
 import 'package:tg_frontend/device/environment.dart';
 import 'package:tg_frontend/models/passenger_model.dart';
-import 'package:tg_frontend/screens/loginAndRegister/login.dart';
-import 'package:tg_frontend/screens/loginAndRegister/vehicle_managment.dart';
-import 'package:tg_frontend/screens/theme.dart';
-import 'package:tg_frontend/services/auth_services.dart';
-import 'package:get/get.dart';
-import 'package:logger/logger.dart';
 import 'package:tg_frontend/models/user_model.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:tg_frontend/widgets/setUserInformation.dart';
+import 'package:tg_frontend/screens/theme.dart';
 
 final logger = Logger();
 
@@ -79,7 +74,7 @@ class _PassengerRequestCardState extends State<PassengerRequestCard> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-        height: 230,
+        height: 205,
         width: 230,
         child: Card(
             shape: RoundedRectangleBorder(
