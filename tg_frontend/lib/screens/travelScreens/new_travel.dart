@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:tg_frontend/datasource/travel_data.dart';
 import 'package:tg_frontend/datasource/user_data.dart';
+import 'package:tg_frontend/device/environment.dart';
+import 'package:tg_frontend/errors.dart/exceptions.dart';
+import 'package:tg_frontend/models/travel_model.dart';
+import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/models/vehicle_model.dart';
 import 'package:tg_frontend/screens/home.dart';
 import 'package:tg_frontend/screens/theme.dart';
 import 'package:tg_frontend/utils/date_Formatter.dart';
+import 'package:tg_frontend/widgets/input_field.dart';
 import 'package:tg_frontend/widgets/main_button.dart';
 import 'package:tg_frontend/widgets/square_button.dart';
-import 'package:tg_frontend/widgets/input_field.dart';
-import 'package:tg_frontend/models/travel_model.dart';
-import 'package:tg_frontend/datasource/travel_data.dart';
-import 'package:tg_frontend/models/user_model.dart';
-import 'package:tg_frontend/device/environment.dart';
-import 'package:intl/date_symbol_data_local.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class NewTravel extends StatefulWidget {
   const NewTravel(
@@ -70,12 +69,14 @@ class _NewTravelState extends State<NewTravel> {
     startingPointController.text =
         await travelDatasourceMethods.getTextDirection(
             lat: latLngStartingPoint.latitude,
-            long: latLngStartingPoint.longitude, context: context);
+            long: latLngStartingPoint.longitude,
+            context: context);
 
     arrivalPointController.text =
         await travelDatasourceMethods.getTextDirection(
             lat: latLngArrivalPoint.latitude,
-            long: latLngArrivalPoint.longitude, context: context);
+            long: latLngArrivalPoint.longitude,
+            context: context);
     setState(() {});
   }
 
@@ -112,8 +113,8 @@ class _NewTravelState extends State<NewTravel> {
         vehicle: vehicleSelected.idVehicle,
       );
 
-      int sentResponse =
-          await travelDatasourceMethods.insertTravelRemote(travel: travel,context: context);
+      int sentResponse = await travelDatasourceMethods.insertTravelRemote(
+          travel: travel, context: context);
       if (sentResponse != 0) {
         await EasyLoading.showInfo("Viaje registrado");
         Get.to(() => const Home());
@@ -121,24 +122,8 @@ class _NewTravelState extends State<NewTravel> {
         await EasyLoading.showInfo("Error, intentalo más tarde");
       }
     } else {
-      showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-                title: const Text("Error"),
-                content: const SingleChildScrollView(
-                  child: ListBody(
-                    children: <Widget>[
-                      Text("Faltan campos por llenar."),
-                    ],
-                  ),
-                ),
-                actions: [
-                  ElevatedButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: const Text("Aceptar"))
-                ]);
-          });
+      return ErrorOrAdviceHandler.showErrorAlert(
+          context, "Error en alguno de los campos", true);
     }
   }
 
@@ -189,16 +174,16 @@ class _NewTravelState extends State<NewTravel> {
   }
 
   Future<void> _getSuggestion(String value) async {
-    var response =
-        await travelDatasourceMethods.getMapSuggestions(address: value, context: context);
+    var response = await travelDatasourceMethods.getMapSuggestions(
+        address: value, context: context);
     setState(() {
       _suggestions = response;
     });
   }
 
   Future<void> _getMapCoordinates(String value, LatLng point) async {
-    LatLng response =
-        await travelDatasourceMethods.getMapCoordinates(address: value, context: context);
+    LatLng response = await travelDatasourceMethods.getMapCoordinates(
+        address: value, context: context);
     setState(() {
       point = response;
     });

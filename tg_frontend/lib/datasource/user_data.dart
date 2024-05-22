@@ -1,12 +1,12 @@
+import 'package:dio/dio.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:tg_frontend/datasource/endPoints/end_point.dart';
+import 'package:tg_frontend/datasource/local_database_provider.dart';
 import 'package:tg_frontend/device/local_tables.dart';
 import 'package:tg_frontend/errors.dart/exceptions.dart';
 import 'package:tg_frontend/models/user_model.dart';
-import 'package:dio/dio.dart';
 import 'package:tg_frontend/models/vehicle_model.dart';
 import 'package:tg_frontend/services/auth_services.dart';
-import 'package:tg_frontend/datasource/local_database_provider.dart';
-import 'package:sqflite/sqflite.dart';
 
 abstract class UserDatasource {
   Future<int> insertUserLocal({required User user, context});
@@ -62,8 +62,8 @@ class UserDatasourceMethods implements UserDatasource {
         return userResponse.idUser;
       }
     } on DioException catch (e) {
-      ErrorHandler.showErrorAlert(
-          context, serverErrorString + e.response!.data.toString());
+      ErrorOrAdviceHandler.showErrorAlert(
+          context, serverErrorString + e.response!.data.toString(), true);
     }
     return null;
   }
@@ -79,11 +79,11 @@ class UserDatasourceMethods implements UserDatasource {
           _endPoints.baseUrl + _endPoints.postUserActivation,
           data: _data);
       if (response.statusCode == 200 || response.statusCode == 201) {
-        ErrorHandler.showErrorAlert(context, "Correo enviado");
+        ErrorOrAdviceHandler.showErrorAlert(context, "Correo enviado", true);
       }
     } on DioException catch (e) {
-      ErrorHandler.showErrorAlert(
-          context, serverErrorString + e.response!.data.toString());
+      ErrorOrAdviceHandler.showErrorAlert(
+          context, serverErrorString + e.response!.data.toString(), true);
     }
   }
 
@@ -107,8 +107,8 @@ class UserDatasourceMethods implements UserDatasource {
         return 1;
       }
     } on DioException catch (e) {
-      ErrorHandler.showErrorAlert(
-          context, serverErrorString + e.response!.data.toString());
+      ErrorOrAdviceHandler.showErrorAlert(
+          context, serverErrorString + e.response!.data.toString(), true);
     }
     return null;
   }
@@ -126,8 +126,8 @@ class UserDatasourceMethods implements UserDatasource {
         return 1;
       }
     } on DioException catch (e) {
-      ErrorHandler.showErrorAlert(
-          context, serverErrorString + e.response!.data.toString());
+      ErrorOrAdviceHandler.showErrorAlert(
+          context, serverErrorString + e.response!.data.toString(), true);
     }
     return null;
   }
@@ -145,8 +145,8 @@ class UserDatasourceMethods implements UserDatasource {
         return 1;
       }
     } on DioException catch (e) {
-      ErrorHandler.showErrorAlert(
-          context, serverErrorString + e.response!.data.toString());
+      ErrorOrAdviceHandler.showErrorAlert(
+          context, serverErrorString + e.response!.data.toString(), true);
     }
     return null;
   }
@@ -206,8 +206,8 @@ class UserDatasourceMethods implements UserDatasource {
         insertUserLocal(user: user);
       }
     } on DioException catch (e) {
-      ErrorHandler.showErrorAlert(
-          context, serverErrorString + e.response!.data.toString());
+      ErrorOrAdviceHandler.showErrorAlert(
+          context, serverErrorString + e.response!.data.toString(), true);
     }
     return idUser;
   }
@@ -224,8 +224,8 @@ class UserDatasourceMethods implements UserDatasource {
         return options;
       }
     } on DioException catch (e) {
-      ErrorHandler.showErrorAlert(
-          context, serverErrorString + e.response!.data.toString());
+      ErrorOrAdviceHandler.showErrorAlert(
+          context, serverErrorString + e.response!.data.toString(), true);
     }
     return null;
   }
@@ -246,8 +246,8 @@ class UserDatasourceMethods implements UserDatasource {
         return vehicles;
       }
     } on DioException catch (e) {
-      ErrorHandler.showErrorAlert(
-          context, serverErrorString + e.response!.data.toString());
+      ErrorOrAdviceHandler.showErrorAlert(
+          context, serverErrorString + e.response!.data.toString(), true);
     }
     return null;
   }
@@ -271,8 +271,8 @@ class UserDatasourceMethods implements UserDatasource {
         return token;
       }
     } on DioException catch (e) {
-      ErrorHandler.showErrorAlert(
-          context, serverErrorString + e.response!.data.toString());
+      ErrorOrAdviceHandler.showErrorAlert(
+          context, serverErrorString + e.response!.data.toString(), true);
     }
     return null;
   }
@@ -285,11 +285,12 @@ class UserDatasourceMethods implements UserDatasource {
         data: {"email": email},
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
-        ErrorHandler.showErrorAlert(context, "Correo enviado con éxito");
+        ErrorOrAdviceHandler.showErrorAlert(
+            context, "Correo enviado con éxito", true);
       }
     } on DioException catch (e) {
-      ErrorHandler.showErrorAlert(
-          context, serverErrorString + e.response!.data.toString());
+      ErrorOrAdviceHandler.showErrorAlert(
+          context, serverErrorString + e.response!.data.toString(), true);
     }
     return null;
   }
@@ -306,8 +307,8 @@ class UserDatasourceMethods implements UserDatasource {
         return citiesOptions;
       }
     } on DioException catch (e) {
-      ErrorHandler.showErrorAlert(
-          context, serverErrorString + e.response!.data.toString());
+      ErrorOrAdviceHandler.showErrorAlert(
+          context, serverErrorString + e.response!.data.toString(), true);
     }
     return null;
   }

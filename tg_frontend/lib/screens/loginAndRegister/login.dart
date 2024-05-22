@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -46,14 +47,14 @@ class _LoginState extends State<Login> {
   }
 
   Future<void> loginUser(String username, String password) async {
-    //String? deviceToken = await FirebaseMessaging.instance.getToken();
-    String deviceToken = "kncñsncunvñsfnv";
+    String? deviceToken = await FirebaseMessaging.instance.getToken();
+    //String deviceToken = "kncñsncunvñsfnv";
 
     if (_validateFormData(_formKey.currentState!.validate(), deviceToken)) {
       final token = await userDatasourceImpl.getUserAuth(
           username: username,
           password: password,
-          idDevice: deviceToken,
+          idDevice: deviceToken!,
           context: context);
 
       if (token != null) {
@@ -166,14 +167,24 @@ class _LoginState extends State<Login> {
                                     showDialog(
                                         context: context,
                                         builder: (BuildContext context) {
-                                          // Aquí construyes el AlertDialog
                                           return AlertDialog(
+                                              backgroundColor:
+                                                  ColorManager.staticColor,
+                                              surfaceTintColor:
+                                                  Colors.transparent,
                                               title: const Text(
                                                   "Restablecer contraseña"),
                                               content: Column(
                                                 children: [
-                                                  const Text(
-                                                      "Ingrese el correo para restablecer la contraseña"),
+                                                  Text(
+                                                    "Ingrese el correo para restablecer la contraseña",
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .titleSmall!
+                                                        .copyWith(
+                                                            color: ColorManager
+                                                                .fourthColor),
+                                                  ),
                                                   TextFormField(
                                                     controller:
                                                         reSetMailController,
@@ -187,7 +198,15 @@ class _LoginState extends State<Login> {
                                                         reSetMailController
                                                             .text);
                                                   },
-                                                  child: const Text("Enviar"),
+                                                  child: Text(
+                                                    "Enviar",
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .titleSmall!
+                                                        .copyWith(
+                                                            color: ColorManager
+                                                                .fourthColor),
+                                                  ),
                                                 )
                                               ]);
                                         });

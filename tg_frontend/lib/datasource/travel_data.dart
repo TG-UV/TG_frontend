@@ -1,19 +1,20 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:convert';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:tg_frontend/datasource/endPoints/end_point.dart';
+import 'package:tg_frontend/datasource/local_database_provider.dart';
+import 'package:tg_frontend/device/environment.dart';
 import 'package:tg_frontend/errors.dart/exceptions.dart';
 import 'package:tg_frontend/models/passenger_model.dart';
 import 'package:tg_frontend/models/travel_model.dart';
-import 'package:dio/dio.dart';
-import 'package:tg_frontend/services/auth_services.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:tg_frontend/datasource/local_database_provider.dart';
-import 'package:tg_frontend/datasource/endPoints/end_point.dart';
 import 'package:tg_frontend/models/user_model.dart';
-import 'package:tg_frontend/device/environment.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:tg_frontend/services/auth_services.dart';
 
 abstract class TravelDatasource {
   Future<List<String>> getMapSuggestions(
@@ -99,8 +100,10 @@ class TravelDatasourceMethods implements TravelDatasource {
       suggestions =
           features.map((feature) => feature['place_name'] as String).toList();
     } else {
-      ErrorHandler.showErrorAlert(context,
-          "lo sentimos estamos teniendo un problema para obtener las direcciones, intenta más tarde");
+      ErrorOrAdviceHandler.showErrorAlert(
+          context,
+          "lo sentimos estamos teniendo un problema para obtener las direcciones, intenta más tarde",
+          true);
     }
     return suggestions;
   }
@@ -122,8 +125,10 @@ class TravelDatasourceMethods implements TravelDatasource {
       coordinates = LatLng(coordinatesValues[1], coordinatesValues[0]);
       return coordinates;
     } else {
-      ErrorHandler.showErrorAlert(context,
-          "lo sentimos estamos teniendo un problema para obtener las direcciones, intenta más tarde");
+      ErrorOrAdviceHandler.showErrorAlert(
+          context,
+          "lo sentimos estamos teniendo un problema para obtener las direcciones, intenta más tarde",
+          true);
       return coordinates;
     }
   }
@@ -150,8 +155,8 @@ class TravelDatasourceMethods implements TravelDatasource {
         return 'No se encontraron resultados';
       }
     } else {
-      ErrorHandler.showErrorAlert(
-          context, "Estamos teniendo un inconveniente, intenta más tarde");
+      ErrorOrAdviceHandler.showErrorAlert(context,
+          "Estamos teniendo un inconveniente, intenta más tarde", true);
     }
     return placeName;
   }
@@ -194,8 +199,8 @@ class TravelDatasourceMethods implements TravelDatasource {
         return 1;
       }
     } on DioException catch (e) {
-      ErrorHandler.showErrorAlert(
-          context, serverErrorString + e.response!.data.toString());
+      ErrorOrAdviceHandler.showErrorAlert(
+          context, serverErrorString + e.response!.data.toString(), true);
     }
     return 0;
   }
@@ -212,8 +217,8 @@ class TravelDatasourceMethods implements TravelDatasource {
         return 1;
       }
     } on DioException catch (e) {
-      ErrorHandler.showErrorAlert(
-          context, serverErrorString + e.response!.data.toString());
+      ErrorOrAdviceHandler.showErrorAlert(
+          context, serverErrorString + e.response!.data.toString(), true);
     }
     return 0;
   }
@@ -270,8 +275,8 @@ class TravelDatasourceMethods implements TravelDatasource {
         //insertTravelsLocal(travels: travelList);
       }
     } on DioException catch (e) {
-      ErrorHandler.showErrorAlert(
-          context, serverErrorString + e.response!.data.toString());
+      ErrorOrAdviceHandler.showErrorAlert(
+          context, serverErrorString + e.response!.data.toString(), true);
     }
     return travelList;
   }
@@ -295,8 +300,8 @@ class TravelDatasourceMethods implements TravelDatasource {
         }
       }
     } on DioException catch (e) {
-      ErrorHandler.showErrorAlert(
-          context, serverErrorString + e.response!.data.toString());
+      ErrorOrAdviceHandler.showErrorAlert(
+          context, serverErrorString + e.response!.data.toString(), true);
     }
 
     return travelList;
@@ -369,8 +374,8 @@ class TravelDatasourceMethods implements TravelDatasource {
         }
       }
     } on DioException catch (e) {
-      ErrorHandler.showErrorAlert(
-          context, serverErrorString + e.response!.data.toString());
+      ErrorOrAdviceHandler.showErrorAlert(
+          context, serverErrorString + e.response!.data.toString(), true);
     }
     return passengersList;
   }
@@ -391,8 +396,8 @@ class TravelDatasourceMethods implements TravelDatasource {
         return 1;
       }
     } on DioException catch (e) {
-      ErrorHandler.showErrorAlert(
-          context, serverErrorString + e.response!.data.toString());
+      ErrorOrAdviceHandler.showErrorAlert(
+          context, serverErrorString + e.response!.data.toString(), true);
     }
     return 0;
   }
@@ -410,8 +415,8 @@ class TravelDatasourceMethods implements TravelDatasource {
         return 1;
       }
     } on DioException catch (e) {
-      ErrorHandler.showErrorAlert(
-          context, serverErrorString + e.response!.data.toString());
+      ErrorOrAdviceHandler.showErrorAlert(
+          context, serverErrorString + e.response!.data.toString(), true);
     }
     return 0;
   }
@@ -429,8 +434,8 @@ class TravelDatasourceMethods implements TravelDatasource {
         return 1;
       }
     } on DioException catch (e) {
-      ErrorHandler.showErrorAlert(
-          context, serverErrorString + e.response!.data.toString());
+      ErrorOrAdviceHandler.showErrorAlert(
+          context, serverErrorString + e.response!.data.toString(), true);
     }
     return 0;
   }
@@ -448,8 +453,8 @@ class TravelDatasourceMethods implements TravelDatasource {
         return 1;
       }
     } on DioException catch (e) {
-      ErrorHandler.showErrorAlert(
-          context, serverErrorString + e.response!.data.toString());
+      ErrorOrAdviceHandler.showErrorAlert(
+          context, serverErrorString + e.response!.data.toString(), true);
     }
     return 0;
   }
@@ -471,8 +476,8 @@ class TravelDatasourceMethods implements TravelDatasource {
         return response;
       }
     } on DioException catch (e) {
-      ErrorHandler.showErrorAlert(
-          context, serverErrorString + e.response!.data.toString());
+      ErrorOrAdviceHandler.showErrorAlert(
+          context, serverErrorString + e.response!.data.toString(), true);
     }
     return null;
   }

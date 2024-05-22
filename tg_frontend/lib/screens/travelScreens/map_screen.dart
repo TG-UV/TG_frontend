@@ -1,9 +1,16 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:get/get.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:location/location.dart' as loc;
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:tg_frontend/device/environment.dart';
 import 'package:tg_frontend/models/travel_model.dart';
+import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/screens/theme.dart';
 import 'package:tg_frontend/screens/travelScreens/available_travels.dart';
 import 'package:tg_frontend/screens/travelScreens/new_travel.dart';
@@ -11,14 +18,6 @@ import 'package:tg_frontend/screens/travelScreens/travel_details.dart';
 import 'package:tg_frontend/services/travel_notification_provider.dart';
 import 'package:tg_frontend/widgets/lateral_bar.dart';
 import 'package:tg_frontend/widgets/main_button.dart';
-import 'package:get/get.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
-import 'package:location/location.dart' as loc;
-import 'package:tg_frontend/models/user_model.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:flutter/services.dart';
 import 'package:tg_frontend/widgets/notification_card.dart';
 
 const mapboxAccessToken =
@@ -63,11 +62,12 @@ class _MapScreenState extends State<MapScreen> {
     await Permission.locationWhenInUse.request();
     if (await Permission.locationWhenInUse.request().isGranted) {
       await _getLocation();
+      setState(() {});
     } else {
       myPosition = defaultLocation;
       await EasyLoading.showInfo("permiso de ubicación denegado");
+      setState(() {});
     }
-    setState(() {});
   }
 
   Future<void> _getLocation() async {
@@ -79,7 +79,7 @@ class _MapScreenState extends State<MapScreen> {
 
   Future<LatLng> _getCenterPosition() async {
     _getLocation();
-    if (myPosition == defaultLocation) {
+    if (myPosition != defaultLocation) {
       return myPosition;
     } else {
       return universityPosition;

@@ -1,8 +1,8 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:tg_frontend/models/travel_model.dart';
 import 'package:tg_frontend/services/travel_notification_provider.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class FirebaseService {
   late dynamic notificationType;
@@ -62,12 +62,12 @@ class FirebaseService {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       if (message.data.isNotEmpty) {
         print("onMessage on listen: ${message.data}");
-        _handleMessage(context, message);
+        // _handleMessage(context, message);
         _showNotification(message);
       }
       travelNotificationProvider.setTravelNotification(true);
-      _showNotification(message);
-      print("onMessage on listen: ${message.data}");
+      //  _showNotification(message);
+      print("onMessage on listen 2: ${message.data}");
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
@@ -78,13 +78,13 @@ class FirebaseService {
 
   void _showNotification(RemoteMessage message) async {
     // Obtener los datos de la notificación
-    final notificationData = message.data;
+    final notificationData = message.notification;
 
     // Configurar la notificación
     const androidPlatformChannelSpecifics = AndroidNotificationDetails(
       'your channel id',
       'your channel name',
-       //'your channel description',
+      //'your channel description',
       importance: Importance.max,
       priority: Priority.high,
     );
@@ -95,13 +95,15 @@ class FirebaseService {
     );
 
     // Mostrar la notificación
-    await flutterLocalNotificationsPlugin.show(
-      0, // Notification ID
-      notificationData['title'] ?? 'Notification', // Title
-      notificationData['body'] ?? 'Notification Body', // Body
-      platformChannelSpecifics,
-      payload: 'New Payload',
-    );
+    if (notificationData != null) {
+      await flutterLocalNotificationsPlugin.show(
+        0, // Notification ID
+        notificationData.title ?? 'Notification', // Title
+        notificationData.body ?? 'Notification Body', // Body
+        platformChannelSpecifics,
+        payload: 'New Payload',
+      );
+    }
   }
 
   void _handleMessage(BuildContext context, RemoteMessage message) {

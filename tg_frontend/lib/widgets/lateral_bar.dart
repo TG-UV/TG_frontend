@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:logger/logger.dart';
 import 'package:tg_frontend/device/environment.dart';
+import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/screens/loginAndRegister/login.dart';
 import 'package:tg_frontend/screens/loginAndRegister/vehicle_managment.dart';
 import 'package:tg_frontend/screens/theme.dart';
 import 'package:tg_frontend/services/auth_services.dart';
-import 'package:get/get.dart';
-import 'package:logger/logger.dart';
-import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/widgets/setUserInformation.dart';
 
 final logger = Logger();
@@ -47,7 +47,7 @@ class _LateralBarState extends State<LateralBar> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Cancelar',
+              child: Text('No',
                   style: Theme.of(context)
                       .textTheme
                       .titleSmall!

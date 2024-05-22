@@ -1,15 +1,15 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_pw_validator/Resource/Strings.dart';
+import 'package:tg_frontend/datasource/user_data.dart';
+import 'package:tg_frontend/device/environment.dart';
+import 'package:tg_frontend/errors.dart/exceptions.dart';
+import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/models/vehicle_model.dart';
 import 'package:tg_frontend/screens/theme.dart';
 import 'package:tg_frontend/widgets/input_field.dart';
-import 'package:tg_frontend/models/user_model.dart';
-import 'package:tg_frontend/datasource/user_data.dart';
-import 'package:tg_frontend/device/environment.dart';
-import 'package:flutter_pw_validator/flutter_pw_validator.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:tg_frontend/widgets/main_button.dart';
 
 class SetUserInformation extends StatefulWidget {
@@ -89,19 +89,8 @@ class _SetUserInformationState extends State<SetUserInformation> {
     if (_formKey.currentState!.validate()) {
       _sendSetPassword();
     } else {
-      AlertDialog(
-          title: const Text("Error"),
-          content: const SingleChildScrollView(
-              child: ListBody(
-            children: <Widget>[
-              Text("Faltan campos por completar."),
-            ],
-          )),
-          actions: [
-            ElevatedButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text("Aceptar"))
-          ]);
+      return ErrorOrAdviceHandler.showErrorAlert(
+          context, "Error en alguno de los campos", true);
     }
   }
 

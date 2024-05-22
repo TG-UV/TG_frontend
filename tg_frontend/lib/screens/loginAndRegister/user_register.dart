@@ -1,17 +1,16 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:tg_frontend/datasource/user_data.dart';
+import 'package:tg_frontend/device/environment.dart';
+import 'package:tg_frontend/errors.dart/exceptions.dart';
+import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/screens/loginAndRegister/password_register.dart';
 import 'package:tg_frontend/screens/loginAndRegister/vehicle_register.dart';
 import 'package:tg_frontend/screens/theme.dart';
 import 'package:tg_frontend/utils/date_Formatter.dart';
 import 'package:tg_frontend/widgets/input_field.dart';
 import 'package:tg_frontend/widgets/main_button.dart';
-import 'package:tg_frontend/models/user_model.dart';
-import 'package:tg_frontend/datasource/user_data.dart';
-import 'package:tg_frontend/device/environment.dart';
-import 'package:flutter/services.dart';
 
 class UserRegister extends StatefulWidget {
   const UserRegister({super.key, required this.userType});
@@ -91,19 +90,8 @@ class _UserRegisterState extends State<UserRegister> {
               ))
           : Get.to(() => PasswordRegister(user: user));
     } else {
-      return AlertDialog(
-          title: const Text("Error"),
-          content: const SingleChildScrollView(
-              child: ListBody(
-            children: <Widget>[
-              Text("Faltan campos por llenar."),
-            ],
-          )),
-          actions: [
-            ElevatedButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text("Aceptar"))
-          ]);
+      return ErrorOrAdviceHandler.showErrorAlert(
+          context, "Error en alguno de los campos", true);
     }
   }
 

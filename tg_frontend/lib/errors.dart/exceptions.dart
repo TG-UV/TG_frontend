@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:tg_frontend/screens/theme.dart';
 
-class ErrorHandler {
-  static void showErrorAlert(BuildContext context, String errorMessage) {
+class ErrorOrAdviceHandler {
+  static void showErrorAlert(
+    BuildContext context,
+    String errorMessage,
+    bool isError, {
+    Future<void> Function()? callbackAcept,
+    Future<void> Function()? callbackDeny,
+  }) {
     String finalMessage;
     List<String> partes = errorMessage.split("[");
     if (partes.length > 1) {
@@ -35,26 +41,45 @@ class ErrorHandler {
             style: Theme.of(context).textTheme.titleSmall,
             maxLines: 10,
           ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Okey',
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleSmall!
-                      .copyWith(color: ColorManager.primaryColor)),
-            ),
-            // TextButton(
-            //   onPressed: () {
-            //     AuthStorage().removeValues();
-            //     Get.to(() => const Login());
-            //   },
-            //   child:
-            //       Text('Salir', style: Theme.of(context).textTheme.titleSmall),
-            // ),
-          ],
+          actions: isError
+              ? <Widget>[
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('Okay',
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleSmall!
+                            .copyWith(color: ColorManager.primaryColor)),
+                  ),
+                  // TextButton(
+                  //   onPressed: () {
+                  //     AuthStorage().removeValues();
+                  //     Get.to(() => const Login());
+                  //   },
+                  //   child:
+                  //       Text('Salir', style: Theme.of(context).textTheme.titleSmall),
+                  // ),
+                ]
+              : <Widget>[
+                  TextButton(
+                    onPressed: callbackDeny,
+                    child: Text('Cancelar',
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleSmall!
+                            .copyWith(color: ColorManager.fourthColor)),
+                  ),
+                  TextButton(
+                    onPressed: callbackAcept,
+                    child: Text('Confirmar',
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleSmall!
+                            .copyWith(color: ColorManager.primaryColor)),
+                  ),
+                ],
         );
       },
     );

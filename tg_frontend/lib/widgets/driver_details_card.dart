@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:tg_frontend/datasource/travel_data.dart';
 import 'package:tg_frontend/device/environment.dart';
+import 'package:tg_frontend/errors.dart/exceptions.dart';
 import 'package:tg_frontend/models/passenger_model.dart';
 import 'package:tg_frontend/models/travel_model.dart';
 import 'package:tg_frontend/models/user_model.dart';
@@ -92,42 +93,55 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
     }
   }
 
-  void _deleteTravel() async {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Confirmación'),
-          content:
-              const Text('¿Estás seguro de que quieres eliminar el viaje?'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cancelar'),
-            ),
-            TextButton(
-              onPressed: () async {
-                int sendResponse =
-                    await travelDatasourceImpl.deleteTravelRemote(
-                        travelId: widget.travel.id.toString(),
-                        context: context);
-                if (sendResponse != 0) {
-                  await EasyLoading.showInfo("Se eliminó tu viaje..");
-                  // ignore: use_build_context_synchronously
-                  Navigator.of(context).pop();
-                } else {
-                  await EasyLoading.showInfo("Hubo un error");
-                  return;
-                }
-              },
-              child: const Text('Sí'),
-            ),
-          ],
-        );
-      },
-    );
+  void _deleteTravel(context) async {
+    return ErrorOrAdviceHandler.showErrorAlert(
+        context, '¿Estás seguro de que quieres eliminar el viaje?', false,
+        callbackAcept: () async {
+      int sendResponse = await travelDatasourceImpl.deleteTravelRemote(
+          travelId: widget.travel.id.toString(), context: context);
+      if (sendResponse != 0) {
+        await EasyLoading.showInfo("Se eliminó tu viaje..");
+        // ignore: use_build_context_synchronously
+        Navigator.of(context).pop();
+      } else {
+        await EasyLoading.showInfo("Hubo un error");
+        return;
+      }
+    }, callbackDeny: () async {
+      Navigator.of(context).pop();
+    });
+    //  backgroundColor: ColorManager.staticColor,
+    // surfaceTintColor: Colors.transparent,
+    // title: const Text('Confirmación'),
+    // content:
+    //     const Text('¿Estás seguro de que quieres eliminar el viaje?'),
+    // actions: <Widget>[
+    //   TextButton(
+    //     onPressed: () {
+    //       Navigator.of(context).pop();
+    //     },
+    //     child: const Text('Cancelar'),
+    //   ),
+    //   TextButton(
+    //     onPressed: () async {
+    //       int sendResponse =
+    //           await travelDatasourceImpl.deleteTravelRemote(
+    //               travelId: widget.travel.id.toString(),
+    //               context: context);
+    //       if (sendResponse != 0) {
+    //         await EasyLoading.showInfo("Se eliminó tu viaje..");
+    //         // ignore: use_build_context_synchronously
+    //         Navigator.of(context).pop();
+    //       } else {
+    //         await EasyLoading.showInfo("Hubo un error");
+    //         return;
+    //       }
+    //     },
+    //     child: const Text('Sí'),
+    //   ),
+    // ],
+    //   );
+    // },
   }
 
   @override
@@ -324,7 +338,7 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                         text: "cancelar viaje",
                         buttonColor: ColorManager.fourthColor,
                         onPressed: () {
-                          _deleteTravel();
+                          _deleteTravel(context);
                         },
                       ))
                     ]))));
