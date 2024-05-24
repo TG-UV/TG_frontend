@@ -96,6 +96,7 @@ class UserDatasourceMethods implements UserDatasource {
       "new_password": newPassword,
       "current_password": currentPassword
     };
+    int? sent;
 
     try {
       dio.options.headers['Authorization'] = 'Token $token';
@@ -104,17 +105,18 @@ class UserDatasourceMethods implements UserDatasource {
         data: _data,
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
-        return 1;
+        sent = 1;
       }
     } on DioException catch (e) {
       ErrorOrAdviceHandler.showErrorAlert(
           context, serverErrorString + e.response!.data.toString(), true);
     }
-    return null;
+    return sent;
   }
 
   @override
   Future<int?> insertVehicleRemote({required Vehicle vehicle, context}) async {
+    int? sent;
     try {
       Map<String, dynamic> jsonUser = vehicle.toJson();
 
@@ -123,18 +125,19 @@ class UserDatasourceMethods implements UserDatasource {
           .post(_endPoints.baseUrl + _endPoints.postVehicle, data: jsonUser);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        return 1;
+        sent = 1;
       }
     } on DioException catch (e) {
       ErrorOrAdviceHandler.showErrorAlert(
           context, serverErrorString + e.response!.data.toString(), true);
     }
-    return null;
+    return sent;
   }
 
   @override
   Future<int?> updateVehicelRemote(
       {required int vehicleId, required Vehicle vehicle, context}) async {
+    int? sent;
     try {
       Map<String, dynamic> jsonUser = vehicle.toJson();
       String url =
@@ -142,13 +145,13 @@ class UserDatasourceMethods implements UserDatasource {
       dio.options.headers['Authorization'] = 'Token $token';
       Response response = await dio.put(url, data: jsonUser);
       if (response.statusCode == 200 || response.statusCode == 201) {
-        return 1;
+        sent = 1;
       }
     } on DioException catch (e) {
       ErrorOrAdviceHandler.showErrorAlert(
           context, serverErrorString + e.response!.data.toString(), true);
     }
-    return null;
+    return sent;
   }
 
   @override
@@ -227,7 +230,7 @@ class UserDatasourceMethods implements UserDatasource {
       ErrorOrAdviceHandler.showErrorAlert(
           context, serverErrorString + e.response!.data.toString(), true);
     }
-    return null;
+    return options;
   }
 
   @override
@@ -249,7 +252,7 @@ class UserDatasourceMethods implements UserDatasource {
       ErrorOrAdviceHandler.showErrorAlert(
           context, serverErrorString + e.response!.data.toString(), true);
     }
-    return null;
+    return vehicles;
   }
 
   @override
@@ -274,7 +277,7 @@ class UserDatasourceMethods implements UserDatasource {
       ErrorOrAdviceHandler.showErrorAlert(
           context, serverErrorString + e.response!.data.toString(), true);
     }
-    return null;
+    return token;
   }
 
   @override
@@ -292,7 +295,7 @@ class UserDatasourceMethods implements UserDatasource {
       ErrorOrAdviceHandler.showErrorAlert(
           context, serverErrorString + e.response!.data.toString(), true);
     }
-    return null;
+    //return null;
   }
 
   @override
@@ -310,6 +313,6 @@ class UserDatasourceMethods implements UserDatasource {
       ErrorOrAdviceHandler.showErrorAlert(
           context, serverErrorString + e.response!.data.toString(), true);
     }
-    return null;
+    return citiesOptions;
   }
 }

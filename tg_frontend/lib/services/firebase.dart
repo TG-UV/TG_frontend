@@ -62,12 +62,13 @@ class FirebaseService {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       if (message.data.isNotEmpty) {
         print("onMessage on listen: ${message.data}");
-        // _handleMessage(context, message);
-        _showNotification(message);
+        _handleMessage(context, message);
+        //_showNotification(message);
+      } else {
+        travelNotificationProvider.setTravelNotification(true);
+        //  _showNotification(message);
+        print("onMessage on listen 2: ${message.data}");
       }
-      travelNotificationProvider.setTravelNotification(true);
-      //  _showNotification(message);
-      print("onMessage on listen 2: ${message.data}");
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
@@ -78,7 +79,8 @@ class FirebaseService {
 
   void _showNotification(RemoteMessage message) async {
     // Obtener los datos de la notificación
-    final notificationData = message.notification;
+    final notificationData = message.data;
+    String bodyNotificationToShow = "";
 
     // Configurar la notificación
     const androidPlatformChannelSpecifics = AndroidNotificationDetails(
@@ -95,31 +97,54 @@ class FirebaseService {
     );
 
     // Mostrar la notificación
-    if (notificationData != null) {
-      await flutterLocalNotificationsPlugin.show(
-        0, // Notification ID
-        notificationData.title ?? 'Notification', // Title
-        notificationData.body ?? 'Notification Body', // Body
-        platformChannelSpecifics,
-        payload: 'New Payload',
-      );
+    final notificationType = message.data['notification_type'];
+    // final notificationAdditionalInfo = Travel.fromJson(message.data['additional_info']);
+    // final idTravel = message.data['additional_info']["id_trip"];
+    switch (notificationType) {
+      case 'travel_notification':
+        bodyNotificationToShow = "Revisa tus viajes";
+        break;
+      case 'current_travel':
+        bodyNotificationToShow = "Alistate!, tienes un viaje en curso";
+        break;
+      case 'travel_deny':
+        bodyNotificationToShow =
+            "Lastimosamente el conductor no pudo aceptar tu cupo";
+        break;
+      case 'travel_canceled':
+        bodyNotificationToShow =
+            "Lastimosamente no uno de tus viajes se ha cancelado";
+        break;
+      // default:
+      //   // Manejar el caso en el que notificationType no coincida con ninguno de los casos anteriores
+      //   break;
     }
+    await flutterLocalNotificationsPlugin.show(
+      0, // Notification ID
+      "Nueva novedad!", // Title
+      bodyNotificationToShow, // Body
+      platformChannelSpecifics,
+      payload: 'New Payload',
+    );
   }
 
   void _handleMessage(BuildContext context, RemoteMessage message) {
-    final notificationType = message.data['notification_type'];
-    final notificationAdditionalInfo = Travel.fromJson(message.data);
-    final idTravel = message.data['additional_info']["travelId"];
+    String notificationType = message.data['notification_type'];
+    String mapNotificationAdditionalInfo = message.data['additional_info'];
+    // Travel notificationAdditionalInfo =
+    //     Travel.fromJsonNotifications(jsonDecode(mapNotificationAdditionalInfo));
+    // int idTravel = message.data['additional_info']["id_trip"];
+    print("reults: $notificationType ");
 
     switch (notificationType) {
       case 'travel_notification':
         travelNotificationProvider.setTravelNotification(true);
-        travelNotificationProvider.setCurrentTravel(travel);
-        travelNotificationProvider.setIdTravelNotification(1);
+        //travelNotificationProvider.setCurrentTravel(travel);
+        // travelNotificationProvider.setIdTravelNotification(idTravel);
         break;
       case 'current_travel':
         travelNotificationProvider.setCurrentTravelNotification(true);
-        travelNotificationProvider.setCurrentTravel(travel);
+        //  travelNotificationProvider.setCurrentTravel(notificationAdditionalInfo);
         break;
       case 'travel_deny':
         travelNotificationProvider.setTravelNotification(true);

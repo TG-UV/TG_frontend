@@ -298,19 +298,19 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
                                       onAccept: () => setState(() {
                                             confirmedPassengersList.add(
                                                 pendingPassengersList[index]);
-                                            pendingPassengersList
-                                                .removeAt(index);
                                             _confirmPassenger(
                                                 pendingPassengersList[index]
                                                     .idPassenger,
                                                 true);
-                                          }),
-                                      onDeny: () => setState(() {
                                             pendingPassengersList
                                                 .removeAt(index);
+                                          }),
+                                      onDeny: () => setState(() {
                                             _cancelPassenger(
                                                 pendingPassengersList[index]
                                                     .idPassenger);
+                                            pendingPassengersList
+                                                .removeAt(index);
                                           })));
                               // return buildPassengerCard(
                               //     pendingPassengersList[index],

@@ -1,5 +1,3 @@
-import 'package:intl/intl.dart';
-
 class Travel {
   final int id;
   final double arrivalPointLat;
@@ -42,6 +40,30 @@ class Travel {
       date: json['start_date']?.toString() ?? '',
       currentTrip: json['current_trip'] == true ? 1 : 0,
     );
+  }
+  factory Travel.fromJsonNotifications(Map<String, dynamic> json) {
+    return Travel(
+        id: json['id_trip']
+            as int, // No es necesario el parseo ya que es un int
+        startingPointLat:
+            double.parse(json['starting_point']['lat'] as String? ?? '0'),
+        startingPointLong:
+            double.parse(json['starting_point']['long'] as String? ?? '0'),
+        arrivalPointLat:
+            double.parse(json['arrival_point']['lat'] as String? ?? '0'),
+        arrivalPointLong:
+            double.parse(json['arrival_point']['long'] as String? ?? '0'),
+        driver:
+            0, // json['driver'] as int? ?? 0, // Ajusta según lo que desees hacer con 'driver'
+        price: json['fare'] as int? ??
+            0, // No es necesario el parseo ya que es un int
+        seats: json['seats'] as int? ??
+            0, // No es necesario el parseo ya que es un int
+        hour: json['start_time']?.toString() ?? '',
+        date: json['start_date']?.toString() ?? '',
+        currentTrip:
+            0 // json['current_trip'] == true ? 1 : 0, // Ajusta según lo que desees hacer con 'current_trip'
+        );
   }
 
   // String get dateFormatted {

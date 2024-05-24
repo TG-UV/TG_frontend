@@ -189,6 +189,7 @@ class TravelDatasourceMethods implements TravelDatasource {
   @override
   Future<int> insertTravelRemote(
       {required Travel travel, required BuildContext context}) async {
+    int sent = 0;
     try {
       String? token = await AuthStorage().getToken();
       Map<String, dynamic> jsonTravel = travel.toJson();
@@ -196,31 +197,32 @@ class TravelDatasourceMethods implements TravelDatasource {
       Response response = await dio
           .post(_endPoints.baseUrl + _endPoints.postTravel, data: jsonTravel);
       if (response.statusCode == 200 || response.statusCode == 201) {
-        return 1;
+        sent++;
       }
     } on DioException catch (e) {
       ErrorOrAdviceHandler.showErrorAlert(
           context, serverErrorString + e.response!.data.toString(), true);
     }
-    return 0;
+    return sent;
   }
 
   @override
   Future<int> deleteTravelRemote(
       {required String travelId, required BuildContext context}) async {
+    int sent = 0;
     String url =
         "${_endPoints.baseUrl}${_endPoints.deleteTRavelDriver}$travelId/";
     try {
       dio.options.headers['Authorization'] = 'Token $token';
       Response response = await dio.delete(url);
       if (response.statusCode == 200 || response.statusCode == 201) {
-        return 1;
+        sent++;
       }
     } on DioException catch (e) {
       ErrorOrAdviceHandler.showErrorAlert(
           context, serverErrorString + e.response!.data.toString(), true);
     }
-    return 0;
+    return sent;
   }
 
   // @override
@@ -388,23 +390,25 @@ class TravelDatasourceMethods implements TravelDatasource {
     Map<String, dynamic> data = {"is_confirmed": valueConfirmed};
     String url =
         "${_endPoints.baseUrl}${_endPoints.patchPassengerTrip}${passengerTripId.toString()}/";
+    int sent = 0;
     try {
       dio.options.headers['Authorization'] = 'Token $token';
       Response response = await dio.patch(url, data: data);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        return 1;
+        sent++;
       }
     } on DioException catch (e) {
       ErrorOrAdviceHandler.showErrorAlert(
           context, serverErrorString + e.response!.data.toString(), true);
     }
-    return 0;
+    return sent;
   }
 
   @override
   Future<int> insertPassengerRemote(
       {required Passenger passenger, required BuildContext context}) async {
+    int sent = 0;
     try {
       Map<String, dynamic> jsonPassengerTrip = passenger.toJson();
       dio.options.headers['Authorization'] = 'Token $token';
@@ -412,13 +416,13 @@ class TravelDatasourceMethods implements TravelDatasource {
           _endPoints.baseUrl + _endPoints.postPassengerTripBook,
           data: jsonPassengerTrip);
       if (response.statusCode == 200 || response.statusCode == 201) {
-        return 1;
+        sent++;
       }
     } on DioException catch (e) {
       ErrorOrAdviceHandler.showErrorAlert(
           context, serverErrorString + e.response!.data.toString(), true);
     }
-    return 0;
+    return sent;
   }
 
   @override
@@ -426,18 +430,18 @@ class TravelDatasourceMethods implements TravelDatasource {
       {required int tripId, required BuildContext context}) async {
     String url =
         "${_endPoints.baseUrl}${_endPoints.deleteSpotTripPassenger}${tripId.toString()}/";
-
+    int sent = 0;
     try {
       dio.options.headers['Authorization'] = 'Token $token';
       Response response = await dio.delete(url);
       if (response.statusCode == 200 || response.statusCode == 201) {
-        return 1;
+        sent++;
       }
     } on DioException catch (e) {
       ErrorOrAdviceHandler.showErrorAlert(
           context, serverErrorString + e.response!.data.toString(), true);
     }
-    return 0;
+    return sent;
   }
 
   @override
@@ -445,18 +449,21 @@ class TravelDatasourceMethods implements TravelDatasource {
       {required int idPassengerTrip, required BuildContext context}) async {
     String url =
         "${_endPoints.baseUrl}${_endPoints.deleteSpotTripDriver}${idPassengerTrip.toString()}/";
-
+    int sent = 0;
     try {
       dio.options.headers['Authorization'] = 'Token $token';
       Response response = await dio.delete(url);
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        return 1;
+      if (response.statusCode == 200 ||
+          response.statusCode == 201 ||
+          response.statusCode == 203 ||
+          response.statusCode == 204) {
+        sent = 1;
       }
     } on DioException catch (e) {
       ErrorOrAdviceHandler.showErrorAlert(
           context, serverErrorString + e.response!.data.toString(), true);
     }
-    return 0;
+    return sent;
   }
 
   @override
@@ -479,6 +486,6 @@ class TravelDatasourceMethods implements TravelDatasource {
       ErrorOrAdviceHandler.showErrorAlert(
           context, serverErrorString + e.response!.data.toString(), true);
     }
-    return null;
+    return response;
   }
 }
