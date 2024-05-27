@@ -1,6 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 
 class DateFormatter {
   DateFormatter() {
@@ -17,7 +16,7 @@ class DateFormatter {
   }
 
   String timeFormatedToSend(DateTime time) {
-    return DateFormat('hh:mm:ss').format(time);
+    return DateFormat('HH:mm:ss').format(time);
   }
 
   DateTime _parseTimeString(String timeString) {

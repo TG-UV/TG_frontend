@@ -1,16 +1,16 @@
+import 'package:convex_bottom_bar/convex_bottom_bar.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:tg_frontend/datasource/local_database_provider.dart';
 import 'package:tg_frontend/datasource/travel_data.dart';
 import 'package:tg_frontend/datasource/user_data.dart';
+import 'package:tg_frontend/device/environment.dart';
 import 'package:tg_frontend/screens/theme.dart';
 import 'package:tg_frontend/screens/travelScreens/listed_travels.dart';
 import 'package:tg_frontend/screens/travelScreens/map_screen.dart';
-import 'package:convex_bottom_bar/convex_bottom_bar.dart';
-import 'package:dio/dio.dart';
-import 'package:tg_frontend/datasource/local_database_provider.dart';
-import 'package:tg_frontend/device/environment.dart';
 import 'package:tg_frontend/services/travel_notification_provider.dart';
 
 class Home extends StatefulWidget {
@@ -106,6 +106,9 @@ class _HomeState extends State<Home> {
               children: [
                 IconButton(
                   onPressed: () {
+                    Get.to(() => const ListedTravels(
+                          pastTravel: false,
+                        ));
                     // TravelNotificationProvider().setTravelNotification(false);
                   },
                   icon: Icon(Icons.time_to_leave_sharp),

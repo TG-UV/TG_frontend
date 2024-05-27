@@ -41,7 +41,6 @@ class _LoginState extends State<Login> {
   void initState() {
     databaseProvider = DatabaseProvider.db;
     databaseProvider.cleanDatabase();
-    Environment.sl.unregister<User>();
 
     super.initState();
   }

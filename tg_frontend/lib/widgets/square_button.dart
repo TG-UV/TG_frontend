@@ -20,14 +20,14 @@ class SquareButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: onPressed,
       style: ButtonStyle(
-        backgroundColor: MaterialStateProperty.all(ColorManager.staticColor),
+        //backgroundColor: MaterialStateProperty.all(ColorManager.staticColor),
         side: MaterialStateProperty.all<BorderSide>(BorderSide(
           color: isSelected
               ? ColorManager.secondaryColor
               : const Color.fromARGB(255, 225, 225, 225), // Color del borde
           width: 1.0, // Ancho del borde
         )),
-        elevation: MaterialStateProperty.all(4),
+        elevation: MaterialStateProperty.all(3),
         shadowColor:
             MaterialStateProperty.all(Color.fromARGB(255, 184, 184, 184)),
         // shape: MaterialStateProperty.all<>(

@@ -56,6 +56,7 @@ class _LateralBarState extends State<LateralBar> {
             TextButton(
               onPressed: () {
                 AuthStorage().removeValues();
+                Environment.sl.unregister<User>();
                 Get.to(() => const Login());
               },
               child:

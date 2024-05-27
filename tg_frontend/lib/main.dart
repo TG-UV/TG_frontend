@@ -1,16 +1,17 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
-//import 'package:tg_frontend/screens/home.dart';
-import 'package:tg_frontend/screens/loginAndRegister/splash.dart';
 //import 'package:tg_frontend/screens/welcome.dart';
 import 'package:tg_frontend/device/environment.dart';
+//import 'package:tg_frontend/screens/home.dart';
+import 'package:tg_frontend/screens/loginAndRegister/splash.dart';
 import 'package:tg_frontend/screens/theme.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:tg_frontend/services/firebase.dart';
 import 'package:tg_frontend/services/travel_notification_provider.dart';
+
 import 'firebase_options.dart';
 
 // @pragma('vm:entry-point')
@@ -80,6 +81,11 @@ class MyApp extends StatelessWidget {
         )),
     timePickerTheme: TimePickerThemeData(
         backgroundColor: ColorManager.staticColor,
+        dayPeriodColor: ColorManager.secondaryColor,
+        //dialBackgroundColor: ColorManager.secondaryColor,
+        hourMinuteTextStyle:
+            TextStyle(color: ColorManager.fourthColor, fontSize: 40),
+        hourMinuteColor: ColorManager.staticColor,
         cancelButtonStyle: ButtonStyle(
           foregroundColor: MaterialStateProperty.all(ColorManager.primaryColor),
           //backgroundColor: MaterialStateProperty.all(ColorManager.primaryColor),
