@@ -52,6 +52,7 @@ class _TravelCardState extends State<TravelCard> with TickerProviderStateMixin {
   }
 
   Future<dynamic>? _onTapHandle() {
+    TravelNotificationProvider().setTravelNotification(false);
     if (widget.pastTravel != null) {
       if (!widget.pastTravel!) {
         return Get.to(() => TravelDetails(
@@ -84,18 +85,6 @@ class _TravelCardState extends State<TravelCard> with TickerProviderStateMixin {
                         Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: <Widget>[
-                              if (notificationProvider.isTavelNotification &&
-                                  notificationProvider.idTravelNotification ==
-                                      widget.travel.id)
-                                AnimatedBuilder(
-                                  animation: _controller,
-                                  builder: (context, child) {
-                                    return Opacity(
-                                        opacity: _controller.value,
-                                        child: const Icon(
-                                            Icons.mark_unread_chat_alt_sharp));
-                                  },
-                                ),
                               Text(
                                 DateFormatter()
                                     .dayOfWeekFormated(widget.travel.date),
@@ -110,6 +99,20 @@ class _TravelCardState extends State<TravelCard> with TickerProviderStateMixin {
                                     .copyWith(fontSize: 22.0),
                                 overflow: TextOverflow.ellipsis,
                               ),
+                              if (notificationProvider.isTavelNotification &&
+                                  notificationProvider.idTravelNotification ==
+                                      widget.travel.id)
+                                AnimatedBuilder(
+                                  animation: _controller,
+                                  builder: (context, child) {
+                                    return Opacity(
+                                        opacity: _controller.value,
+                                        child: const Icon(
+                                          Icons.send_rounded,
+                                          color: Colors.red,
+                                        ));
+                                  },
+                                ),
                             ]),
                         const SizedBox(width: 8),
                         Row(

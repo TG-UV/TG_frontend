@@ -182,13 +182,13 @@ class _GlobalDetailsCardState extends State<GlobalDetailsCard> {
                                             ),
                                           ]),
                                       Text(
-                                        '     ${widget.travel.date}',
+                                        '   ${widget.travel.date}',
                                         style: Theme.of(context)
                                             .textTheme
                                             .titleMedium!
                                             .copyWith(fontSize: 16.0),
                                       ),
-                                      const SizedBox(height: 25),
+                                      //const SizedBox(height: 15),
                                       Row(
                                         children: [
                                           const Image(
@@ -226,7 +226,7 @@ class _GlobalDetailsCardState extends State<GlobalDetailsCard> {
                                           ),
                                         ],
                                       ),
-                                      const SizedBox(height: 40),
+                                      const SizedBox(height: 10),
                                       Row(
                                         //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                         children: [
@@ -264,7 +264,7 @@ class _GlobalDetailsCardState extends State<GlobalDetailsCard> {
                                             .copyWith(
                                                 fontWeight: FontWeight.normal),
                                       ),
-                                      const SizedBox(height: 50),
+                                      // const SizedBox(height: 50),
                                       Card(
                                           color: Colors.white,
                                           child: Padding(

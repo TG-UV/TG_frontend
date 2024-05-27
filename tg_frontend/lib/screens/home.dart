@@ -106,7 +106,7 @@ class _HomeState extends State<Home> {
               children: [
                 IconButton(
                   onPressed: () {
-                    TravelNotificationProvider().setTravelNotification(false);
+                    // TravelNotificationProvider().setTravelNotification(false);
                   },
                   icon: Icon(Icons.time_to_leave_sharp),
                   color: Colors.black,

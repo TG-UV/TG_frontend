@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -113,7 +115,7 @@ class FirebaseService {
         break;
       case 'travel_canceled':
         bodyNotificationToShow =
-            "Lastimosamente no uno de tus viajes se ha cancelado";
+            "Lastimosamente uno de tus viajes se ha cancelado";
         break;
       // default:
       //   // Manejar el caso en el que notificationType no coincida con ninguno de los casos anteriores
@@ -131,16 +133,16 @@ class FirebaseService {
   void _handleMessage(BuildContext context, RemoteMessage message) {
     String notificationType = message.data['notification_type'];
     String mapNotificationAdditionalInfo = message.data['additional_info'];
-    // Travel notificationAdditionalInfo =
-    //     Travel.fromJsonNotifications(jsonDecode(mapNotificationAdditionalInfo));
-    // int idTravel = message.data['additional_info']["id_trip"];
+    Travel notificationAdditionalInfo =
+        Travel.fromJsonNotifications(jsonDecode(mapNotificationAdditionalInfo));
+    int idTravel = notificationAdditionalInfo.id;
     print("reults: $notificationType ");
 
     switch (notificationType) {
       case 'travel_notification':
         travelNotificationProvider.setTravelNotification(true);
         //travelNotificationProvider.setCurrentTravel(travel);
-        // travelNotificationProvider.setIdTravelNotification(idTravel);
+        travelNotificationProvider.setIdTravelNotification(idTravel);
         break;
       case 'current_travel':
         travelNotificationProvider.setCurrentTravelNotification(true);

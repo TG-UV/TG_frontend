@@ -78,6 +78,15 @@ class MyApp extends StatelessWidget {
         confirmButtonStyle: ButtonStyle(
           foregroundColor: MaterialStateProperty.all(ColorManager.primaryColor),
         )),
+    timePickerTheme: TimePickerThemeData(
+        backgroundColor: ColorManager.staticColor,
+        cancelButtonStyle: ButtonStyle(
+          foregroundColor: MaterialStateProperty.all(ColorManager.primaryColor),
+          //backgroundColor: MaterialStateProperty.all(ColorManager.primaryColor),
+        ),
+        confirmButtonStyle: ButtonStyle(
+          foregroundColor: MaterialStateProperty.all(ColorManager.primaryColor),
+        )),
     dialogBackgroundColor: ColorManager.thirdColor,
     primaryColor: ColorManager.thirdColor, // Color primario
     colorScheme: const ColorScheme.light().copyWith(

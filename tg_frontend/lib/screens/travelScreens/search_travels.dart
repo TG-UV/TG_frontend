@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tg_frontend/errors.dart/exceptions.dart';
 import 'package:tg_frontend/screens/theme.dart';
 import 'package:tg_frontend/utils/date_Formatter.dart';
 import 'package:tg_frontend/widgets/main_button.dart';
@@ -43,6 +44,7 @@ class _SearchTravelsState extends State<SearchTravels> {
   final _formKey = GlobalKey<FormState>();
 
   List<Travel> travelsList = [];
+  bool searchDone = false;
 
   List<String> _suggestions = [];
   late LatLng latLngArrivalPoint;
@@ -68,43 +70,54 @@ class _SearchTravelsState extends State<SearchTravels> {
     startingPointController.text =
         await travelDatasourceMethods.getTextDirection(
             lat: latLngStartingPoint.latitude,
-            long: latLngStartingPoint.longitude, context: context);
+            long: latLngStartingPoint.longitude,
+            context: context);
 
     arrivalPointController.text =
         await travelDatasourceMethods.getTextDirection(
             lat: latLngArrivalPoint.latitude,
-            long: latLngArrivalPoint.longitude, context: context);
+            long: latLngArrivalPoint.longitude,
+            context: context);
     setState(() {});
   }
 
   void _submitForm(BuildContext context) async {
-    if (true
-        // _formKey.currentState!.validate() &&
-        //   dateController.text.isNotEmpty &&
-        //   timeController.text.isNotEmpty
-        ) {
-      // Map<String, dynamic> requestData = {
-      //   'starting_point_lat': latLngStartingPoint.latitude,
-      //   "starting_point_long": latLngStartingPoint.longitude,
-      //   "arrival_point_lat": latLngArrivalPoint.latitude,
-      //   "arrival_point_long": latLngArrivalPoint.longitude,
-      //   'start_time': _selectedTime,
-      //   'start_date': _selectedDate,
-      // };
-
+    if (_formKey.currentState!.validate() &&
+        dateController.text.isNotEmpty &&
+        timeController.text.isNotEmpty) {
       Map<String, dynamic> requestData = {
-        "starting_point_lat": "3.370051",
-        "starting_point_long": "-76.53266",
-        "arrival_point_lat": "3.391652",
-        "arrival_point_long": "-76.551000",
-        "seats": "1",
-        "start_time": "5:25:00",
-        "start_date": "2024-04-29"
+        // 'starting_point_lat':
+        //     double.parse(latLngStartingPoint.latitude.toStringAsFixed(6)),
+        // "starting_point_long":
+        //     double.parse(latLngStartingPoint.longitude.toStringAsFixed(6)),
+        // "arrival_point_lat":
+        //     double.parse(latLngArrivalPoint.latitude.toStringAsFixed(6)),
+        // "arrival_point_long":
+        //     double.parse(latLngArrivalPoint.longitude.toStringAsFixed(6)),
+        "starting_point_lat": "3.376582",
+        "starting_point_long": "-76.533462",
+        "arrival_point_lat": "3.399394",
+        "arrival_point_long": "-76.543935",
+        'start_time': _selectedTime,
+        'start_date': _selectedDate,
       };
+
+      // Map<String, dynamic> requestData = {
+      //   "starting_point_lat": "3.370051",
+      //   "starting_point_long": "-76.53266",
+      //   "arrival_point_lat": "3.391652",
+      //   "arrival_point_long": "-76.551000",
+      //   "seats": "1",
+      //   "start_time": "5:25:00",
+      //   "start_date": "2024-04-29"
+      // };
 
       _fetchTravels(requestData);
       //print("form correcto.........$data");
-    } else {}
+    } else {
+      return ErrorOrAdviceHandler.showErrorAlert(
+          context, "Campos incompletos o error en alguno de ellos", true);
+    }
   }
 
   Future<void> _fetchTravels(Map<String, dynamic> requestData) async {
@@ -112,6 +125,7 @@ class _SearchTravelsState extends State<SearchTravels> {
         .getTravelSuggestions(searchData: requestData, context: context);
 
     setState(() {
+      searchDone = true;
       travelsList = travelsResponse;
     });
   }
@@ -385,6 +399,26 @@ class _SearchTravelsState extends State<SearchTravels> {
                           large: false,
                           buttonColor: ColorManager.fourthColor,
                           onPressed: () => _submitForm(context)),
+                      const SizedBox(height: 70),
+                      if (travelsList.isEmpty && searchDone)
+                        Container(
+                          decoration: BoxDecoration(
+                              color: ColorManager.thirdColor,
+                              border: Border.all(color: Colors.red),
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(20))),
+                          child: Text(
+                            textAlign: TextAlign.center,
+                            "Lastimosamente no encontramos viajes para esta solicitud, intentalo más tarde o intenta modificar el horario",
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleSmall!
+                                .copyWith(
+                                    overflow: TextOverflow.ellipsis,
+                                    fontSize: 12),
+                            maxLines: 3,
+                          ),
+                        )
                     ],
                   ),
                 )),
@@ -425,7 +459,6 @@ class _SearchTravelsState extends State<SearchTravels> {
                                 itemBuilder: (BuildContext context, int index) {
                                   return TravelCard(
                                     travel: travelsList[index],
-                                    pastTravel: false,
                                   );
                                 },
                               ),
@@ -436,59 +469,6 @@ class _SearchTravelsState extends State<SearchTravels> {
                     );
                   })
           ],
-
-          // SliverList.list(children: [
-          //   FilledButton.tonal(
-          //     onPressed: () {
-          //       sheetController.animateTo(
-          //         0.8,
-          //         duration: const Duration(milliseconds: 200),
-          //         curve: Curves.bounceIn,
-          //       );
-          //     },
-          //     child: const Text('Scrool to 0.8'),
-          //   ),
-
-          // DraggableScrollableSheet(
-          //     initialChildSize: 0.35,
-          //     minChildSize: 0.25,
-          //     maxChildSize: 0.75,
-          //     builder: (BuildContext context,
-          //         ScrollController scrollController) {
-          //       return Padding(
-          //           padding: const EdgeInsets.all(10),
-          //           child: Container(
-          //               width: 200,
-          //               height: 600,
-          //               decoration: BoxDecoration(
-          //                   color: Colors.red,
-          //                   borderRadius: BorderRadius.circular(15)),
-          //               child:
-          //                   //travelsList.isNotEmpty?
-          //                   Container(
-          //                       child: ListView.builder(
-          //                           controller: scrollController,
-          //                           itemCount: travelsList.length,
-          //                           itemBuilder: (context, index) {
-          //                             return TravelCard(
-          //                               travel: travelsList[index],
-          //                               pastTravel: false,
-          //                             );
-          //                           }))
-          //               // : Center(
-          //               //     child: Text(
-          //               //       "Lastimosamente no encontramos viajes para esta solicitud, intentalo más tarde o intenta modificar el horario",
-          //               //       style: Theme.of(context)
-          //               //           .textTheme
-          //               //           .titleSmall!
-          //               //           .copyWith(
-          //               //               overflow:
-          //               //                   TextOverflow.ellipsis),
-          //               //       maxLines: 3,
-          //               //     ),
-          //               //   )
-          //               ));
-          //     })
         ));
   }
 }

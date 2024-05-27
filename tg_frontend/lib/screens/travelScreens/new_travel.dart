@@ -514,26 +514,29 @@ class _NewTravelState extends State<NewTravel> {
                       icon: const Icon(Icons.edit),
                     ),
                     const SizedBox(height: 30),
-                    SizedBox(
-                        height: 70,
-                        child: DropdownButtonFormField<Vehicle>(
-                          value: vehicleSelected,
-                          onChanged: (Vehicle? newValue) {
-                            setState(() {
-                              vehicleSelected = newValue!;
-                            });
-                          },
-                          items: driverVehicles.map((Vehicle vehiculo) {
-                            return DropdownMenuItem<Vehicle>(
-                              value: vehiculo,
-                              child: Text(
-                                  '${vehiculo.licensePlate} ${vehiculo.vehicleBrand}',
-                                  style:
-                                      Theme.of(context).textTheme.titleSmall),
-                            );
-                          }).toList(),
-                          decoration: myInputDecoration(" Vehículo"),
-                        )),
+                    driverVehicles.isNotEmpty
+                        ? SizedBox(
+                            height: 70,
+                            child: DropdownButtonFormField<Vehicle>(
+                              value: vehicleSelected,
+                              onChanged: (Vehicle? newValue) {
+                                setState(() {
+                                  vehicleSelected = newValue!;
+                                });
+                              },
+                              items: driverVehicles.map((Vehicle vehiculo) {
+                                return DropdownMenuItem<Vehicle>(
+                                  value: vehiculo,
+                                  child: Text(
+                                      '${vehiculo.licensePlate} ${vehiculo.vehicleBrand}',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall),
+                                );
+                              }).toList(),
+                              decoration: myInputDecoration(" Vehículo"),
+                            ))
+                        : const SizedBox.shrink(),
                     const SizedBox(
                       height: 20,
                     ),
