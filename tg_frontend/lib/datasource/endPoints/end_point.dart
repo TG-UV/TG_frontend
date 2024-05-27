@@ -3,6 +3,7 @@ class EndPoints {
 
   final String getUserLogged = "/users/me/";
   final String getUserAuth = '/auth/token/login/';
+  final String getUserLogout = "/auth/token/logout/";
   final String getAndPostUser = '/users/';
   final String getVehicleOptions = "/vehicle/registration/";
   final String postVehicle = "/driver/vehicle/add/";

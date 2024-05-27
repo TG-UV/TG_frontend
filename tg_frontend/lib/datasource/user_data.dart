@@ -1,4 +1,6 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:tg_frontend/datasource/endPoints/end_point.dart';
 import 'package:tg_frontend/datasource/local_database_provider.dart';
@@ -25,7 +27,8 @@ abstract class UserDatasource {
       required String password,
       required String idDevice,
       context});
-  Future<void> postReSetPassword({required String email});
+  Future<void> postReSetPassword(
+      {required String email, required BuildContext context});
   Future<User> getUserLocal(int idUser);
   Future<List<dynamic>?> getUserCitiesRemote(conext);
 }
@@ -281,19 +284,26 @@ class UserDatasourceMethods implements UserDatasource {
   }
 
   @override
-  Future<void> postReSetPassword({required String email, context}) async {
+  Future<void> postReSetPassword(
+      {required String email, required BuildContext context}) async {
     try {
       Response response = await dio.post(
-        _endPoints.baseUrl + _endPoints.postReSetPassword,
-        data: {"email": email},
-      );
-      if (response.statusCode == 200 || response.statusCode == 201) {
+          _endPoints.baseUrl + _endPoints.postReSetPassword,
+          data: {"email": email});
+      print(response.statusCode);
+      if (response.statusCode == 200 ||
+          response.statusCode == 201 ||
+          response.statusCode == 203 ||
+          response.statusCode == 204) {
         ErrorOrAdviceHandler.showErrorAlert(
-            context, "Correo enviado con éxito", true);
+            context,
+            "Correo enviado con éxito, ingrese al correo que ingresó para restablecer su contraseña",
+            true);
       }
     } on DioException catch (e) {
+      print("error al ernviar correos ${e.toString()}");
       ErrorOrAdviceHandler.showErrorAlert(
-          context, serverErrorString + e.response!.data.toString(), true);
+          context, "Formato invalido, intente de nuevo", true);
     }
     //return null;
   }

@@ -38,7 +38,10 @@ class ErrorOrAdviceHandler {
           ),
           content: Text(
             "  $finalMessage",
-            style: Theme.of(context).textTheme.titleSmall,
+            style: Theme.of(context)
+                .textTheme
+                .titleSmall!
+                .copyWith(overflow: TextOverflow.ellipsis),
             maxLines: 10,
           ),
           actions: isError

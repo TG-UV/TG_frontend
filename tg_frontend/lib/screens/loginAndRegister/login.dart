@@ -1,4 +1,3 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -45,9 +44,10 @@ class _LoginState extends State<Login> {
     super.initState();
   }
 
-  Future<void> loginUser(String username, String password) async {
-    String? deviceToken = await FirebaseMessaging.instance.getToken();
-    //String deviceToken = "kncñsncunvñsfnv";
+  Future<void> loginUser(
+      String username, String password, BuildContext context) async {
+    // String? deviceToken = await FirebaseMessaging.instance.getToken();
+    String deviceToken = "kncñsncunvñsfnv";
 
     if (_validateFormData(_formKey.currentState!.validate(), deviceToken)) {
       final token = await userDatasourceImpl.getUserAuth(
@@ -74,8 +74,8 @@ class _LoginState extends State<Login> {
     }
   }
 
-  Future<void> reSetPassword(String email) async {
-    await userDatasourceImpl.postReSetPassword(email: email);
+  Future<void> reSetPassword(String email, BuildContext context) async {
+    await userDatasourceImpl.postReSetPassword(email: email, context: context);
   }
 
   void saveAuthInformation(token, username, password) async {
@@ -171,9 +171,28 @@ class _LoginState extends State<Login> {
                                                   ColorManager.staticColor,
                                               surfaceTintColor:
                                                   Colors.transparent,
-                                              title: const Text(
-                                                  "Restablecer contraseña"),
+                                              title: Row(
+                                                children: [
+                                                  Text(
+                                                    "Restablecer contraseña",
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .titleMedium!
+                                                        .copyWith(
+                                                            fontSize: 18,
+                                                            color: ColorManager
+                                                                .primaryColor,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis),
+                                                    maxLines: 2,
+                                                  ),
+                                                  const SizedBox(width: 5),
+                                                  const Icon(Icons.settings),
+                                                ],
+                                              ),
                                               content: Column(
+                                                mainAxisSize: MainAxisSize.min,
                                                 children: [
                                                   Text(
                                                     "Ingrese el correo para restablecer la contraseña",
@@ -182,20 +201,40 @@ class _LoginState extends State<Login> {
                                                         .titleSmall!
                                                         .copyWith(
                                                             color: ColorManager
-                                                                .fourthColor),
+                                                                .fourthColor,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis),
+                                                    maxLines: 3,
                                                   ),
                                                   TextFormField(
                                                     controller:
                                                         reSetMailController,
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .titleSmall!
+                                                        .copyWith(
+                                                          color: ColorManager
+                                                              .primaryColor,
+                                                        ),
                                                   )
                                                 ],
                                               ),
                                               actions: [
                                                 TextButton(
+                                                  style: ButtonStyle(
+                                                    overlayColor:
+                                                        MaterialStateColor
+                                                            .resolveWith(
+                                                      (states) => Colors.grey
+                                                          .withOpacity(0.5),
+                                                    ),
+                                                  ),
                                                   onPressed: () {
                                                     reSetPassword(
                                                         reSetMailController
-                                                            .text);
+                                                            .text,
+                                                        context);
                                                   },
                                                   child: Text(
                                                     "Enviar",
@@ -244,8 +283,10 @@ class _LoginState extends State<Login> {
                                           setState(() {
                                             _isLoading = true;
                                           });
-                                          loginUser(mailLoginController.text,
-                                              passwordLoginController.text);
+                                          loginUser(
+                                              mailLoginController.text,
+                                              passwordLoginController.text,
+                                              context);
                                         }),
                                 const SizedBox(height: 80),
                                 Row(
