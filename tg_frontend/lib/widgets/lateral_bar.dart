@@ -116,10 +116,10 @@ class _LateralBarState extends State<LateralBar> {
             title: Text('Configuración'),
             leading: const Icon(Icons.settings),
             children: <Widget>[
-              ListTile(
-                title: Text('Editar perfil'),
-                onTap: () {},
-              ),
+              // ListTile(
+              //   title: Text('Editar perfil'),
+              //   onTap: () {},
+              // ),
               ListTile(
                 title: Text('Cambiar contraseña'),
                 onTap: () {

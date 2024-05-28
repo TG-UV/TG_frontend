@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_pw_validator/Resource/Strings.dart';
 import 'package:flutter_pw_validator/flutter_pw_validator.dart';
+import 'package:get/get.dart';
 import 'package:tg_frontend/datasource/user_data.dart';
 import 'package:tg_frontend/device/environment.dart';
 import 'package:tg_frontend/errors.dart/exceptions.dart';
 import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/models/vehicle_model.dart';
+import 'package:tg_frontend/screens/loginAndRegister/login.dart';
 import 'package:tg_frontend/screens/theme.dart';
 import 'package:tg_frontend/services/auth_services.dart';
 import 'package:tg_frontend/widgets/input_field.dart';
@@ -66,11 +68,12 @@ class _PasswordRegisterState extends State<PasswordRegister> {
   Future<dynamic> submitForm(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       widget.user.password = passwordConfirmationController.text;
+
       dynamic userInsertResponse =
           await userDatasourceImpl.insertUserRemote(user: widget.user);
       if (userInsertResponse is int) {
         User newUser =
-            await userDatasourceImpl.getUserLocal(userInsertResponse as int);
+            await userDatasourceImpl.getUserLocal(userInsertResponse);
 
         if (widget.vehicle != null) {
           Vehicle newVehicle = Vehicle(
@@ -86,17 +89,14 @@ class _PasswordRegisterState extends State<PasswordRegister> {
               .insertVehicleRemote(vehicle: newVehicle, context: context);
           if (vehicleRegisterResponse is int) {
             return EasyLoading.showInfo("registro de vehículo exitoso");
-          } else {
-            return EasyLoading.showInfo(vehicleRegisterResponse.toString());
           }
         }
         setState(() {
           emailCheckAdvice = true;
         });
+        _showConfirmationDialog(context);
         saveAuthInformation(
             newUser, newUser.email, passwordConfirmationController.text);
-      } else {
-        return EasyLoading.showInfo(userInsertResponse);
       }
     } else {
       return ErrorOrAdviceHandler.showErrorAlert(
@@ -104,7 +104,7 @@ class _PasswordRegisterState extends State<PasswordRegister> {
     }
   }
 
-  Future<dynamic> reSendConfirmationEmail() async {
+  Future<void> reSendConfirmationEmail() async {
     await userDatasourceImpl.postUserSendEmail(userEmail: widget.user.email);
   }
 
@@ -121,10 +121,56 @@ class _PasswordRegisterState extends State<PasswordRegister> {
       await AuthStorage().savePassword(password);
 
       Environment.sl.registerSingleton<User>(user);
+
       // Get.to(() => const Home());
     } else {
       print('Error al intentar registrar el usuario');
     }
+  }
+
+  _showConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: ColorManager.staticColor,
+          surfaceTintColor: Colors.transparent,
+          title: Text(
+            '¡Bienvenido!',
+            style: Theme.of(context)
+                .textTheme
+                .titleSmall!
+                .copyWith(fontWeight: FontWeight.bold),
+          ),
+          content: Text(
+            'Hemos enviado un correo de activación, diríjase a su cuenta universitaria para activar su perfil.',
+            style: Theme.of(context).textTheme.titleSmall,
+            maxLines: 6,
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                () => reSendConfirmationEmail();
+              },
+              child: Text('Reenviar correo',
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleSmall!
+                      .copyWith(color: ColorManager.fourthColor)),
+            ),
+            TextButton(
+              onPressed: () {
+                AuthStorage().removeValues();
+                Environment.sl.unregister<User>();
+                Get.to(() => const Login());
+              },
+              child:
+                  Text('Salir', style: Theme.of(context).textTheme.titleSmall),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -152,7 +198,7 @@ class _PasswordRegisterState extends State<PasswordRegister> {
                       Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            SizedBox(height: 60),
+                            const SizedBox(height: 60),
                             Row(children: [
                               IconButton(
                                   onPressed: () {
@@ -197,59 +243,10 @@ class _PasswordRegisterState extends State<PasswordRegister> {
                             //   //strings: FrenchStrings(),
                             // ),
                             const SizedBox(height: 200),
-                            Visibility(
-                                visible: emailCheckAdvice,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: <Widget>[
-                                    const Text(
-                                      "Revisa tu correo para activar tu cuenta",
-                                      style: TextStyle(
-                                        fontFamily: 'Jost',
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        //color: Colors.black,
-                                      ),
-                                    ),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        Expanded(
-                                          child: Text(
-                                            '¿No te ha llegado?',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                              fontFamily: 'Jost',
-                                              fontSize: 17,
-                                              fontWeight: FontWeight.w400,
-                                              color: ColorManager.primaryColor,
-                                            ),
-                                          ),
-                                        ),
-                                        Expanded(
-                                          child: TextButton(
-                                            onPressed: () {
-                                              //Get.to(() => const SignUp());
-                                              () => reSendConfirmationEmail();
-                                            },
-                                            child: const Text(
-                                              'Reenviar correo',
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                fontFamily: 'Jost',
-                                                fontSize: 17,
-                                                fontWeight: FontWeight.w500,
-                                                color: Colors.red,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    )
-                                  ],
-                                )),
+                            // Visibility(
+                            //     visible: emailCheckAdvice,
+                            //     //maintainAnimation: true,
+                            //     child: _showConfirmationDialog(context)),
                             Visibility(
                               visible: !emailCheckAdvice,
                               child: MainButton(

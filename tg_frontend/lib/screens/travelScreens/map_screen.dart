@@ -59,14 +59,20 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   Future<void> _requestLocationPermission() async {
+    bool isLocationServiceEnabled = await Geolocator.isLocationServiceEnabled();
+
+    if (!isLocationServiceEnabled) {
+      myPosition = defaultLocation;
+      setState(() {});
+      return;
+    }
+
     await Permission.locationWhenInUse.request();
     if (await Permission.locationWhenInUse.request().isGranted) {
       await _getLocation();
       setState(() {});
     } else {
-      myPosition = defaultLocation;
-      await EasyLoading.showInfo("permiso de ubicación denegado");
-      setState(() {});
+      await EasyLoading.showInfo("Error con el gps");
     }
   }
 

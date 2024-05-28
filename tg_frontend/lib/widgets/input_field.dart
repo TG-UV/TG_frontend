@@ -40,14 +40,14 @@ class InputField extends StatelessWidget {
       }
     }
 
-    String? _validator(String? value) {
+    String? validator(String? value) {
       if (textInput != "Contraseña" || textInput != "Contraseña actual") {
         if (value == null || value.isEmpty) {
           return 'Este campo no puede estar vacio';
         }
       } else {
         if (value!.isEmpty) {
-          return "Este campo no puede estar vacio";
+          return "Este campo no puede estar vaciooo";
         } else {
           bool result = validatePassword(value);
           if (result) {
@@ -57,6 +57,7 @@ class InputField extends StatelessWidget {
           }
         }
       }
+      return null;
     }
 
     return TextFormField(
@@ -97,6 +98,6 @@ class InputField extends StatelessWidget {
                 width: 2.0,
               ),
             )),
-        validator: _validator);
+        validator: validator);
   }
 }

@@ -9,6 +9,7 @@ class EndPoints {
   final String postVehicle = "/driver/vehicle/add/";
   final String getCities = "/city/";
   final String postUserActivation = "/users/activation/";
+  final String postUserReSendActivation = "/users/resend_activation/";
   final String postSetPassword = "/users/set_password/";
   final String postReSetPassword = "/users/reset_password/";
 

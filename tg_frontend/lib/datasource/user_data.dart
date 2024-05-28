@@ -79,9 +79,12 @@ class UserDatasourceMethods implements UserDatasource {
     try {
       dio.options.headers['Authorization'] = 'Token $token';
       response = await dio.post(
-          _endPoints.baseUrl + _endPoints.postUserActivation,
+          _endPoints.baseUrl + _endPoints.postUserReSendActivation,
           data: _data);
-      if (response.statusCode == 200 || response.statusCode == 201) {
+      if (response.statusCode == 200 ||
+          response.statusCode == 201 ||
+          response.statusCode == 203 ||
+          response.statusCode == 204) {
         ErrorOrAdviceHandler.showErrorAlert(context, "Correo enviado", true);
       }
     } on DioException catch (e) {
@@ -134,7 +137,7 @@ class UserDatasourceMethods implements UserDatasource {
       ErrorOrAdviceHandler.showErrorAlert(
           context, serverErrorString + e.response!.data.toString(), true);
     }
-    return sent;
+    return null;
   }
 
   @override

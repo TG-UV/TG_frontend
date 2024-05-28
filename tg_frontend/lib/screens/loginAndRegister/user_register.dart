@@ -44,7 +44,7 @@ class _UserRegisterState extends State<UserRegister> {
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
-        context: context, firstDate: DateTime(1950), lastDate: DateTime(2025));
+        context: context, firstDate: DateTime(1950), lastDate: DateTime(2009));
     if (pickedDate != null) {
       setState(() {
         _selectedDate = DateFormatter().dateFormatedToSend(pickedDate);
@@ -160,7 +160,7 @@ class _UserRegisterState extends State<UserRegister> {
                             const SizedBox(height: 15),
                             InputField(
                               controller: identifactionController,
-                              textInputType: TextInputType.text,
+                              textInputType: TextInputType.number,
                               obscure: false,
                               textInput: 'Documento de identificación',
                               icon: const Icon(Icons.insert_drive_file),
@@ -212,7 +212,7 @@ class _UserRegisterState extends State<UserRegister> {
                             InputField(
                               controller: phoneController,
                               textInput: 'Celular',
-                              textInputType: TextInputType.text,
+                              textInputType: TextInputType.number,
                               obscure: false,
                               icon: const Icon(Icons.phone),
                             ),
