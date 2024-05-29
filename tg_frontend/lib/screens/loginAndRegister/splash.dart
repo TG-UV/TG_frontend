@@ -1,13 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:tg_frontend/datasource/user_data.dart';
+import 'package:tg_frontend/device/environment.dart';
 import 'package:tg_frontend/screens/home.dart';
 import 'package:tg_frontend/screens/loginAndRegister/login.dart';
-import 'dart:async';
-import 'package:get/get.dart';
 import 'package:tg_frontend/services/auth_services.dart';
-import 'package:tg_frontend/datasource/user_data.dart';
-import 'package:tg_frontend/models/user_model.dart';
-import 'package:tg_frontend/device/environment.dart';
-import 'package:tg_frontend/services/travel_notification_provider.dart';
 
 class Splash extends StatefulWidget {
   // final Splash({Key? key}) : super(key: key);
@@ -49,20 +48,12 @@ class _LoginState extends State<Splash> {
 
   Future<void> _saveToken() async {
     int idUser = await userDatasourceImpl.getUserRemote(context);
-    User user = await userDatasourceImpl.getUserLocal(idUser);
-    Environment.sl.registerSingleton<User>(user);
-    Get.to(() => const Home());
-    //authStorage.removeValues();
-    //bool isLoggedIn;
+    // User user = await userDatasourceImpl.getUserLocal(idUser);
+    //Environment.sl.registerSingleton<User>(user);
 
-    // final nickname = await authStorage.getNickName();
-    // final password = await authStorage.getPassword();
-    // print('llega a verifyAuth');
-    // if (nickname != null && password != null) {
-    //   isLoggedIn = true;
-    // }
-    // token != null ? isLoggedIn = true : isLoggedIn = false;
-    // return isLoggedIn;
+    if (idUser != 0) {
+      Get.to(() => const Home());
+    }
   }
 
   Future<void> verifyLoggedIn() async {

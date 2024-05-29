@@ -71,9 +71,8 @@ class _PasswordRegisterState extends State<PasswordRegister> {
 
       dynamic userInsertResponse =
           await userDatasourceImpl.insertUserRemote(user: widget.user);
-      if (userInsertResponse is int) {
-        User newUser =
-            await userDatasourceImpl.getUserLocal(userInsertResponse);
+      if (userInsertResponse != 0) {
+        User newUser = Environment.sl.get<User>();
 
         if (widget.vehicle != null) {
           Vehicle newVehicle = Vehicle(

@@ -40,11 +40,14 @@ class _NewTravelState extends State<NewTravel> {
   List<String> _suggestions = [];
   late LatLng latLngArrivalPoint;
   late LatLng latLngStartingPoint;
-  // late LatLng _selectedLocation;
   List<Vehicle> driverVehicles = [];
   late Vehicle vehicleSelected;
 
   final _formKey = GlobalKey<FormState>();
+  final GlobalKey _startingPointKey = GlobalKey();
+  final GlobalKey _arrivalPointKey = GlobalKey();
+  Offset? startingPointPosition;
+  Offset? arrivalPointPosition;
 
   final FocusNode _focusNodeArrivalPoint = FocusNode();
   final FocusNode _focusNodeStartingPoint = FocusNode();
@@ -250,351 +253,388 @@ class _NewTravelState extends State<NewTravel> {
     );
   }
 
+  void _getWidgetPosition(GlobalKey key, Function(Offset) callback) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final RenderBox renderBox =
+          key.currentContext!.findRenderObject() as RenderBox;
+      final position = renderBox.localToGlobal(Offset.zero);
+      callback(position);
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      _getWidgetPosition(_startingPointKey, (position) {
+        setState(() {
+          startingPointPosition = position;
+        });
+      });
+
+      _getWidgetPosition(_arrivalPointKey, (position) {
+        setState(() {
+          arrivalPointPosition = position;
+        });
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        resizeToAvoidBottomInset: true,
-        body: SingleChildScrollView(
-            child: Form(
-                key: _formKey,
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  alignment: Alignment.center,
-                  child: Column(children: [
-                    SizedBox(height: MediaQuery.of(context).size.height / 16),
-                    Row(children: [
-                      IconButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          icon: const Icon(Icons.arrow_back)),
-                      const SizedBox(width: 5),
-                      Text(
-                        "Crea un nuevo viaje",
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleLarge!
-                            .copyWith(fontSize: 23),
-                      )
-                    ]),
-                    const SizedBox(height: 20),
-                    Align(
-                        alignment: Alignment.topLeft,
-                        child: Text(
-                          "Desde",
-                          style: Theme.of(context).textTheme.titleSmall,
-                          textAlign: TextAlign.left,
-                        )),
-                    InputField(
-                      foco: _focusNodeStartingPoint,
-                      controller: startingPointController,
-                      textInput: startingPointController.text,
-                      textInputType: TextInputType.text,
-                      obscure: false,
-                      onChange: (value) {
-                        _currentFoco = _focusNodeStartingPoint;
-                        _getSuggestion(value);
-                      },
-                      icon: const Icon(Icons.add_location_alt_outlined),
-                      onPressed: () {
-                        _openMapSelector(true, startingPointController);
-                        setState(() {
-                          _focusNodeStartingPoint.unfocus();
-                          _currentFoco = emptyFocus;
-                        });
-                      },
-                    ),
-                    _suggestions.isNotEmpty &&
-                            _currentFoco == _focusNodeStartingPoint
-                        ? Positioned(
-                            top: 50.0,
-                            left: 0.0,
-                            right: 0.0,
-                            child: Container(
-                              height: 200.0,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.5),
-                                    spreadRadius: 1,
-                                    blurRadius: 3,
-                                    offset: const Offset(0, 2),
-                                  ),
-                                ],
-                              ),
-                              child: ListView.builder(
-                                itemCount: _suggestions.length,
-                                itemBuilder: (context, index) {
-                                  return ListTile(
-                                    title: Text(_suggestions[index]),
-                                    onTap: () {
-                                      startingPointController.text =
-                                          _suggestions[index];
-                                      _getMapCoordinates(_suggestions[index],
-                                          latLngStartingPoint);
-                                      _suggestions.clear();
-                                      setState(() {
-                                        _currentFoco.unfocus();
-                                        _focusNodeStartingPoint.unfocus();
-                                      });
-                                    },
-                                  );
-                                },
-                              ),
-                            ),
-                          )
-                        : SizedBox.shrink(),
-                    const SizedBox(height: 7),
-                    Align(
-                        alignment: Alignment.topLeft,
-                        child: Text(
-                          "Hacia",
-                          style: Theme.of(context).textTheme.titleSmall,
-                          textAlign: TextAlign.left,
-                        )),
-                    InputField(
-                      foco: _focusNodeArrivalPoint,
-                      controller: arrivalPointController,
-                      textInput: arrivalPointController.text,
-                      textInputType: TextInputType.text,
-                      obscure: false,
-                      onChange: (value) {
-                        _currentFoco = _focusNodeArrivalPoint;
-                        _getSuggestion(value);
-                      },
-                      icon: const Icon(Icons.add_location_alt_outlined),
-                      onPressed: () {
-                        _openMapSelector(false, arrivalPointController);
-                        setState(() {
-                          //  _currentFoco.unfocus();
-                          _focusNodeArrivalPoint.unfocus();
-                          _currentFoco = emptyFocus;
-                        });
-                      },
-                    ),
-                    if (_suggestions.isNotEmpty &&
-                        _currentFoco == _focusNodeArrivalPoint)
-                      Positioned(
-                        top: 100.0,
-                        left: 0.0,
-                        right: 0.0,
-                        child: Container(
-                          height: 200.0,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.5),
-                                spreadRadius: 1,
-                                blurRadius: 3,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: ListView.builder(
-                            itemCount: _suggestions.length,
-                            itemBuilder: (context, index) {
-                              return ListTile(
-                                title: Text(_suggestions[index]),
-                                onTap: () {
-                                  arrivalPointController.text =
-                                      _suggestions[index];
-                                  _getMapCoordinates(
-                                      _suggestions[index], latLngArrivalPoint);
-                                  _suggestions.clear();
-                                  setState(() {
-                                    _currentFoco = emptyFocus;
-                                    _focusNodeArrivalPoint.unfocus();
-                                  });
-                                },
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                    const SizedBox(height: 40),
-                    Align(
+      resizeToAvoidBottomInset: true,
+      body: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            alignment: Alignment.center,
+            child: Stack(
+              children: [
+                Column(children: [
+                  SizedBox(height: MediaQuery.of(context).size.height / 16),
+                  Row(children: [
+                    IconButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        icon: const Icon(Icons.arrow_back)),
+                    const SizedBox(width: 5),
+                    Text(
+                      "Crea un nuevo viaje",
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleLarge!
+                          .copyWith(fontSize: 23),
+                    )
+                  ]),
+                  const SizedBox(height: 20),
+                  Align(
                       alignment: Alignment.topLeft,
-                      child: Row(
-                        children: [
-                          Text(
-                            'Cuándo',
-                            style: Theme.of(context).textTheme.titleSmall,
-                          ),
-                          const Spacer(),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text(
-                                timeController.text,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleSmall!
-                                    .copyWith(fontWeight: FontWeight.bold),
-                              ),
-                              Text(
-                                dateController.text,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleSmall!
-                                    .copyWith(fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          )
-                        ],
-                      ),
-                    ),
-                    Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          SquareButton(
-                              text: '10',
-                              isSelected: _selectedTimeButtonIndex == 0,
-                              onPressed: () {
-                                setState(() {
-                                  _selectedTimeButtonIndex = 0;
-                                  DateTime now = DateTime.now();
-                                  DateTime newTime =
-                                      now.add(const Duration(minutes: 10));
-                                  _selectTime(dateTime: newTime);
-                                });
-                              }),
-                          SquareButton(
-                              text: '30',
-                              isSelected: _selectedTimeButtonIndex == 1,
-                              onPressed: () {
-                                setState(() {
-                                  _selectedTimeButtonIndex = 1;
-                                  DateTime now = DateTime.now();
-                                  DateTime newTime =
-                                      now.add(const Duration(minutes: 30));
-                                  _selectTime(dateTime: newTime);
-                                  //dateController.text = "$newTime";
-                                });
-                              }),
-                          SquareButton(
-                              text: '60',
-                              isSelected: _selectedTimeButtonIndex == 2,
-                              onPressed: () {
-                                setState(() {
-                                  _selectedTimeButtonIndex = 2;
-                                  DateTime now = DateTime.now();
-                                  DateTime newTime =
-                                      now.add(const Duration(minutes: 60));
-                                  _selectTime(dateTime: newTime);
-                                });
-                              }),
-                          SquareButton(
-                            isSelected: _selectedTimeButtonIndex == 3,
-                            myIcon: Icons.edit,
-                            text: '',
-                            onPressed: () => _selectDate(context),
-                          ),
-                        ]),
-                    const SizedBox(height: 15),
-                    Align(
-                        alignment: Alignment.topLeft,
-                        child: Text(
-                          "Cupos",
+                      child: Text(
+                        "Desde",
+                        style: Theme.of(context).textTheme.titleSmall,
+                        textAlign: TextAlign.left,
+                      )),
+                  InputField(
+                    key: _startingPointKey,
+                    foco: _focusNodeStartingPoint,
+                    controller: startingPointController,
+                    textInput: startingPointController.text,
+                    textInputType: TextInputType.text,
+                    obscure: false,
+                    onChange: (value) {
+                      _currentFoco = _focusNodeStartingPoint;
+                      _getSuggestion(value);
+                    },
+                    icon: const Icon(Icons.add_location_alt_outlined),
+                    onPressed: () {
+                      _openMapSelector(true, startingPointController);
+                      setState(() {
+                        _focusNodeStartingPoint.unfocus();
+                        _currentFoco = emptyFocus;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 7),
+                  Align(
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        "Hacia",
+                        style: Theme.of(context).textTheme.titleSmall,
+                        textAlign: TextAlign.left,
+                      )),
+                  InputField(
+                    key: _arrivalPointKey,
+                    foco: _focusNodeArrivalPoint,
+                    controller: arrivalPointController,
+                    textInput: arrivalPointController.text,
+                    textInputType: TextInputType.text,
+                    obscure: false,
+                    onChange: (value) {
+                      _currentFoco = _focusNodeArrivalPoint;
+                      _getSuggestion(value);
+                    },
+                    icon: const Icon(Icons.add_location_alt_outlined),
+                    onPressed: () {
+                      _openMapSelector(false, arrivalPointController);
+                      setState(() {
+                        //  _currentFoco.unfocus();
+                        _focusNodeArrivalPoint.unfocus();
+                        _currentFoco = emptyFocus;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 40),
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: Row(
+                      children: [
+                        Text(
+                          'Cuándo',
                           style: Theme.of(context).textTheme.titleSmall,
-                          textAlign: TextAlign.left,
-                        )),
-                    Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          SquareButton(
-                              text: '1',
-                              isSelected: _selectedSeatsButtonIndex == 0,
-                              onPressed: () {
-                                setState(() {
-                                  seatsController.text = '1';
-                                  _selectedSeatsButtonIndex = 0;
-                                });
-                              }),
-                          SquareButton(
-                              text: '2',
-                              isSelected: _selectedSeatsButtonIndex == 1,
-                              onPressed: () {
-                                setState(() {
-                                  seatsController.text = '2';
-                                  _selectedSeatsButtonIndex = 1;
-                                });
-                              }),
-                          SquareButton(
-                              text: '3',
-                              isSelected: _selectedSeatsButtonIndex == 2,
-                              onPressed: () {
-                                setState(() {
-                                  seatsController.text = '3';
-                                  _selectedSeatsButtonIndex = 2;
-                                });
-                              }),
-                          SquareButton(
-                            text: '4',
-                            isSelected: _selectedSeatsButtonIndex == 3,
+                        ),
+                        const Spacer(),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              timeController.text,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleSmall!
+                                  .copyWith(fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              dateController.text,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleSmall!
+                                  .copyWith(fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        SquareButton(
+                            text: '10',
+                            isSelected: _selectedTimeButtonIndex == 0,
                             onPressed: () {
                               setState(() {
-                                seatsController.text = '4';
-                                _selectedSeatsButtonIndex = 3;
+                                _selectedTimeButtonIndex = 0;
+                                DateTime now = DateTime.now();
+                                DateTime newTime =
+                                    now.add(const Duration(minutes: 10));
+                                _selectTime(dateTime: newTime);
+                              });
+                            }),
+                        SquareButton(
+                            text: '30',
+                            isSelected: _selectedTimeButtonIndex == 1,
+                            onPressed: () {
+                              setState(() {
+                                _selectedTimeButtonIndex = 1;
+                                DateTime now = DateTime.now();
+                                DateTime newTime =
+                                    now.add(const Duration(minutes: 30));
+                                _selectTime(dateTime: newTime);
+                                //dateController.text = "$newTime";
+                              });
+                            }),
+                        SquareButton(
+                            text: '60',
+                            isSelected: _selectedTimeButtonIndex == 2,
+                            onPressed: () {
+                              setState(() {
+                                _selectedTimeButtonIndex = 2;
+                                DateTime now = DateTime.now();
+                                DateTime newTime =
+                                    now.add(const Duration(minutes: 60));
+                                _selectTime(dateTime: newTime);
+                              });
+                            }),
+                        SquareButton(
+                          isSelected: _selectedTimeButtonIndex == 3,
+                          myIcon: Icons.edit,
+                          text: '',
+                          onPressed: () => _selectDate(context),
+                        ),
+                      ]),
+                  const SizedBox(height: 15),
+                  Align(
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        "Cupos",
+                        style: Theme.of(context).textTheme.titleSmall,
+                        textAlign: TextAlign.left,
+                      )),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        SquareButton(
+                            text: '1',
+                            isSelected: _selectedSeatsButtonIndex == 0,
+                            onPressed: () {
+                              setState(() {
+                                seatsController.text = '1';
+                                _selectedSeatsButtonIndex = 0;
+                              });
+                            }),
+                        SquareButton(
+                            text: '2',
+                            isSelected: _selectedSeatsButtonIndex == 1,
+                            onPressed: () {
+                              setState(() {
+                                seatsController.text = '2';
+                                _selectedSeatsButtonIndex = 1;
+                              });
+                            }),
+                        SquareButton(
+                            text: '3',
+                            isSelected: _selectedSeatsButtonIndex == 2,
+                            onPressed: () {
+                              setState(() {
+                                seatsController.text = '3';
+                                _selectedSeatsButtonIndex = 2;
+                              });
+                            }),
+                        SquareButton(
+                          text: '4',
+                          isSelected: _selectedSeatsButtonIndex == 3,
+                          onPressed: () {
+                            setState(() {
+                              seatsController.text = '4';
+                              _selectedSeatsButtonIndex = 3;
+                            });
+                          },
+                          //myIcon: Icons.edit
+                        )
+                      ]),
+                  const SizedBox(height: 40),
+                  Align(
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        "Precio",
+                        style: Theme.of(context).textTheme.titleSmall,
+                        textAlign: TextAlign.left,
+                      )),
+                  InputField(
+                    controller: priceController,
+                    textInput: '2000',
+                    textInputType: TextInputType.number,
+                    obscure: false,
+                    icon: const Icon(Icons.edit),
+                  ),
+                  const SizedBox(height: 30),
+                  driverVehicles.isNotEmpty
+                      ? SizedBox(
+                          height: 70,
+                          child: DropdownButtonFormField<Vehicle>(
+                            value: vehicleSelected,
+                            onChanged: (Vehicle? newValue) {
+                              setState(() {
+                                vehicleSelected = newValue!;
                               });
                             },
-                            //myIcon: Icons.edit
-                          )
-                        ]),
-                    const SizedBox(height: 40),
-                    Align(
-                        alignment: Alignment.topLeft,
-                        child: Text(
-                          "Precio",
-                          style: Theme.of(context).textTheme.titleSmall,
-                          textAlign: TextAlign.left,
-                        )),
-                    InputField(
-                      controller: priceController,
-                      textInput: '2000',
-                      textInputType: TextInputType.number,
-                      obscure: false,
-                      icon: const Icon(Icons.edit),
+                            items: driverVehicles.map((Vehicle vehiculo) {
+                              return DropdownMenuItem<Vehicle>(
+                                value: vehiculo,
+                                child: Text(
+                                    '${vehiculo.licensePlate} ${vehiculo.vehicleBrand}',
+                                    style:
+                                        Theme.of(context).textTheme.titleSmall),
+                              );
+                            }).toList(),
+                            decoration: myInputDecoration(" Vehículo"),
+                          ))
+                      : const SizedBox.shrink(),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  MainButton(
+                      text: 'crear',
+                      large: false,
+                      buttonColor: ColorManager.fourthColor,
+                      onPressed: () {
+                        submitForm(context);
+                      }),
+                  SizedBox(height: MediaQuery.of(context).viewInsets.bottom)
+                ]),
+                if (_suggestions.isNotEmpty &&
+                    _currentFoco == _focusNodeStartingPoint)
+                  Positioned(
+                    top: startingPointPosition != null
+                        ? startingPointPosition!.dy + 50
+                        : 150.0,
+                    left: 0.0,
+                    right: 0.0,
+                    child: Container(
+                      height: 200.0,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 1,
+                            blurRadius: 3,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: ListView.builder(
+                        itemCount: _suggestions.length,
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                            title: Text(_suggestions[index]),
+                            onTap: () {
+                              startingPointController.text =
+                                  _suggestions[index];
+                              _getMapCoordinates(
+                                  _suggestions[index], latLngStartingPoint);
+                              _suggestions.clear();
+                              setState(() {
+                                _currentFoco.unfocus();
+                                _focusNodeStartingPoint.unfocus();
+                              });
+                            },
+                          );
+                        },
+                      ),
                     ),
-                    const SizedBox(height: 30),
-                    driverVehicles.isNotEmpty
-                        ? SizedBox(
-                            height: 70,
-                            child: DropdownButtonFormField<Vehicle>(
-                              value: vehicleSelected,
-                              onChanged: (Vehicle? newValue) {
-                                setState(() {
-                                  vehicleSelected = newValue!;
-                                });
-                              },
-                              items: driverVehicles.map((Vehicle vehiculo) {
-                                return DropdownMenuItem<Vehicle>(
-                                  value: vehiculo,
-                                  child: Text(
-                                      '${vehiculo.licensePlate} ${vehiculo.vehicleBrand}',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall),
-                                );
-                              }).toList(),
-                              decoration: myInputDecoration(" Vehículo"),
-                            ))
-                        : const SizedBox.shrink(),
-                    const SizedBox(
-                      height: 20,
+                  ),
+                if (_suggestions.isNotEmpty &&
+                    _currentFoco == _focusNodeArrivalPoint)
+                  Positioned(
+                    top: arrivalPointPosition != null
+                        ? arrivalPointPosition!.dy + 60
+                        : 180.0,
+                    left: 0.0,
+                    right: 0.0,
+                    child: Container(
+                      height: 200.0,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 1,
+                            blurRadius: 3,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: ListView.builder(
+                        itemCount: _suggestions.length,
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                            title: Text(_suggestions[index]),
+                            onTap: () {
+                              arrivalPointController.text = _suggestions[index];
+                              _getMapCoordinates(
+                                  _suggestions[index], latLngArrivalPoint);
+                              _suggestions.clear();
+                              setState(() {
+                                _currentFoco.unfocus();
+                                _focusNodeArrivalPoint.unfocus();
+                              });
+                            },
+                          );
+                        },
+                      ),
                     ),
-                    MainButton(
-                        text: 'crear',
-                        large: false,
-                        buttonColor: ColorManager.fourthColor,
-                        onPressed: () {
-                          submitForm(context);
-                        }),
-                    SizedBox(height: MediaQuery.of(context).viewInsets.bottom)
-                  ]),
-                ))));
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   @override

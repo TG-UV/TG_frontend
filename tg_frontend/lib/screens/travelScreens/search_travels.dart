@@ -41,6 +41,11 @@ class _SearchTravelsState extends State<SearchTravels> {
   final TextEditingController priceController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
+  final GlobalKey _startingPointKey = GlobalKey();
+  final GlobalKey _arrivalPointKey = GlobalKey();
+  Offset? startingPointPosition;
+  Offset? arrivalPointPosition;
+
   List<Travel> travelsList = [];
   bool searchDone = false;
 
@@ -111,7 +116,6 @@ class _SearchTravelsState extends State<SearchTravels> {
       // };
 
       _fetchTravels(requestData);
-      //print("form correcto.........$data");
     } else {
       return ErrorOrAdviceHandler.showErrorAlert(
           context, "Campos incompletos o error en alguno de ellos", true);
@@ -243,6 +247,33 @@ class _SearchTravelsState extends State<SearchTravels> {
     );
   }
 
+  void _getWidgetPosition(GlobalKey key, Function(Offset) callback) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final RenderBox renderBox =
+          key.currentContext!.findRenderObject() as RenderBox;
+      final position = renderBox.localToGlobal(Offset.zero);
+      callback(position);
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      _getWidgetPosition(_startingPointKey, (position) {
+        setState(() {
+          startingPointPosition = position;
+        });
+      });
+
+      _getWidgetPosition(_arrivalPointKey, (position) {
+        setState(() {
+          arrivalPointPosition = position;
+        });
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -255,55 +286,162 @@ class _SearchTravelsState extends State<SearchTravels> {
                 child: Form(
                   key: _formKey,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
-                  child: Column(
+                  child: Stack(
                     children: [
-                      SizedBox(height: MediaQuery.of(context).size.height / 16),
-                      Row(children: [
-                        IconButton(
-                            onPressed: () {
-                              Navigator.pop(context);
+                      Column(
+                        children: [
+                          SizedBox(
+                              height: MediaQuery.of(context).size.height / 16),
+                          Row(children: [
+                            IconButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                icon: const Icon(Icons.arrow_back)),
+                            const SizedBox(width: 10),
+                            Text(
+                              "Busca un viaje",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleLarge!
+                                  .copyWith(fontSize: 26),
+                            )
+                          ]),
+                          const SizedBox(height: 30),
+                          Align(
+                              alignment: Alignment.topLeft,
+                              child: Text(
+                                "Desde",
+                                style: Theme.of(context).textTheme.titleSmall,
+                                textAlign: TextAlign.left,
+                              )),
+                          InputField(
+                            foco: _focusNodeStartingPoint,
+                            controller: startingPointController,
+                            textInput: startingPointController.text,
+                            textInputType: TextInputType.text,
+                            obscure: false,
+                            onChange: (travelsResponse) {
+                              _currentFoco = _focusNodeStartingPoint;
+                              _getSuggestion(travelsResponse);
                             },
-                            icon: const Icon(Icons.arrow_back)),
-                        const SizedBox(width: 10),
-                        Text(
-                          "Busca un viaje",
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleLarge!
-                              .copyWith(fontSize: 26),
-                        )
-                      ]),
-                      const SizedBox(height: 30),
-                      Align(
-                          alignment: Alignment.topLeft,
-                          child: Text(
-                            "Desde",
-                            style: Theme.of(context).textTheme.titleSmall,
-                            textAlign: TextAlign.left,
-                          )),
-                      InputField(
-                        foco: _focusNodeStartingPoint,
-                        controller: startingPointController,
-                        textInput: startingPointController.text,
-                        textInputType: TextInputType.text,
-                        obscure: false,
-                        onChange: (travelsResponse) {
-                          _currentFoco = _focusNodeStartingPoint;
-                          _getSuggestion(travelsResponse);
-                        },
-                        icon: const Icon(Icons.add_location_alt_outlined),
-                        onPressed: () {
-                          _openMapSelector(true, startingPointController);
-                          setState(() {
-                            _focusNodeStartingPoint.unfocus();
-                            _currentFoco = emptyFocus;
-                          });
-                        },
+                            icon: const Icon(Icons.add_location_alt_outlined),
+                            onPressed: () {
+                              _openMapSelector(true, startingPointController);
+                              setState(() {
+                                _focusNodeStartingPoint.unfocus();
+                                _currentFoco = emptyFocus;
+                              });
+                            },
+                          ),
+                          const SizedBox(height: 7),
+                          Align(
+                              alignment: Alignment.topLeft,
+                              child: Text(
+                                "Hacia",
+                                style: Theme.of(context).textTheme.titleSmall,
+                                textAlign: TextAlign.left,
+                              )),
+                          InputField(
+                            foco: _focusNodeStartingPoint,
+                            controller: arrivalPointController,
+                            textInput: arrivalPointController.text,
+                            textInputType: TextInputType.text,
+                            obscure: false,
+                            onChange: (travelsResponse) {
+                              _currentFoco = _focusNodeArrivalPoint;
+                              _getSuggestion(travelsResponse);
+                            },
+                            icon: const Icon(Icons.add_location_alt_outlined),
+                            onPressed: () {
+                              _openMapSelector(false, arrivalPointController);
+                              setState(() {
+                                //  _currentFoco.unfocus();
+                                _focusNodeArrivalPoint.unfocus();
+                                _currentFoco = emptyFocus;
+                              });
+                            },
+                          ),
+                          const SizedBox(height: 40),
+                          Align(
+                              alignment: Alignment.topLeft,
+                              child: Text(
+                                "Cuándo",
+                                style: Theme.of(context).textTheme.titleSmall,
+                                textAlign: TextAlign.left,
+                              )),
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                //BotonPersonalizado('Botón 1'),
+                                SquareButton(
+                                    text: '10',
+                                    isSelected: _selectedTimeButtonIndex == 0,
+                                    onPressed: () {
+                                      setState(() {
+                                        timeController.text = '0';
+                                        _selectedTimeButtonIndex = 0;
+                                      });
+                                    }),
+                                SquareButton(
+                                    text: '30',
+                                    isSelected: _selectedTimeButtonIndex == 1,
+                                    onPressed: () {
+                                      setState(() {
+                                        timeController.text = '1';
+                                        _selectedTimeButtonIndex = 1;
+                                      });
+                                    }),
+                                SquareButton(
+                                    text: '60',
+                                    isSelected: _selectedTimeButtonIndex == 2,
+                                    onPressed: () {
+                                      setState(() {
+                                        timeController.text = '2';
+                                        _selectedTimeButtonIndex = 2;
+                                      });
+                                    }),
+                                SquareButton(
+                                  isSelected: _selectedTimeButtonIndex == 3,
+                                  myIcon: Icons.edit,
+                                  text: '',
+                                  onPressed: () => _selectDate(context),
+                                ),
+                              ]),
+                          const SizedBox(height: 20),
+                          MainButton(
+                              text: "buscar",
+                              large: false,
+                              buttonColor: ColorManager.fourthColor,
+                              onPressed: () => _submitForm(context)),
+                          const SizedBox(height: 70),
+                          if (travelsList.isEmpty && searchDone)
+                            Container(
+                              decoration: BoxDecoration(
+                                  color: ColorManager.thirdColor,
+                                  border: Border.all(color: Colors.red),
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(20))),
+                              child: Text(
+                                textAlign: TextAlign.center,
+                                "Lastimosamente no encontramos viajes para esta solicitud, intentalo más tarde o intenta modificar el horario",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleSmall!
+                                    .copyWith(
+                                        overflow: TextOverflow.ellipsis,
+                                        fontSize: 12),
+                                maxLines: 3,
+                              ),
+                            )
+                        ],
                       ),
                       if (_suggestions.isNotEmpty &&
                           _currentFoco == _focusNodeStartingPoint)
                         Positioned(
-                          top: 50.0,
+                          top: startingPointPosition != null
+                              ? startingPointPosition!.dy + 70
+                              : 170.0,
                           left: 0.0,
                           right: 0.0,
                           child: Container(
@@ -330,9 +468,8 @@ class _SearchTravelsState extends State<SearchTravels> {
                                     _getMapCoordinates(_suggestions[index],
                                         latLngStartingPoint);
                                     _suggestions.clear();
-                                    // _focusNodeStartingPoint.unfocus();
                                     setState(() {
-                                      _currentFoco = emptyFocus;
+                                      _currentFoco.unfocus();
                                       _focusNodeStartingPoint.unfocus();
                                     });
                                   },
@@ -341,38 +478,12 @@ class _SearchTravelsState extends State<SearchTravels> {
                             ),
                           ),
                         ),
-                      const SizedBox(height: 7),
-                      Align(
-                          alignment: Alignment.topLeft,
-                          child: Text(
-                            "Hacia",
-                            style: Theme.of(context).textTheme.titleSmall,
-                            textAlign: TextAlign.left,
-                          )),
-                      InputField(
-                        foco: _focusNodeStartingPoint,
-                        controller: arrivalPointController,
-                        textInput: arrivalPointController.text,
-                        textInputType: TextInputType.text,
-                        obscure: false,
-                        onChange: (travelsResponse) {
-                          _currentFoco = _focusNodeArrivalPoint;
-                          _getSuggestion(travelsResponse);
-                        },
-                        icon: const Icon(Icons.add_location_alt_outlined),
-                        onPressed: () {
-                          _openMapSelector(false, arrivalPointController);
-                          setState(() {
-                            //  _currentFoco.unfocus();
-                            _focusNodeArrivalPoint.unfocus();
-                            _currentFoco = emptyFocus;
-                          });
-                        },
-                      ),
                       if (_suggestions.isNotEmpty &&
                           _currentFoco == _focusNodeArrivalPoint)
                         Positioned(
-                          top: 100.0,
+                          top: arrivalPointPosition != null
+                              ? arrivalPointPosition!.dy + 80
+                              : 180.0,
                           left: 0.0,
                           right: 0.0,
                           child: Container(
@@ -391,106 +502,24 @@ class _SearchTravelsState extends State<SearchTravels> {
                             child: ListView.builder(
                               itemCount: _suggestions.length,
                               itemBuilder: (context, index) {
-                                return Column(
-                                  children: [
-                                    ListTile(
-                                      title: Text(_getStringSuggestionFormated(
-                                          _suggestions[index])),
-                                      onTap: () {
-                                        arrivalPointController.text =
-                                            _suggestions[index];
-                                        _getMapCoordinates(_suggestions[index],
-                                            latLngArrivalPoint);
-                                        _suggestions.clear();
-                                        setState(() {
-                                          _currentFoco = emptyFocus;
-                                          _focusNodeArrivalPoint.unfocus();
-                                        });
-                                      },
-                                    ),
-                                    const Divider(
-                                      height:
-                                          0.5, // Ajusta el espaciado vertical entre las líneas
-                                      color: Colors.grey, // Color de la línea
-                                    ),
-                                  ],
+                                return ListTile(
+                                  title: Text(_suggestions[index]),
+                                  onTap: () {
+                                    arrivalPointController.text =
+                                        _suggestions[index];
+                                    _getMapCoordinates(_suggestions[index],
+                                        latLngArrivalPoint);
+                                    _suggestions.clear();
+                                    setState(() {
+                                      _currentFoco.unfocus();
+                                      _focusNodeArrivalPoint.unfocus();
+                                    });
+                                  },
                                 );
                               },
                             ),
                           ),
                         ),
-                      const SizedBox(height: 40),
-                      Align(
-                          alignment: Alignment.topLeft,
-                          child: Text(
-                            "Cuándo",
-                            style: Theme.of(context).textTheme.titleSmall,
-                            textAlign: TextAlign.left,
-                          )),
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            //BotonPersonalizado('Botón 1'),
-                            SquareButton(
-                                text: '10',
-                                isSelected: _selectedTimeButtonIndex == 0,
-                                onPressed: () {
-                                  setState(() {
-                                    timeController.text = '0';
-                                    _selectedTimeButtonIndex = 0;
-                                  });
-                                }),
-                            SquareButton(
-                                text: '30',
-                                isSelected: _selectedTimeButtonIndex == 1,
-                                onPressed: () {
-                                  setState(() {
-                                    timeController.text = '1';
-                                    _selectedTimeButtonIndex = 1;
-                                  });
-                                }),
-                            SquareButton(
-                                text: '60',
-                                isSelected: _selectedTimeButtonIndex == 2,
-                                onPressed: () {
-                                  setState(() {
-                                    timeController.text = '2';
-                                    _selectedTimeButtonIndex = 2;
-                                  });
-                                }),
-                            SquareButton(
-                              isSelected: _selectedTimeButtonIndex == 3,
-                              myIcon: Icons.edit,
-                              text: '',
-                              onPressed: () => _selectDate(context),
-                            ),
-                          ]),
-                      const SizedBox(height: 20),
-                      MainButton(
-                          text: "buscar",
-                          large: false,
-                          buttonColor: ColorManager.fourthColor,
-                          onPressed: () => _submitForm(context)),
-                      const SizedBox(height: 70),
-                      if (travelsList.isEmpty && searchDone)
-                        Container(
-                          decoration: BoxDecoration(
-                              color: ColorManager.thirdColor,
-                              border: Border.all(color: Colors.red),
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(20))),
-                          child: Text(
-                            textAlign: TextAlign.center,
-                            "Lastimosamente no encontramos viajes para esta solicitud, intentalo más tarde o intenta modificar el horario",
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleSmall!
-                                .copyWith(
-                                    overflow: TextOverflow.ellipsis,
-                                    fontSize: 12),
-                            maxLines: 3,
-                          ),
-                        )
                     ],
                   ),
                 )),
