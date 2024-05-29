@@ -90,6 +90,7 @@ class TravelDatasourceMethods implements TravelDatasource {
       {required String address, required BuildContext context}) async {
     String url =
         'https://api.mapbox.com/geocoding/v5/mapbox.places/$address.json?access_token=$apiKey&country=CO&region=Valle%20del%20Cauca';
+    // final String url = 'https://nominatim.openstreetmap.org/search?q=$address&format=json&addressdetails=1&limit=10&bounded=1&viewbox=-77.6667,3.1833,-75.6667,4.6333';
     List<String> suggestions = [];
 
     var response = await http.get(Uri.parse(url));
@@ -99,6 +100,10 @@ class TravelDatasourceMethods implements TravelDatasource {
       List<dynamic> features = data['features'];
       suggestions =
           features.map((feature) => feature['place_name'] as String).toList();
+      // var data = json.decode(response.body) as List;
+
+      // suggestions =
+      //     data.map<String>((item) => item['display_name'] as String).toList();
     } else {
       ErrorOrAdviceHandler.showErrorAlert(
           context,
@@ -113,6 +118,9 @@ class TravelDatasourceMethods implements TravelDatasource {
       {required String address, required BuildContext context}) async {
     String url =
         "https://api.mapbox.com/geocoding/v5/mapbox.places/$address.json?access_token=$apiKey";
+    // String url =
+    //     'https://nominatim.openstreetmap.org/search?q=$address&format=json&addressdetails=1';
+
     LatLng coordinates = const LatLng(0.0, 0.0);
     //List<String> suggestions = [];
 

@@ -277,6 +277,7 @@ class UserDatasourceMethods implements UserDatasource {
       if (response.statusCode == 200 || response.statusCode == 201) {
         Map<String, dynamic> responseData = Map.from(response.data);
         token = responseData['auth_token'];
+        await AuthStorage().saveToken(token!);
         return token;
       }
     } on DioException catch (e) {

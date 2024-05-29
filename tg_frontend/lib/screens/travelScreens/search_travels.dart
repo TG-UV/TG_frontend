@@ -196,6 +196,15 @@ class _SearchTravelsState extends State<SearchTravels> {
     });
   }
 
+  String _getStringSuggestionFormated(String suggestion) {
+    print("get");
+    if (suggestion.length > 30) {
+      return "${suggestion.substring(0, 30)}...";
+    } else {
+      return suggestion;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -329,19 +338,29 @@ class _SearchTravelsState extends State<SearchTravels> {
                             child: ListView.builder(
                               itemCount: _suggestions.length,
                               itemBuilder: (context, index) {
-                                return ListTile(
-                                  title: Text(_suggestions[index]),
-                                  onTap: () {
-                                    arrivalPointController.text =
-                                        _suggestions[index];
-                                    _getMapCoordinates(_suggestions[index],
-                                        latLngArrivalPoint);
-                                    _suggestions.clear();
-                                    setState(() {
-                                      _currentFoco = emptyFocus;
-                                      _focusNodeArrivalPoint.unfocus();
-                                    });
-                                  },
+                                return Column(
+                                  children: [
+                                    ListTile(
+                                      title: Text(_getStringSuggestionFormated(
+                                          _suggestions[index])),
+                                      onTap: () {
+                                        arrivalPointController.text =
+                                            _suggestions[index];
+                                        _getMapCoordinates(_suggestions[index],
+                                            latLngArrivalPoint);
+                                        _suggestions.clear();
+                                        setState(() {
+                                          _currentFoco = emptyFocus;
+                                          _focusNodeArrivalPoint.unfocus();
+                                        });
+                                      },
+                                    ),
+                                    Divider(
+                                      height:
+                                          0.5, // Ajusta el espaciado vertical entre las líneas
+                                      color: Colors.grey, // Color de la línea
+                                    ),
+                                  ],
                                 );
                               },
                             ),
