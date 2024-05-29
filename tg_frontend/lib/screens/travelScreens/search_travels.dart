@@ -1,21 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:tg_frontend/datasource/endPoints/end_point.dart';
+import 'package:tg_frontend/datasource/travel_data.dart';
+import 'package:tg_frontend/device/environment.dart';
 import 'package:tg_frontend/errors.dart/exceptions.dart';
+import 'package:tg_frontend/models/travel_model.dart';
+import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/screens/theme.dart';
 import 'package:tg_frontend/utils/date_Formatter.dart';
+import 'package:tg_frontend/widgets/input_field.dart';
 import 'package:tg_frontend/widgets/main_button.dart';
 import 'package:tg_frontend/widgets/map_location_selector.dart';
 import 'package:tg_frontend/widgets/square_button.dart';
-import 'package:tg_frontend/widgets/input_field.dart';
-import 'package:tg_frontend/models/travel_model.dart';
 import 'package:tg_frontend/widgets/travel_card.dart';
-import 'package:http/http.dart' as http;
-import 'package:tg_frontend/datasource/endPoints/end_point.dart';
-import 'package:tg_frontend/datasource/travel_data.dart';
-import 'package:tg_frontend/models/user_model.dart';
-import 'package:tg_frontend/device/environment.dart';
-import 'package:latlong2/latlong.dart';
-import 'package:intl/intl.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 class SearchTravels extends StatefulWidget {
   const SearchTravels(
@@ -206,7 +203,7 @@ class _SearchTravelsState extends State<SearchTravels> {
   }
 
   void _openMapSelector(
-      LatLng latLongPoint, TextEditingController textController) {
+      bool isStartingPoint, TextEditingController textController) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -219,8 +216,12 @@ class _SearchTravelsState extends State<SearchTravels> {
         ),
         content: MapSelectionScreen(
           onLocationSelected: (location) {
+            isStartingPoint
+                ? latLngStartingPoint = location
+                : latLngArrivalPoint = location;
+            LatLng latLongPoint =
+                isStartingPoint ? latLngStartingPoint : latLngArrivalPoint;
             setState(() async {
-              latLongPoint = location;
               textController.text =
                   await travelDatasourceMethods.getTextDirection(
                       lat: latLongPoint.latitude,
@@ -292,8 +293,7 @@ class _SearchTravelsState extends State<SearchTravels> {
                         },
                         icon: const Icon(Icons.add_location_alt_outlined),
                         onPressed: () {
-                          _openMapSelector(
-                              latLngStartingPoint, startingPointController);
+                          _openMapSelector(true, startingPointController);
                           setState(() {
                             _focusNodeStartingPoint.unfocus();
                             _currentFoco = emptyFocus;
@@ -361,8 +361,7 @@ class _SearchTravelsState extends State<SearchTravels> {
                         },
                         icon: const Icon(Icons.add_location_alt_outlined),
                         onPressed: () {
-                          _openMapSelector(
-                              latLngArrivalPoint, arrivalPointController);
+                          _openMapSelector(false, arrivalPointController);
                           setState(() {
                             //  _currentFoco.unfocus();
                             _focusNodeArrivalPoint.unfocus();

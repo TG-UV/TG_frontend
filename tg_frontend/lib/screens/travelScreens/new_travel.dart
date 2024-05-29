@@ -210,7 +210,7 @@ class _NewTravelState extends State<NewTravel> {
   }
 
   void _openMapSelector(
-      LatLng latLongPoint, TextEditingController textController) {
+      bool isStartingPoint, TextEditingController textController) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -223,7 +223,11 @@ class _NewTravelState extends State<NewTravel> {
         ),
         content: MapSelectionScreen(
           onLocationSelected: (location) {
-            latLongPoint = location;
+            isStartingPoint
+                ? latLngStartingPoint = location
+                : latLngArrivalPoint = location;
+            LatLng latLongPoint =
+                isStartingPoint ? latLngStartingPoint : latLngArrivalPoint;
             setState(() async {
               textController.text =
                   await travelDatasourceMethods.getTextDirection(
@@ -294,54 +298,54 @@ class _NewTravelState extends State<NewTravel> {
                       },
                       icon: const Icon(Icons.add_location_alt_outlined),
                       onPressed: () {
-                        _openMapSelector(
-                            latLngStartingPoint, startingPointController);
+                        _openMapSelector(true, startingPointController);
                         setState(() {
                           _focusNodeStartingPoint.unfocus();
                           _currentFoco = emptyFocus;
                         });
                       },
                     ),
-                    if (_suggestions.isNotEmpty &&
-                        _currentFoco == _focusNodeStartingPoint)
-                      Positioned(
-                        top: 50.0,
-                        left: 0.0,
-                        right: 0.0,
-                        child: Container(
-                          height: 200.0,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.5),
-                                spreadRadius: 1,
-                                blurRadius: 3,
-                                offset: const Offset(0, 2),
+                    _suggestions.isNotEmpty &&
+                            _currentFoco == _focusNodeStartingPoint
+                        ? Positioned(
+                            top: 50.0,
+                            left: 0.0,
+                            right: 0.0,
+                            child: Container(
+                              height: 200.0,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.5),
+                                    spreadRadius: 1,
+                                    blurRadius: 3,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                          child: ListView.builder(
-                            itemCount: _suggestions.length,
-                            itemBuilder: (context, index) {
-                              return ListTile(
-                                title: Text(_suggestions[index]),
-                                onTap: () {
-                                  startingPointController.text =
-                                      _suggestions[index];
-                                  _getMapCoordinates(
-                                      _suggestions[index], latLngStartingPoint);
-                                  _suggestions.clear();
-                                  setState(() {
-                                    _currentFoco.unfocus();
-                                    _focusNodeStartingPoint.unfocus();
-                                  });
+                              child: ListView.builder(
+                                itemCount: _suggestions.length,
+                                itemBuilder: (context, index) {
+                                  return ListTile(
+                                    title: Text(_suggestions[index]),
+                                    onTap: () {
+                                      startingPointController.text =
+                                          _suggestions[index];
+                                      _getMapCoordinates(_suggestions[index],
+                                          latLngStartingPoint);
+                                      _suggestions.clear();
+                                      setState(() {
+                                        _currentFoco.unfocus();
+                                        _focusNodeStartingPoint.unfocus();
+                                      });
+                                    },
+                                  );
                                 },
-                              );
-                            },
-                          ),
-                        ),
-                      ),
+                              ),
+                            ),
+                          )
+                        : SizedBox.shrink(),
                     const SizedBox(height: 7),
                     Align(
                         alignment: Alignment.topLeft,
@@ -362,8 +366,7 @@ class _NewTravelState extends State<NewTravel> {
                       },
                       icon: const Icon(Icons.add_location_alt_outlined),
                       onPressed: () {
-                        _openMapSelector(
-                            latLngArrivalPoint, arrivalPointController);
+                        _openMapSelector(false, arrivalPointController);
                         setState(() {
                           //  _currentFoco.unfocus();
                           _focusNodeArrivalPoint.unfocus();
@@ -551,7 +554,7 @@ class _NewTravelState extends State<NewTravel> {
                     InputField(
                       controller: priceController,
                       textInput: '2000',
-                      textInputType: TextInputType.text,
+                      textInputType: TextInputType.number,
                       obscure: false,
                       icon: const Icon(Icons.edit),
                     ),

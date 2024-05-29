@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:tg_frontend/datasource/endPoints/end_point.dart';
 import 'package:tg_frontend/datasource/local_database_provider.dart';
+import 'package:tg_frontend/device/environment.dart';
 import 'package:tg_frontend/device/local_tables.dart';
 import 'package:tg_frontend/errors.dart/exceptions.dart';
 import 'package:tg_frontend/models/user_model.dart';
@@ -203,22 +204,25 @@ class UserDatasourceMethods implements UserDatasource {
   @override
   Future<int> getUserRemote(context) async {
     User user;
-    int idUser = 0;
-
+    int send = 0;
+    token = await AuthStorage().getToken();
     try {
       dio.options.headers['Authorization'] = 'Token $token';
       Response response =
           await dio.get(_endPoints.baseUrl + _endPoints.getUserLogged);
       if (response.statusCode == 200 || response.statusCode == 201) {
         user = User.fromJson(response.data);
-        idUser = user.idUser;
-        insertUserLocal(user: user);
+        Environment.sl.registerSingleton<User>(user);
+        send++;
+        return send;
+        //idUser = user.idUser;
+        //insertUserLocal(user: user);
       }
     } on DioException catch (e) {
       ErrorOrAdviceHandler.showErrorAlert(
           context, serverErrorString + e.response!.data.toString(), true);
     }
-    return idUser;
+    return send;
   }
 
   @override

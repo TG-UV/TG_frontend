@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -7,7 +8,6 @@ import 'package:tg_frontend/datasource/endPoints/end_point.dart';
 import 'package:tg_frontend/datasource/local_database_provider.dart';
 import 'package:tg_frontend/datasource/user_data.dart';
 import 'package:tg_frontend/device/environment.dart';
-import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/screens/home.dart';
 import 'package:tg_frontend/screens/loginAndRegister/sign_up.dart';
 import 'package:tg_frontend/screens/theme.dart';
@@ -46,8 +46,8 @@ class _LoginState extends State<Login> {
 
   Future<void> loginUser(
       String username, String password, BuildContext context) async {
-    // String? deviceToken = await FirebaseMessaging.instance.getToken();
-    String deviceToken = "kncñsncunvñsfnv";
+    String? deviceToken = await FirebaseMessaging.instance.getToken();
+    //String deviceToken = "kncñsncunvñsfnv";
 
     if (_validateFormData(_formKey.currentState!.validate(), deviceToken)) {
       final token = await userDatasourceImpl.getUserAuth(
@@ -57,7 +57,7 @@ class _LoginState extends State<Login> {
           context: context);
 
       if (token != null) {
-        saveAuthInformation(token, username, password);
+        saveAuthInformation(token, username, password, context);
       }
       setState(() {
         _isLoading = false;
@@ -78,15 +78,17 @@ class _LoginState extends State<Login> {
     await userDatasourceImpl.postReSetPassword(email: email, context: context);
   }
 
-  void saveAuthInformation(token, username, password) async {
+  void saveAuthInformation(token, username, password, context) async {
     // await AuthStorage().saveToken(token);
     await AuthStorage().saveNickname(username);
     await AuthStorage().savePassword(password);
     int idUser = await userDatasourceImpl.getUserRemote(context);
-    User user = await userDatasourceImpl.getUserLocal(idUser);
-    Environment.sl.registerSingleton<User>(user);
+    //User user = await userDatasourceImpl.getUserLocal(idUser);
+    // Environment.sl.registerSingleton<User>(user);
     setState(() {});
-    Get.to(() => const Home());
+    if (idUser != 0) {
+      Get.to(() => const Home());
+    }
   }
 
   Future<void> showErrorMessage(String errorMessage) {
