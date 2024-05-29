@@ -108,12 +108,17 @@ class _DetailsCardState extends State<AssociatesDetailsCard>
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   } else if (snapshot.hasError || snapshot.data == null) {
-                    return Image.asset(
-                      'assets/errorImage.PNG',
-                      // width: 500,
-                      // height: 800,
-                      // height: double.maxFinite,
-                      fit: BoxFit.fitHeight,
+                    return Center(
+                      child: Text(
+                        'Se produjo un error, intente mas tarde',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 20.0,
+                          overflow: TextOverflow.ellipsis,
+                          color: ColorManager.fourthColor,
+                        ),
+                        maxLines: 3,
+                      ),
                     );
                   } else {
                     detailsList = snapshot.data;

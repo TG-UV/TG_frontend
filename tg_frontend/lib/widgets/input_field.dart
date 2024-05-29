@@ -21,7 +21,7 @@ class InputField extends StatelessWidget {
   final bool obscure;
   final Icon? icon;
   final Function(String)? onChange;
-  final Function()? onPressed;
+  final void Function()? onPressed;
   final FocusNode? foco;
   final Color? color;
 

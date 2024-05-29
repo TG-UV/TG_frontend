@@ -3,6 +3,7 @@ import 'package:tg_frontend/errors.dart/exceptions.dart';
 import 'package:tg_frontend/screens/theme.dart';
 import 'package:tg_frontend/utils/date_Formatter.dart';
 import 'package:tg_frontend/widgets/main_button.dart';
+import 'package:tg_frontend/widgets/map_location_selector.dart';
 import 'package:tg_frontend/widgets/square_button.dart';
 import 'package:tg_frontend/widgets/input_field.dart';
 import 'package:tg_frontend/models/travel_model.dart';
@@ -197,12 +198,48 @@ class _SearchTravelsState extends State<SearchTravels> {
   }
 
   String _getStringSuggestionFormated(String suggestion) {
-    print("get");
     if (suggestion.length > 30) {
       return "${suggestion.substring(0, 30)}...";
     } else {
       return suggestion;
     }
+  }
+
+  void _openMapSelector(
+      LatLng latLongPoint, TextEditingController textController) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: ColorManager.staticColor,
+        title: Text(
+          'Seleccione la ubicación en el mapa',
+          style: Theme.of(context).textTheme.titleSmall!.copyWith(
+              fontWeight: FontWeight.bold, overflow: TextOverflow.ellipsis),
+          maxLines: 3,
+        ),
+        content: MapSelectionScreen(
+          onLocationSelected: (location) {
+            setState(() async {
+              latLongPoint = location;
+              textController.text =
+                  await travelDatasourceMethods.getTextDirection(
+                      lat: latLongPoint.latitude,
+                      long: latLongPoint.longitude,
+                      context: context);
+            });
+          },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child:
+                Text('Regresar', style: Theme.of(context).textTheme.titleSmall),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -253,7 +290,15 @@ class _SearchTravelsState extends State<SearchTravels> {
                           _currentFoco = _focusNodeStartingPoint;
                           _getSuggestion(travelsResponse);
                         },
-                        icon: const Icon(Icons.edit),
+                        icon: const Icon(Icons.add_location_alt_outlined),
+                        onPressed: () {
+                          _openMapSelector(
+                              latLngStartingPoint, startingPointController);
+                          setState(() {
+                            _focusNodeStartingPoint.unfocus();
+                            _currentFoco = emptyFocus;
+                          });
+                        },
                       ),
                       if (_suggestions.isNotEmpty &&
                           _currentFoco == _focusNodeStartingPoint)
@@ -314,7 +359,16 @@ class _SearchTravelsState extends State<SearchTravels> {
                           _currentFoco = _focusNodeArrivalPoint;
                           _getSuggestion(travelsResponse);
                         },
-                        icon: const Icon(Icons.edit),
+                        icon: const Icon(Icons.add_location_alt_outlined),
+                        onPressed: () {
+                          _openMapSelector(
+                              latLngArrivalPoint, arrivalPointController);
+                          setState(() {
+                            //  _currentFoco.unfocus();
+                            _focusNodeArrivalPoint.unfocus();
+                            _currentFoco = emptyFocus;
+                          });
+                        },
                       ),
                       if (_suggestions.isNotEmpty &&
                           _currentFoco == _focusNodeArrivalPoint)
@@ -355,7 +409,7 @@ class _SearchTravelsState extends State<SearchTravels> {
                                         });
                                       },
                                     ),
-                                    Divider(
+                                    const Divider(
                                       height:
                                           0.5, // Ajusta el espaciado vertical entre las líneas
                                       color: Colors.grey, // Color de la línea

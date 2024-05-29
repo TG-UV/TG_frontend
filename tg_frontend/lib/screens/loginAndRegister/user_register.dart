@@ -108,10 +108,19 @@ class _UserRegisterState extends State<UserRegister> {
                     color: ColorManager.fourthColor,
                   ),
                 );
-              } else if (snapshot.hasError) {
+              } else if (snapshot.hasError || snapshot.data == null) {
                 return Center(
-                    child:
-                        Text('Error al cargar información: ${snapshot.error}'));
+                  child: Text(
+                    'Se produjo un error, intente mas tarde',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 20.0,
+                      overflow: TextOverflow.ellipsis,
+                      color: ColorManager.fourthColor,
+                    ),
+                    maxLines: 3,
+                  ),
+                );
               } else {
                 cities = snapshot.data!;
                 return SingleChildScrollView(

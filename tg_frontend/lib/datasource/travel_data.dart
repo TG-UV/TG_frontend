@@ -89,13 +89,16 @@ class TravelDatasourceMethods implements TravelDatasource {
   Future<List<String>> getMapSuggestions(
       {required String address, required BuildContext context}) async {
     String url =
-        'https://api.mapbox.com/geocoding/v5/mapbox.places/$address.json?access_token=$apiKey&country=CO&region=Valle%20del%20Cauca';
+        'https://api.mapbox.com/geocoding/v5/mapbox.places/$address.json?access_token=$apiKey&country=CO&region=Valle%20del%20Cauca=1&limit=10';
     // final String url = 'https://nominatim.openstreetmap.org/search?q=$address&format=json&addressdetails=1&limit=10&bounded=1&viewbox=-77.6667,3.1833,-75.6667,4.6333';
     List<String> suggestions = [];
 
     var response = await http.get(Uri.parse(url));
 
-    if (response.statusCode == 200 || response.statusCode == 201) {
+    if (response.statusCode == 200 ||
+        response.statusCode == 201 ||
+        response.statusCode == 203 ||
+        response.statusCode == 204) {
       Map<String, dynamic> data = jsonDecode(response.body);
       List<dynamic> features = data['features'];
       suggestions =
@@ -105,10 +108,10 @@ class TravelDatasourceMethods implements TravelDatasource {
       // suggestions =
       //     data.map<String>((item) => item['display_name'] as String).toList();
     } else {
-      ErrorOrAdviceHandler.showErrorAlert(
-          context,
-          "lo sentimos estamos teniendo un problema para obtener las direcciones, intenta más tarde",
-          true);
+      // ErrorOrAdviceHandler.showErrorAlert(
+      //     context,
+      //     "Ops! estamos teniendo un problema para obtener las direcciones, intenta más tarde",
+      //     true);
     }
     return suggestions;
   }
@@ -126,7 +129,10 @@ class TravelDatasourceMethods implements TravelDatasource {
 
     final response = await http.get(Uri.parse(url));
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 ||
+        response.statusCode == 201 ||
+        response.statusCode == 203 ||
+        response.statusCode == 204) {
       Map<String, dynamic> data = json.decode(response.body);
       List<double> coordinatesValues =
           List<double>.from(data['features'][0]['geometry']['coordinates']);
@@ -135,7 +141,7 @@ class TravelDatasourceMethods implements TravelDatasource {
     } else {
       ErrorOrAdviceHandler.showErrorAlert(
           context,
-          "lo sentimos estamos teniendo un problema para obtener las direcciones, intenta más tarde",
+          "Ops! estamos teniendo un problema para obtener las direcciones, intenta más tarde",
           true);
       return coordinates;
     }
@@ -204,7 +210,10 @@ class TravelDatasourceMethods implements TravelDatasource {
       dio.options.headers['Authorization'] = 'Token $token';
       Response response = await dio
           .post(_endPoints.baseUrl + _endPoints.postTravel, data: jsonTravel);
-      if (response.statusCode == 200 || response.statusCode == 201) {
+      if (response.statusCode == 200 ||
+          response.statusCode == 201 ||
+          response.statusCode == 203 ||
+          response.statusCode == 204) {
         sent++;
       }
     } on DioException catch (e) {
@@ -223,7 +232,10 @@ class TravelDatasourceMethods implements TravelDatasource {
     try {
       dio.options.headers['Authorization'] = 'Token $token';
       Response response = await dio.delete(url);
-      if (response.statusCode == 200 || response.statusCode == 201) {
+      if (response.statusCode == 200 ||
+          response.statusCode == 201 ||
+          response.statusCode == 203 ||
+          response.statusCode == 204) {
         sent++;
       }
     } on DioException catch (e) {
@@ -303,7 +315,10 @@ class TravelDatasourceMethods implements TravelDatasource {
       response = await dio.post(
           _endPoints.baseUrl + _endPoints.getGeneralTravels,
           data: searchData);
-      if (response.statusCode == 200 || response.statusCode == 201) {
+      if (response.statusCode == 200 ||
+          response.statusCode == 201 ||
+          response.statusCode == 203 ||
+          response.statusCode == 204) {
         for (var data in response.data[0]["results"]) {
           Travel travel = Travel.fromJson(data);
           travelList.add(travel);
@@ -364,7 +379,10 @@ class TravelDatasourceMethods implements TravelDatasource {
         url,
         //  queryParameters: parameters,
       );
-      if (response.statusCode == 200 || response.statusCode == 201) {
+      if (response.statusCode == 200 ||
+          response.statusCode == 201 ||
+          response.statusCode == 203 ||
+          response.statusCode == 204) {
         List<dynamic> passengersData = response.data['passengers'];
 
         for (var passengerData in passengersData) {
@@ -403,7 +421,10 @@ class TravelDatasourceMethods implements TravelDatasource {
       dio.options.headers['Authorization'] = 'Token $token';
       Response response = await dio.patch(url, data: data);
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
+      if (response.statusCode == 200 ||
+          response.statusCode == 201 ||
+          response.statusCode == 203 ||
+          response.statusCode == 204) {
         sent++;
       }
     } on DioException catch (e) {
@@ -423,7 +444,10 @@ class TravelDatasourceMethods implements TravelDatasource {
       Response response = await dio.post(
           _endPoints.baseUrl + _endPoints.postPassengerTripBook,
           data: jsonPassengerTrip);
-      if (response.statusCode == 200 || response.statusCode == 201) {
+      if (response.statusCode == 200 ||
+          response.statusCode == 201 ||
+          response.statusCode == 203 ||
+          response.statusCode == 204) {
         sent++;
       }
     } on DioException catch (e) {
@@ -442,7 +466,10 @@ class TravelDatasourceMethods implements TravelDatasource {
     try {
       dio.options.headers['Authorization'] = 'Token $token';
       Response response = await dio.delete(url);
-      if (response.statusCode == 200 || response.statusCode == 201) {
+      if (response.statusCode == 200 ||
+          response.statusCode == 201 ||
+          response.statusCode == 203 ||
+          response.statusCode == 204) {
         sent++;
       }
     } on DioException catch (e) {
@@ -487,7 +514,10 @@ class TravelDatasourceMethods implements TravelDatasource {
       response = await dio.get(
         url,
       );
-      if (response.statusCode == 200 || response.statusCode == 201) {
+      if (response.statusCode == 200 ||
+          response.statusCode == 201 ||
+          response.statusCode == 203 ||
+          response.statusCode == 204) {
         return response;
       }
     } on DioException catch (e) {

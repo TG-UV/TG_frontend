@@ -116,9 +116,20 @@ class _ListedTravelsState extends State<ListedTravels> {
                                 ConnectionState.waiting) {
                               return const Center(
                                   child: CircularProgressIndicator());
-                            } else if (snapshot.hasError) {
+                            } else if (snapshot.hasError ||
+                                snapshot.data == null) {
                               return Center(
-                                  child: Text('Error: ${snapshot.error}'));
+                                child: Text(
+                                  'Se produjo un error, intente mas tarde',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 20.0,
+                                    overflow: TextOverflow.ellipsis,
+                                    color: ColorManager.fourthColor,
+                                  ),
+                                  maxLines: 3,
+                                ),
+                              );
                             } else {
                               travelsList = snapshot.data ?? [];
                               if (travelsList.isEmpty) {

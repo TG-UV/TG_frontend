@@ -44,18 +44,6 @@ class _MapScreenState extends State<MapScreen> {
   void initState() {
     super.initState();
     _requestLocationPermission();
-    //FirebaseService().initializeFirebaseMessaging(context);
-    // FirebaseService().initializeFirebaseMessaging(
-    //   onMessageReceived: (RemoteMessage message) {
-    //     travelNotification = Travel.fromJson(message.data);
-    //     setState(() {});
-    //     Provider.of<MapScreenProvider>(context, listen: false)
-    //         .setShowNotificationCard(true);
-    //   },
-    //   onNotificationTypeReceived: (String notificationType) {
-    //     // Manejar el tipo de notificación recibida si es necesario
-    //   },
-    // );
   }
 
   Future<void> _requestLocationPermission() async {
@@ -119,7 +107,7 @@ class _MapScreenState extends State<MapScreen> {
                           child: CircularProgressIndicator(
                         valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
                       ));
-                    } else if (snapshot.hasError) {
+                    } else if (snapshot.hasError || snapshot.data == null) {
                       return const Center(
                           child: Text('Ops :(  ha ocurrido un error'));
                     } else {

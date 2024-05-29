@@ -14,6 +14,7 @@ import 'package:tg_frontend/screens/theme.dart';
 import 'package:tg_frontend/utils/date_Formatter.dart';
 import 'package:tg_frontend/widgets/input_field.dart';
 import 'package:tg_frontend/widgets/main_button.dart';
+import 'package:tg_frontend/widgets/map_location_selector.dart';
 import 'package:tg_frontend/widgets/square_button.dart';
 
 class NewTravel extends StatefulWidget {
@@ -39,6 +40,7 @@ class _NewTravelState extends State<NewTravel> {
   List<String> _suggestions = [];
   late LatLng latLngArrivalPoint;
   late LatLng latLngStartingPoint;
+  // late LatLng _selectedLocation;
   List<Vehicle> driverVehicles = [];
   late Vehicle vehicleSelected;
 
@@ -207,6 +209,43 @@ class _NewTravelState extends State<NewTravel> {
     );
   }
 
+  void _openMapSelector(
+      LatLng latLongPoint, TextEditingController textController) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: ColorManager.staticColor,
+        title: Text(
+          'Seleccione la ubicación en el mapa',
+          style: Theme.of(context).textTheme.titleSmall!.copyWith(
+              fontWeight: FontWeight.bold, overflow: TextOverflow.ellipsis),
+          maxLines: 3,
+        ),
+        content: MapSelectionScreen(
+          onLocationSelected: (location) {
+            latLongPoint = location;
+            setState(() async {
+              textController.text =
+                  await travelDatasourceMethods.getTextDirection(
+                      lat: latLongPoint.latitude,
+                      long: latLongPoint.longitude,
+                      context: context);
+            });
+          },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child:
+                Text('Regresar', style: Theme.of(context).textTheme.titleSmall),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -253,10 +292,11 @@ class _NewTravelState extends State<NewTravel> {
                         _currentFoco = _focusNodeStartingPoint;
                         _getSuggestion(value);
                       },
-                      icon: const Icon(Icons.edit),
+                      icon: const Icon(Icons.add_location_alt_outlined),
                       onPressed: () {
+                        _openMapSelector(
+                            latLngStartingPoint, startingPointController);
                         setState(() {
-                          // _currentFoco.unfocus();
                           _focusNodeStartingPoint.unfocus();
                           _currentFoco = emptyFocus;
                         });
@@ -320,8 +360,10 @@ class _NewTravelState extends State<NewTravel> {
                         _currentFoco = _focusNodeArrivalPoint;
                         _getSuggestion(value);
                       },
-                      icon: const Icon(Icons.edit),
+                      icon: const Icon(Icons.add_location_alt_outlined),
                       onPressed: () {
+                        _openMapSelector(
+                            latLngArrivalPoint, arrivalPointController);
                         setState(() {
                           //  _currentFoco.unfocus();
                           _focusNodeArrivalPoint.unfocus();
@@ -550,5 +592,10 @@ class _NewTravelState extends State<NewTravel> {
                     SizedBox(height: MediaQuery.of(context).viewInsets.bottom)
                   ]),
                 ))));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 }
