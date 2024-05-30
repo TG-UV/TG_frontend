@@ -316,6 +316,7 @@ class _SearchTravelsState extends State<SearchTravels> {
                                 textAlign: TextAlign.left,
                               )),
                           InputField(
+                            key: _startingPointKey,
                             foco: _focusNodeStartingPoint,
                             controller: startingPointController,
                             textInput: startingPointController.text,
@@ -343,6 +344,7 @@ class _SearchTravelsState extends State<SearchTravels> {
                                 textAlign: TextAlign.left,
                               )),
                           InputField(
+                            key: _arrivalPointKey,
                             foco: _focusNodeStartingPoint,
                             controller: arrivalPointController,
                             textInput: arrivalPointController.text,
@@ -440,7 +442,7 @@ class _SearchTravelsState extends State<SearchTravels> {
                           _currentFoco == _focusNodeStartingPoint)
                         Positioned(
                           top: startingPointPosition != null
-                              ? startingPointPosition!.dy + 70
+                              ? startingPointPosition!.dy + 50
                               : 170.0,
                           left: 0.0,
                           right: 0.0,
@@ -482,7 +484,7 @@ class _SearchTravelsState extends State<SearchTravels> {
                           _currentFoco == _focusNodeArrivalPoint)
                         Positioned(
                           top: arrivalPointPosition != null
-                              ? arrivalPointPosition!.dy + 80
+                              ? arrivalPointPosition!.dy + 50
                               : 180.0,
                           left: 0.0,
                           right: 0.0,
