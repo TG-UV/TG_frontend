@@ -40,22 +40,37 @@ class InputField extends StatelessWidget {
       }
     }
 
+    // String? validator(String? value, String? textInput) {
+    //   if (textInput != "Contraseña" || textInput != "Contraseña actual") {
+    //     if (value == null || value.isEmpty) {
+    //       return 'Este campo no puede estar vacio';
+    //     }
+    //   } else {
+    //     if (value!.isEmpty) {
+    //       return "Este campo no puede estar vaciooo";
+    //     } else {
+    //       bool result = validatePassword(value);
+    //       if (result) {
+    //         return null;
+    //       } else {
+    //         return "La constraseña debe tener al menos un \nnúmero, un carácter especial y una\nmayúscula";
+    //       }
+    //     }
+    //   }
+    //   return null;
+    // }
     String? validator(String? value) {
-      if (textInput != "Contraseña" || textInput != "Contraseña actual") {
-        if (value == null || value.isEmpty) {
-          return 'Este campo no puede estar vacio';
-        }
-      } else {
-        if (value!.isEmpty) {
-          return "Este campo no puede estar vaciooo";
+      if (textInput == "Contraseña" ||
+          textInput == "Nueva contraseña" ||
+          textInput == "Confirmación de contraseña") {
+        bool result = validatePassword(value!);
+        if (result) {
+          return null;
         } else {
-          bool result = validatePassword(value);
-          if (result) {
-            return null;
-          } else {
-            return "La constraseña debe tener al menos un \nnúmero, un carácter especial y una\nmayúscula";
-          }
+          return "La constraseña debe tener al menos un \nnúmero, un carácter especial y una\nmayúscula";
         }
+      } else if (value!.isEmpty) {
+        return "Este campo no puede estar vaciooo";
       }
       return null;
     }
