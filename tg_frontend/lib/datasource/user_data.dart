@@ -17,7 +17,7 @@ abstract class UserDatasource {
   Future<void> postUserSendEmail({required String userEmail, context});
   Future<int?> postUserSetPassword(
       {required String currentPassword, required String newPassword, context});
-  Future<int?> insertVehicleRemote({required Vehicle vehicle, context});
+  Future<int> insertVehicleRemote({required Vehicle vehicle, context});
   Future<int?> updateVehicelRemote(
       {required int vehicleId, required Vehicle vehicle});
   Future<int> getUserRemote(context);
@@ -124,8 +124,8 @@ class UserDatasourceMethods implements UserDatasource {
   }
 
   @override
-  Future<int?> insertVehicleRemote({required Vehicle vehicle, context}) async {
-    int? sent;
+  Future<int> insertVehicleRemote({required Vehicle vehicle, context}) async {
+    int sent = 0;
     try {
       Map<String, dynamic> jsonUser = vehicle.toJson();
 
@@ -140,7 +140,7 @@ class UserDatasourceMethods implements UserDatasource {
       ErrorOrAdviceHandler.showErrorAlert(
           context, serverErrorString + e.response!.data.toString(), true);
     }
-    return null;
+    return sent;
   }
 
   @override
@@ -325,7 +325,11 @@ class UserDatasourceMethods implements UserDatasource {
       //dio.options.headers['Authorization'] = 'Token $token';
       Response response =
           await dio.get(_endPoints.baseUrl + _endPoints.getCities);
-      if (response.statusCode == 200 || response.statusCode == 201) {
+      print("get done");
+      if (response.statusCode == 200 ||
+          response.statusCode == 201 ||
+          response.statusCode == 203 ||
+          response.statusCode == 204) {
         citiesOptions = response.data;
         return citiesOptions;
       }

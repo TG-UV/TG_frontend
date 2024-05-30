@@ -212,7 +212,7 @@ class _VehicleManagmentState extends State<VehicleManagment> {
                                           decoration:
                                               myInputDecoration(" Vehículo"),
                                         )),
-                                    const SizedBox(height: 30.0),
+                                    const SizedBox(height: 20.0),
                                     InputField(
                                       controller: licensePlateController,
                                       textInput: 'Placa',

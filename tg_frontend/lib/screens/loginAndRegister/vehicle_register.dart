@@ -109,7 +109,7 @@ class _VehicleRegisterState extends State<VehicleRegister> {
       if (widget.parent == "menu") {
         var response = await userDatasourceImpl.insertVehicleRemote(
             vehicle: vehicle, context: context);
-        if (response is int) {
+        if (response != 0) {
           await EasyLoading.showInfo("vehículo añadido");
           Get.to(() => const Home());
         }
