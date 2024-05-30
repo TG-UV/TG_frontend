@@ -101,7 +101,6 @@ class _DriverDetailsCardState extends State<DriverDetailsCard> {
           travelId: widget.travel.id.toString(), context: context);
       if (sendResponse != 0) {
         await EasyLoading.showInfo("Se eliminó tu viaje..");
-        // ignore: use_build_context_synchronously
         Navigator.of(context).pop();
       } else {
         await EasyLoading.showInfo("Hubo un error");

@@ -11,6 +11,7 @@ import 'package:tg_frontend/models/user_model.dart';
 import 'package:tg_frontend/device/environment.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:tg_frontend/widgets/map_location_selector.dart';
 
 class GlobalDetailsCard extends StatefulWidget {
   const GlobalDetailsCard({
@@ -38,6 +39,7 @@ class _GlobalDetailsCardState extends State<GlobalDetailsCard> {
 
   final FocusNode _focusNodeStartingPoint = FocusNode();
   late FocusNode _currentFoco;
+  late FocusNode emptyFocus = FocusNode();
   List<String> _suggestions = [];
   late LatLng latLngStartingPoint;
   String dayOfWeek = "Fecha";
@@ -75,16 +77,6 @@ class _GlobalDetailsCardState extends State<GlobalDetailsCard> {
     setState(() => _seats = newValue);
   }
 
-  // Future<Map<String, dynamic>?> _loadTravelDetails() async {
-  //   Map<String, dynamic>? value;
-  //   final listResponse = await travelDatasourceImpl.getTravelDetails(
-  //       travelId: widget.travel.id,
-  //       finalUrl: _endPoints.getTravelDetailsPassenger);
-  //   if (listResponse != null) {
-  //     value = listResponse.data;
-  //   }
-  //   return value;
-  // }
   Future<void> _loadTravelDetails() async {
     final listResponse = await travelDatasourceImpl.getTravelDetails(
         travelId: widget.travel.id,
@@ -134,6 +126,43 @@ class _GlobalDetailsCardState extends State<GlobalDetailsCard> {
     setState(() {
       latLngStartingPoint = response;
     });
+  }
+
+  void _openMapSelector(
+      bool isStartingPoint, TextEditingController textController) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: ColorManager.staticColor,
+        title: Text(
+          'Seleccione la ubicación en el mapa',
+          style: Theme.of(context).textTheme.titleSmall!.copyWith(
+              fontWeight: FontWeight.bold, overflow: TextOverflow.ellipsis),
+          maxLines: 3,
+        ),
+        content: MapSelectionScreen(
+          onLocationSelected: (location) {
+            latLngStartingPoint = location;
+            LatLng latLongPoint = latLngStartingPoint;
+            setState(() async {
+              textController.text = await travelDatasourceImpl.getTextDirection(
+                  lat: latLongPoint.latitude,
+                  long: latLongPoint.longitude,
+                  context: context);
+            });
+          },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child:
+                Text('Regresar', style: Theme.of(context).textTheme.titleSmall),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -331,6 +360,16 @@ class _GlobalDetailsCardState extends State<GlobalDetailsCard> {
                                                           .staticColor,
                                                       icon: const Icon(Icons
                                                           .location_history),
+                                                      onPressed: () {
+                                                        _openMapSelector(true,
+                                                            startingPointController);
+                                                        setState(() {
+                                                          _focusNodeStartingPoint
+                                                              .unfocus();
+                                                          _currentFoco =
+                                                              emptyFocus;
+                                                        });
+                                                      },
                                                       onChange: (value) {
                                                         _currentFoco =
                                                             _focusNodeStartingPoint;

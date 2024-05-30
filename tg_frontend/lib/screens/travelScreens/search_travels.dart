@@ -89,18 +89,18 @@ class _SearchTravelsState extends State<SearchTravels> {
         dateController.text.isNotEmpty &&
         timeController.text.isNotEmpty) {
       Map<String, dynamic> requestData = {
-        // 'starting_point_lat':
-        //     double.parse(latLngStartingPoint.latitude.toStringAsFixed(6)),
-        // "starting_point_long":
-        //     double.parse(latLngStartingPoint.longitude.toStringAsFixed(6)),
-        // "arrival_point_lat":
-        //     double.parse(latLngArrivalPoint.latitude.toStringAsFixed(6)),
-        // "arrival_point_long":
-        //     double.parse(latLngArrivalPoint.longitude.toStringAsFixed(6)),
-        "starting_point_lat": "3.376582",
-        "starting_point_long": "-76.533462",
-        "arrival_point_lat": "3.399394",
-        "arrival_point_long": "-76.543935",
+        'starting_point_lat':
+            double.parse(latLngStartingPoint.latitude.toStringAsFixed(6)),
+        "starting_point_long":
+            double.parse(latLngStartingPoint.longitude.toStringAsFixed(6)),
+        "arrival_point_lat":
+            double.parse(latLngArrivalPoint.latitude.toStringAsFixed(6)),
+        "arrival_point_long":
+            double.parse(latLngArrivalPoint.longitude.toStringAsFixed(6)),
+        // "starting_point_lat": "3.376582",
+        // "starting_point_long": "-76.533462",
+        // "arrival_point_lat": "3.399394",
+        // "arrival_point_long": "-76.543935",
         'start_time': _selectedTime,
         'start_date': _selectedDate,
       };
@@ -328,6 +328,7 @@ class _SearchTravelsState extends State<SearchTravels> {
                             },
                             icon: const Icon(Icons.add_location_alt_outlined),
                             onPressed: () {
+                              searchDone = false;
                               _openMapSelector(true, startingPointController);
                               setState(() {
                                 _focusNodeStartingPoint.unfocus();
@@ -356,6 +357,7 @@ class _SearchTravelsState extends State<SearchTravels> {
                             },
                             icon: const Icon(Icons.add_location_alt_outlined),
                             onPressed: () {
+                              searchDone = false;
                               _openMapSelector(false, arrivalPointController);
                               setState(() {
                                 //  _currentFoco.unfocus();
@@ -366,12 +368,38 @@ class _SearchTravelsState extends State<SearchTravels> {
                           ),
                           const SizedBox(height: 40),
                           Align(
-                              alignment: Alignment.topLeft,
-                              child: Text(
-                                "Cuándo",
-                                style: Theme.of(context).textTheme.titleSmall,
-                                textAlign: TextAlign.left,
-                              )),
+                            alignment: Alignment.topLeft,
+                            child: Row(
+                              children: [
+                                Text(
+                                  'Cuándo',
+                                  style: Theme.of(context).textTheme.titleSmall,
+                                ),
+                                const Spacer(),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Text(
+                                      timeController.text,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall!
+                                          .copyWith(
+                                              fontWeight: FontWeight.bold),
+                                    ),
+                                    Text(
+                                      dateController.text,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall!
+                                          .copyWith(
+                                              fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                )
+                              ],
+                            ),
+                          ),
                           Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [

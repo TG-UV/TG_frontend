@@ -136,6 +136,7 @@ class _LateralBarState extends State<LateralBar> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
+                    backgroundColor: ColorManager.staticColor,
                     title: const Text("¿Necesitas ayuda?"),
                     content: Column(
                       children: [

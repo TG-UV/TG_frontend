@@ -53,14 +53,14 @@ class _MapScreenState extends State<MapScreen> {
       myPosition = defaultLocation;
       setState(() {});
       return;
-    }
-
-    await Permission.locationWhenInUse.request();
-    if (await Permission.locationWhenInUse.request().isGranted) {
-      await _getLocation();
-      setState(() {});
     } else {
-      await EasyLoading.showInfo("Error con el gps");
+      await Permission.locationWhenInUse.request();
+      if (await Permission.locationWhenInUse.request().isGranted) {
+        await _getLocation();
+        setState(() {});
+      } else {
+        await EasyLoading.showInfo("Error con el gps");
+      }
     }
   }
 
