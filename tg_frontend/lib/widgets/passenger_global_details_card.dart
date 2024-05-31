@@ -46,6 +46,9 @@ class _GlobalDetailsCardState extends State<GlobalDetailsCard> {
   String startingPointTextDirection = "";
   String arrivalPointTextDirection = "";
 
+  final GlobalKey _startingPointKey = GlobalKey();
+  Offset? startingPointPosition;
+
   @override
   void initState() {
     _getTextDirections();
@@ -163,6 +166,27 @@ class _GlobalDetailsCardState extends State<GlobalDetailsCard> {
         ],
       ),
     );
+  }
+
+  void _getWidgetPosition(GlobalKey key, Function(Offset) callback) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final RenderBox renderBox =
+          key.currentContext!.findRenderObject() as RenderBox;
+      final position = renderBox.localToGlobal(Offset.zero);
+      callback(position);
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      _getWidgetPosition(_startingPointKey, (position) {
+        setState(() {
+          startingPointPosition = position;
+        });
+      });
+    });
   }
 
   @override
@@ -294,151 +318,219 @@ class _GlobalDetailsCardState extends State<GlobalDetailsCard> {
                                                 fontWeight: FontWeight.normal),
                                       ),
                                       // const SizedBox(height: 50),
-                                      Card(
-                                          color: Colors.white,
-                                          child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(12.0),
-                                              child: Column(
-                                                children: [
-                                                  Text(
-                                                    'Solicita tu cupo:  ',
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .titleSmall,
-                                                  ),
-                                                  Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
+                                      Stack(
+                                        children: [
+                                          Card(
+                                              color: Colors.white,
+                                              child: Padding(
+                                                  padding: const EdgeInsets.all(
+                                                      12.0),
+                                                  child: Column(
                                                     children: [
                                                       Text(
-                                                        'cupos:  ',
-                                                        style: Theme.of(context)
-                                                            .textTheme
-                                                            .titleSmall!
-                                                            .copyWith(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold),
-                                                      ),
-                                                      IconButton(
-                                                        icon: const Icon(Icons
-                                                            .arrow_drop_up_outlined),
-                                                        color: Colors.black,
-                                                        iconSize: 40,
-                                                        onPressed: () =>
-                                                            _seatsIncrement(1),
-                                                      ),
-                                                      Text(
-                                                        '$_seats',
+                                                        'Solicita tu cupo:  ',
                                                         style: Theme.of(context)
                                                             .textTheme
                                                             .titleSmall,
                                                       ),
-                                                      IconButton(
-                                                        icon: const Icon(Icons
-                                                            .arrow_drop_down_outlined),
-                                                        color: Colors.black,
-                                                        iconSize: 40,
-                                                        onPressed: () =>
-                                                            _seatsIncrement(0),
-                                                      )
+                                                      Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          Text(
+                                                            'cupos:  ',
+                                                            style: Theme.of(
+                                                                    context)
+                                                                .textTheme
+                                                                .titleSmall!
+                                                                .copyWith(
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold),
+                                                          ),
+                                                          IconButton(
+                                                            icon: const Icon(Icons
+                                                                .arrow_drop_up_outlined),
+                                                            color: Colors.black,
+                                                            iconSize: 40,
+                                                            onPressed: () =>
+                                                                _seatsIncrement(
+                                                                    1),
+                                                          ),
+                                                          Text(
+                                                            '$_seats',
+                                                            style: Theme.of(
+                                                                    context)
+                                                                .textTheme
+                                                                .titleSmall,
+                                                          ),
+                                                          IconButton(
+                                                            icon: const Icon(Icons
+                                                                .arrow_drop_down_outlined),
+                                                            color: Colors.black,
+                                                            iconSize: 40,
+                                                            onPressed: () =>
+                                                                _seatsIncrement(
+                                                                    0),
+                                                          )
+                                                        ],
+                                                      ),
+                                                      const SizedBox(
+                                                          height: 10),
+                                                      InputField(
+                                                          key:
+                                                              _startingPointKey,
+                                                          foco:
+                                                              _focusNodeStartingPoint,
+                                                          controller:
+                                                              startingPointController,
+                                                          textInput:
+                                                              "Punto de recogida",
+                                                          textInputType:
+                                                              TextInputType
+                                                                  .text,
+                                                          color: ColorManager
+                                                              .staticColor,
+                                                          icon: const Icon(Icons
+                                                              .location_history),
+                                                          onPressed: () {
+                                                            _openMapSelector(
+                                                                true,
+                                                                startingPointController);
+                                                            setState(() {
+                                                              _focusNodeStartingPoint
+                                                                  .unfocus();
+                                                              _currentFoco =
+                                                                  emptyFocus;
+                                                            });
+                                                          },
+                                                          onChange: (value) {
+                                                            _currentFoco =
+                                                                _focusNodeStartingPoint;
+                                                            _getSuggestion(
+                                                                value);
+                                                          },
+                                                          obscure: false),
+                                                      // if (_suggestions.isNotEmpty &&
+                                                      //     _currentFoco ==
+                                                      //         _focusNodeStartingPoint)
+                                                      //   Positioned(
+                                                      //     top: 50.0,
+                                                      //     left: 0.0,
+                                                      //     right: 0.0,
+                                                      //     child: Container(
+                                                      //       height: 100,
+                                                      //       decoration:
+                                                      //           BoxDecoration(
+                                                      //         color: Colors.white,
+                                                      //         boxShadow: [
+                                                      //           BoxShadow(
+                                                      //             color: Colors.grey
+                                                      //                 .withOpacity(
+                                                      //                     0.5),
+                                                      //             spreadRadius: 1,
+                                                      //             blurRadius: 3,
+                                                      //             offset:
+                                                      //                 const Offset(
+                                                      //                     0, 2),
+                                                      //           ),
+                                                      //         ],
+                                                      //       ),
+                                                      //       child: ListView.builder(
+                                                      //         itemCount:
+                                                      //             _suggestions
+                                                      //                 .length,
+                                                      //         itemBuilder:
+                                                      //             (context, index) {
+                                                      //           return ListTile(
+                                                      //             title: Text(
+                                                      //                 _suggestions[
+                                                      //                     index]),
+                                                      //             onTap: () {
+                                                      //               startingPointController
+                                                      //                       .text =
+                                                      //                   _suggestions[
+                                                      //                       index];
+                                                      //               _getMapCoordinates(
+                                                      //                   _suggestions[
+                                                      //                       index],
+                                                      //                   _focusNodeStartingPoint);
+                                                      //               _suggestions
+                                                      //                   .clear();
+                                                      //             },
+                                                      //           );
+                                                      //         },
+                                                      //       ),
+                                                      //     ),
+                                                      //   ),
+                                                      const SizedBox(
+                                                          height: 30),
+                                                      Center(
+                                                          child: MainButton(
+                                                        large: false,
+                                                        text: "reservar",
+                                                        onPressed: () {
+                                                          reserveSpot();
+                                                        },
+                                                      ))
                                                     ],
-                                                  ),
-                                                  const SizedBox(height: 10),
-                                                  InputField(
-                                                      foco:
-                                                          _focusNodeStartingPoint,
-                                                      controller:
-                                                          startingPointController,
-                                                      textInput:
-                                                          "Punto de recogida",
-                                                      textInputType:
-                                                          TextInputType.text,
-                                                      color: ColorManager
-                                                          .staticColor,
-                                                      icon: const Icon(Icons
-                                                          .location_history),
-                                                      onPressed: () {
-                                                        _openMapSelector(true,
-                                                            startingPointController);
+                                                  ))),
+                                          if (_suggestions.isNotEmpty &&
+                                              _currentFoco ==
+                                                  _focusNodeStartingPoint)
+                                            Positioned(
+                                              top: startingPointPosition != null
+                                                  ? startingPointPosition!.dy +
+                                                      50
+                                                  : 170.0,
+                                              left: 0.0,
+                                              right: 0.0,
+                                              child: Container(
+                                                height: 250.0,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: Colors.grey
+                                                          .withOpacity(0.5),
+                                                      spreadRadius: 1,
+                                                      blurRadius: 3,
+                                                      offset:
+                                                          const Offset(0, 2),
+                                                    ),
+                                                  ],
+                                                ),
+                                                child: ListView.builder(
+                                                  itemCount:
+                                                      _suggestions.length,
+                                                  itemBuilder:
+                                                      (context, index) {
+                                                    return ListTile(
+                                                      title: Text(
+                                                          _suggestions[index]),
+                                                      onTap: () {
+                                                        startingPointController
+                                                                .text =
+                                                            _suggestions[index];
+                                                        _getMapCoordinates(
+                                                            _suggestions[index],
+                                                            _focusNodeStartingPoint);
+                                                        _suggestions.clear();
                                                         setState(() {
+                                                          _currentFoco
+                                                              .unfocus();
                                                           _focusNodeStartingPoint
                                                               .unfocus();
-                                                          _currentFoco =
-                                                              emptyFocus;
                                                         });
                                                       },
-                                                      onChange: (value) {
-                                                        _currentFoco =
-                                                            _focusNodeStartingPoint;
-                                                        _getSuggestion(value);
-                                                      },
-                                                      obscure: false),
-                                                  if (_suggestions.isNotEmpty &&
-                                                      _currentFoco ==
-                                                          _focusNodeStartingPoint)
-                                                    Positioned(
-                                                      top: 50.0,
-                                                      left: 0.0,
-                                                      right: 0.0,
-                                                      child: Container(
-                                                        height: 100,
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          color: Colors.white,
-                                                          boxShadow: [
-                                                            BoxShadow(
-                                                              color: Colors.grey
-                                                                  .withOpacity(
-                                                                      0.5),
-                                                              spreadRadius: 1,
-                                                              blurRadius: 3,
-                                                              offset:
-                                                                  const Offset(
-                                                                      0, 2),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                        child: ListView.builder(
-                                                          itemCount:
-                                                              _suggestions
-                                                                  .length,
-                                                          itemBuilder:
-                                                              (context, index) {
-                                                            return ListTile(
-                                                              title: Text(
-                                                                  _suggestions[
-                                                                      index]),
-                                                              onTap: () {
-                                                                startingPointController
-                                                                        .text =
-                                                                    _suggestions[
-                                                                        index];
-                                                                _getMapCoordinates(
-                                                                    _suggestions[
-                                                                        index],
-                                                                    _focusNodeStartingPoint);
-                                                                _suggestions
-                                                                    .clear();
-                                                              },
-                                                            );
-                                                          },
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  const SizedBox(height: 30),
-                                                  Center(
-                                                      child: MainButton(
-                                                    large: false,
-                                                    text: "reservar",
-                                                    onPressed: () {
-                                                      reserveSpot();
-                                                    },
-                                                  ))
-                                                ],
-                                              ))),
+                                                    );
+                                                  },
+                                                ),
+                                              ),
+                                            ),
+                                        ],
+                                      ),
                                       const SizedBox(height: 15),
                                     ]))))));
   }
