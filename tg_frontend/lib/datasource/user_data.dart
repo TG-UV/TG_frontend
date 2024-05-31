@@ -126,6 +126,7 @@ class UserDatasourceMethods implements UserDatasource {
   @override
   Future<int> insertVehicleRemote({required Vehicle vehicle, context}) async {
     int sent = 0;
+    token = await AuthStorage().getToken();
     try {
       Map<String, dynamic> jsonUser = vehicle.toJson();
 

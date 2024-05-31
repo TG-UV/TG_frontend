@@ -73,8 +73,10 @@ class _PasswordRegisterState extends State<PasswordRegister> {
           await userDatasourceImpl.insertUserRemote(user: widget.user);
       if (userInsertResponse != 0) {
         User newUser = Environment.sl.get<User>();
+        String? token = await saveAuthInformation(
+            newUser, newUser.email, passwordConfirmationController.text);
 
-        if (widget.vehicle != null) {
+        if (widget.vehicle != null && token != null) {
           Vehicle newVehicle = Vehicle(
             idVehicle: widget.vehicle!.idVehicle,
             //owner: newUser.userInsertResponse,
@@ -87,15 +89,13 @@ class _PasswordRegisterState extends State<PasswordRegister> {
           dynamic vehicleRegisterResponse = await userDatasourceImpl
               .insertVehicleRemote(vehicle: newVehicle, context: context);
           if (vehicleRegisterResponse != 0) {
-            return EasyLoading.showInfo("registro de vehículo exitoso");
+            await EasyLoading.showInfo("registro de vehículo exitoso");
           }
         }
         setState(() {
           emailCheckAdvice = true;
         });
         _showConfirmationDialog(context);
-        saveAuthInformation(
-            newUser, newUser.email, passwordConfirmationController.text);
       }
     } else {
       return ErrorOrAdviceHandler.showErrorAlert(
@@ -107,7 +107,7 @@ class _PasswordRegisterState extends State<PasswordRegister> {
     await userDatasourceImpl.postUserSendEmail(userEmail: widget.user.email);
   }
 
-  void saveAuthInformation(user, username, password) async {
+  Future<String?> saveAuthInformation(user, username, password) async {
     late final String? token;
     String? deviceToken = await FirebaseMessaging.instance.getToken();
     if (deviceToken is String) {
@@ -115,16 +115,17 @@ class _PasswordRegisterState extends State<PasswordRegister> {
           username: username, password: password, idDevice: deviceToken);
     }
     if (token != null) {
-      await AuthStorage().saveToken(token);
+      //await AuthStorage().saveToken(token);
       await AuthStorage().saveNickname(username);
       await AuthStorage().savePassword(password);
 
-      Environment.sl.registerSingleton<User>(user);
+      //Environment.sl.registerSingleton<User>(user);
 
       // Get.to(() => const Home());
     } else {
       print('Error al intentar registrar el usuario');
     }
+    return token;
   }
 
   _showConfirmationDialog(BuildContext context) {
