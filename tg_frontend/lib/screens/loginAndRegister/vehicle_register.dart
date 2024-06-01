@@ -63,19 +63,6 @@ class _VehicleRegisterState extends State<VehicleRegister> {
           'Error al llamar la opciones de vehiculo, intente de nuevo');
     }
   }
-
-  // InputDecoration(
-  //                 enabledBorder: OutlineInputBorder(
-  //                   borderSide: BorderSide(color: Colors.blue, width: 2),
-  //                   borderRadius: BorderRadius.circular(20),
-  //                 ),
-  //                 border: OutlineInputBorder(
-  //                   borderSide: BorderSide(color: Colors.blue, width: 2),
-  //                   borderRadius: BorderRadius.circular(20),
-  //                 ),
-  //                 filled: true,
-  //                 fillColor: Color.fromARGB(255, 38, 159, 80),
-  //               );
   InputDecoration myInputDecoration(String label) {
     return InputDecoration(
       labelText: label,
@@ -105,7 +92,6 @@ class _VehicleRegisterState extends State<VehicleRegister> {
         vehicleModel: _selectedModel!.toString(),
         vehicleType: _selectedType!.toString(),
       );
-      //Get.to(() => const Home());
       if (widget.parent == "menu") {
         var response = await userDatasourceImpl.insertVehicleRemote(
             vehicle: vehicle, context: context);

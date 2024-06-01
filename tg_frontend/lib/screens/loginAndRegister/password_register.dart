@@ -63,7 +63,6 @@ class _PasswordRegisterState extends State<PasswordRegister> {
       GlobalKey<FlutterPwValidatorState>();
 
   bool emailCheckAdvice = false;
-  //String? deviceToken = FirebaseService().fCMToken;
 
   Future<dynamic> submitForm(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
@@ -79,7 +78,6 @@ class _PasswordRegisterState extends State<PasswordRegister> {
         if (widget.vehicle != null && token != null) {
           Vehicle newVehicle = Vehicle(
             idVehicle: widget.vehicle!.idVehicle,
-            //owner: newUser.userInsertResponse,
             vehicleBrand: widget.vehicle!.vehicleBrand,
             vehicleColor: widget.vehicle!.vehicleColor,
             vehicleModel: widget.vehicle!.vehicleModel,
@@ -115,13 +113,8 @@ class _PasswordRegisterState extends State<PasswordRegister> {
           username: username, password: password, idDevice: deviceToken);
     }
     if (token != null) {
-      //await AuthStorage().saveToken(token);
       await AuthStorage().saveNickname(username);
       await AuthStorage().savePassword(password);
-
-      //Environment.sl.registerSingleton<User>(user);
-
-      // Get.to(() => const Home());
     } else {
       print('Error al intentar registrar el usuario');
     }

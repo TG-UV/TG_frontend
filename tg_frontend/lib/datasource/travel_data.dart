@@ -25,12 +25,10 @@ abstract class TravelDatasource {
       {required double lat,
       required double long,
       required BuildContext context});
-  //Future<void> insertTravelsLocal({required List<Travel> travels, required BuildContext context});
   Future<void> insertTravelRemote(
       {required Travel travel, required BuildContext context});
   Future<void> deleteTravelRemote(
       {required String travelId, required BuildContext context});
-  // Future<void> getTravelLocal({required int travelId, String filter, required BuildContext context});
   Future<List<Travel>> getTravelsRemote(
       {required String finalEndPoint,
       Map<String, dynamic> searchData,
@@ -42,10 +40,6 @@ abstract class TravelDatasource {
       {required int travelId,
       required String finalUrl,
       required BuildContext context});
-  // Future<int?> updateTravelLocal(
-  //     {required int travelId,
-  //     required List<String> fields,
-  //     required List<String> values, required BuildContext context});
   Future<int?> updateTravelRemote(
       {required int travelId,
       required List<String> fields,
@@ -103,10 +97,6 @@ class TravelDatasourceMethods implements TravelDatasource {
       List<dynamic> features = data['features'];
       suggestions =
           features.map((feature) => feature['place_name'] as String).toList();
-      // var data = json.decode(response.body) as List;
-
-      // suggestions =
-      //     data.map<String>((item) => item['display_name'] as String).toList();
     } else {
       // ErrorOrAdviceHandler.showErrorAlert(
       //     context,
@@ -121,11 +111,8 @@ class TravelDatasourceMethods implements TravelDatasource {
       {required String address, required BuildContext context}) async {
     String url =
         "https://api.mapbox.com/geocoding/v5/mapbox.places/$address.json?access_token=$apiKey";
-    // String url =
-    //     'https://nominatim.openstreetmap.org/search?q=$address&format=json&addressdetails=1';
 
     LatLng coordinates = const LatLng(0.0, 0.0);
-    //List<String> suggestions = [];
 
     final response = await http.get(Uri.parse(url));
 
@@ -175,31 +162,6 @@ class TravelDatasourceMethods implements TravelDatasource {
     return placeName;
   }
 
-  // @override
-  // Future<void> insertTravelsLocal({required List<Travel> travels, context}) async {
-  //   var i = 0;
-  //   Travel currentTravel;
-  //   try {
-  //     while (i < travels.length) {
-  //       currentTravel = travels[i];
-  //       await database.insert(LocalDB.tbTravel, {
-  //         LocalDB.idTravel: currentTravel.id,
-  //         LocalDB.arrivalPoint: currentTravel.arrivalPoint,
-  //         LocalDB.startingPoint: currentTravel.startingPoint,
-  //         LocalDB.date: currentTravel.date,
-  //         LocalDB.hour: currentTravel.hour,
-  //         LocalDB.driver: currentTravel.driver,
-  //         LocalDB.price: currentTravel.price,
-  //         LocalDB.seats: currentTravel.seats,
-  //         LocalDB.currentTrip: currentTravel.currentTrip,
-  //       }).timeout(const Duration(seconds: 120));
-  //       i++;
-  //     }
-  //   } catch (e) {
-  //     print('Error al insertar un viaje Local' + e.toString());
-  //   }
-  // }
-
   @override
   Future<int> insertTravelRemote(
       {required Travel travel, required BuildContext context}) async {
@@ -245,27 +207,6 @@ class TravelDatasourceMethods implements TravelDatasource {
     return sent;
   }
 
-  // @override
-  // Future<Travel?> getTravelLocal(
-  //     {required int travelId, String? filter, required BuildContext context}) async {
-  //   try {
-  //     List<Map<String, dynamic>> travelMaps = await database.query(
-  //       LocalDB.tbTravel,
-  //       where: '${LocalDB.idTravel} = ?',
-  //       whereArgs: [travelId],
-  //     ).timeout(const Duration(seconds: 300));
-
-  //     if (travelMaps.isNotEmpty) {
-  //       return Travel.fromJson(travelMaps.first);
-  //     } else {
-  //       return null;
-  //     }
-  //   } catch (e) {
-  //     print(e.toString());
-  //     return null;
-  //   }
-  // }
-
   @override
   Future<List<Travel>> getTravelsRemote(
       {required String finalEndPoint,
@@ -292,9 +233,6 @@ class TravelDatasourceMethods implements TravelDatasource {
             travelList.add(travel);
           }
         }
-        // travel = Travel.fromJson(response.data);
-        // travelList.add(travel);
-        //insertTravelsLocal(travels: travelList);
       }
     } on DioException catch (e) {
       ErrorOrAdviceHandler.showErrorAlert(
@@ -332,26 +270,6 @@ class TravelDatasourceMethods implements TravelDatasource {
     return travelList;
   }
 
-  // @override
-  // Future<int?> updateTravelLocal(
-  //     {required int travelId,
-  //     required List<String> fields,
-  //     required List<String> values, required BuildContext context}) async {
-  //   int request = 0;
-  //   try {
-  //     Map<String, Object?> updates = {};
-  //     for (var i = 0; i < fields.length; i++) {
-  //       updates[fields[i]] = values[i];
-  //     }
-  //     request = await database.update(LocalDB.tbTravel, updates, where: """
-  //         ${LocalDB.idTravel} = ?
-  //         """, whereArgs: [travelId]).timeout(const Duration(seconds: 300));
-  //   } catch (error) {
-  //     print('Error al realizar updateTRavelLocal: $error');
-  //   }
-  //   return request;
-  // }
-
   @override
   Future<int> updateTravelRemote(
       {required int travelId,
@@ -371,13 +289,11 @@ class TravelDatasourceMethods implements TravelDatasource {
     String? token = await AuthStorage().getToken();
 
     try {
-      //Map<String, dynamic> parameters = {"id_trip": travelId.toString()};
       dio.options.headers['Authorization'] = 'Token $token';
       String url =
           _endPoints.baseUrl + _endPoints.getTravel + travelId.toString();
       response = await dio.get(
         url,
-        //  queryParameters: parameters,
       );
       if (response.statusCode == 200 ||
           response.statusCode == 201 ||

@@ -45,8 +45,6 @@ class _ListedTravelsState extends State<AvailableTravels> {
       "arrival_point_long":
           double.parse(widget.arrivalPoint.longitude.toStringAsFixed(6)),
       "seats": "1",
-      // "start_time": "5:25:00",
-      // "start_date": "2024-04-29"
     };
     setState(() {});
   }
@@ -61,7 +59,6 @@ class _ListedTravelsState extends State<AvailableTravels> {
   Widget build(BuildContext context) {
     return Stack(children: [
       Column(
-          //mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const SizedBox(height: 50),
             Row(children: [
@@ -91,7 +88,7 @@ class _ListedTravelsState extends State<AvailableTravels> {
               },
             ),
             const SizedBox(height: 30),
-            Text("!Viajes próximos a salir!",
+            Text("¡Viajes próximos a salir!",
                 style: Theme.of(context).textTheme.titleMedium),
           ]),
       Positioned(
@@ -163,7 +160,6 @@ class _ListedTravelsState extends State<AvailableTravels> {
                                               .copyWith(color: Colors.white),
                                           textAlign: TextAlign.left,
                                         )),
-                                    //TravelCard(travel: perfectTravel),
                                     TravelCard(
                                       travel: travelsList[0],
                                     ),

@@ -22,10 +22,10 @@ class Welcome extends StatelessWidget {
                         const SizedBox(height: 150),
                         Image.asset(
                           'assets/1200px-U+2301.svg.png',
-                          width: 50, // ajusta el ancho según tus necesidades
-                          height: 50, // ajusta la altura según tus necesidades
+                          width: 50, 
+                          height: 50,
                           fit: BoxFit
-                              .cover, // ajusta el modo de ajuste de la imagen
+                              .cover,
                         ),
                         const SizedBox(height: 20),
                         Container(
@@ -68,7 +68,6 @@ class Welcome extends StatelessWidget {
                             Expanded(
                               child: TextButton(
                                 onPressed: () {
-                                  //Get.to(() => const SignUp());
                                   Get.to(() => const SignUp());
                                 },
                                 child: const Text(

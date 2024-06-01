@@ -65,10 +65,8 @@ class FirebaseService {
       if (message.data.isNotEmpty) {
         print("onMessage on listen: ${message.data}");
         _handleMessage(context, message);
-        //_showNotification(message);
       } else {
         travelNotificationProvider.setTravelNotification(true);
-        //  _showNotification(message);
         print("onMessage on listen 2: ${message.data}");
       }
     });
@@ -80,28 +78,21 @@ class FirebaseService {
   }
 
   void _showNotification(RemoteMessage message) async {
-    // Obtener los datos de la notificación
     final notificationData = message.data;
     String bodyNotificationToShow = "";
 
-    // Configurar la notificación
     const androidPlatformChannelSpecifics = AndroidNotificationDetails(
       'your channel id',
       'your channel name',
-      //'your channel description',
       importance: Importance.max,
       priority: Priority.high,
     );
-    // final iOSPlatformChannelSpecifics = IOSNotificationDetails();
     const platformChannelSpecifics = NotificationDetails(
       android: androidPlatformChannelSpecifics,
-      // iOS: iOSPlatformChannelSpecifics,
     );
 
-    // Mostrar la notificación
     final notificationType = message.data['notification_type'];
-    // final notificationAdditionalInfo = Travel.fromJson(message.data['additional_info']);
-    // final idTravel = message.data['additional_info']["id_trip"];
+ 
     switch (notificationType) {
       case 'travel_notification':
         bodyNotificationToShow = "Revisa tus viajes";
@@ -117,12 +108,10 @@ class FirebaseService {
         bodyNotificationToShow =
             "Lastimosamente uno de tus viajes se ha cancelado";
         break;
-      // default:
-      //   // Manejar el caso en el que notificationType no coincida con ninguno de los casos anteriores
-      //   break;
+     
     }
     await flutterLocalNotificationsPlugin.show(
-      0, // Notification ID
+      0, // Notificati on ID
       "Nueva novedad!", // Title
       bodyNotificationToShow, // Body
       platformChannelSpecifics,
@@ -141,12 +130,10 @@ class FirebaseService {
     switch (notificationType) {
       case 'travel_notification':
         travelNotificationProvider.setTravelNotification(true);
-        //travelNotificationProvider.setCurrentTravel(travel);
         travelNotificationProvider.setIdTravelNotification(idTravel);
         break;
       case 'current_travel':
         travelNotificationProvider.setCurrentTravelNotification(true);
-        //  travelNotificationProvider.setCurrentTravel(notificationAdditionalInfo);
         break;
       case 'travel_deny':
         travelNotificationProvider.setTravelNotification(true);
@@ -154,9 +141,6 @@ class FirebaseService {
       case 'travel_canceled':
         travelNotificationProvider.setTravelNotification(true);
         break;
-      // default:
-      //   // Manejar el caso en el que notificationType no coincida con ninguno de los casos anteriores
-      //   break;
     }
   }
 }

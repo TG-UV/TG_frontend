@@ -93,17 +93,6 @@ class _LoginState extends State<Login> {
 
   Future<void> showErrorMessage(String errorMessage) {
     return EasyLoading.showInfo(errorMessage);
-    // return AlertDialog(
-    //     title: const Text("Error"),
-    //     content: Text(errorMessage),
-    //     actions: [
-    //       TextButton(
-    //         onPressed: () {
-    //           Navigator.of(context).pop();
-    //         },
-    //         child: const Text("Cerrar"),
-    //       )
-    //     ]);
   }
 
   @override
@@ -118,13 +107,11 @@ class _LoginState extends State<Login> {
             body: SingleChildScrollView(
                 child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    //alignment: Alignment.center,
                     child: Form(
                         key: _formKey,
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                         child: Stack(children: [
                           Column(
-                              //mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
                                 const SizedBox(height: 100),

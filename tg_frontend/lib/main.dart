@@ -4,24 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
-//import 'package:tg_frontend/screens/welcome.dart';
 import 'package:tg_frontend/device/environment.dart';
-//import 'package:tg_frontend/screens/home.dart';
 import 'package:tg_frontend/screens/loginAndRegister/splash.dart';
 import 'package:tg_frontend/screens/theme.dart';
 import 'package:tg_frontend/services/firebase.dart';
 import 'package:tg_frontend/services/travel_notification_provider.dart';
 
 import 'firebase_options.dart';
-
-// @pragma('vm:entry-point')
-// Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-//   // If you're going to use other Firebase services in the background, such as Firestore,
-//   // make sure you call `initializeApp` before using other Firebase services.
-//   // await Firebase.initializeApp();
-
-//   print("Handling a background message: ${message.messageId}");
-// }
+import 'dart:io';
 
 final navigatorKey = GlobalKey<NavigatorState>();
 
@@ -34,7 +24,6 @@ void main() async {
   );
   await FirebaseMessaging.instance.setAutoInitEnabled(true);
   FirebaseMessaging.instance.requestPermission;
-  // FirebaseMessaging.onBackgroundMessage(myBackgroundMessageHandler);
 
   runApp(
     ChangeNotifierProvider(
@@ -59,13 +48,11 @@ class MyApp extends StatelessWidget {
       theme: myTheme,
       builder: EasyLoading.init(),
       home: const Splash(),
-      //home: const Home(),
     );
   }
 
   final ThemeData myTheme = ThemeData.light().copyWith(
     cardColor: ColorManager.fourthColor,
-
     cardTheme: CardTheme(
         color: ColorManager.thirdColor,
         surfaceTintColor: Color.fromARGB(162, 239, 239, 239)),
@@ -74,7 +61,6 @@ class MyApp extends StatelessWidget {
         headerHeadlineStyle: TextStyle(color: ColorManager.primaryColor),
         cancelButtonStyle: ButtonStyle(
           foregroundColor: MaterialStateProperty.all(ColorManager.primaryColor),
-          //backgroundColor: MaterialStateProperty.all(ColorManager.primaryColor),
         ),
         confirmButtonStyle: ButtonStyle(
           foregroundColor: MaterialStateProperty.all(ColorManager.primaryColor),
@@ -82,21 +68,19 @@ class MyApp extends StatelessWidget {
     timePickerTheme: TimePickerThemeData(
         backgroundColor: ColorManager.staticColor,
         dayPeriodColor: ColorManager.secondaryColor,
-        //dialBackgroundColor: ColorManager.secondaryColor,
         hourMinuteTextStyle:
             TextStyle(color: ColorManager.fourthColor, fontSize: 40),
         hourMinuteColor: ColorManager.staticColor,
         cancelButtonStyle: ButtonStyle(
           foregroundColor: MaterialStateProperty.all(ColorManager.primaryColor),
-          //backgroundColor: MaterialStateProperty.all(ColorManager.primaryColor),
         ),
         confirmButtonStyle: ButtonStyle(
           foregroundColor: MaterialStateProperty.all(ColorManager.primaryColor),
         )),
     dialogBackgroundColor: ColorManager.thirdColor,
-    primaryColor: ColorManager.thirdColor, // Color primario
+    primaryColor: ColorManager.thirdColor,
     colorScheme: const ColorScheme.light().copyWith(
-      primary: ColorManager.thirdColor, // Color primario
+      primary: ColorManager.thirdColor,
       secondary: ColorManager.secondaryColor,
       error: ColorManager.fourthColor,
     ),
@@ -108,7 +92,6 @@ class MyApp extends StatelessWidget {
           fontWeight: FontWeight.w800,
           overflow: TextOverflow.ellipsis),
       titleMedium: TextStyle(
-          // Equivalente a bodyText2
           color: ColorManager.primaryColor,
           fontFamily: 'Jost',
           fontSize: 22.0,

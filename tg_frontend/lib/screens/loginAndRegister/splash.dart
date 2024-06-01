@@ -9,7 +9,6 @@ import 'package:tg_frontend/screens/loginAndRegister/login.dart';
 import 'package:tg_frontend/services/auth_services.dart';
 
 class Splash extends StatefulWidget {
-  // final Splash({Key? key}) : super(key: key);
   const Splash({super.key});
   @override
   State<Splash> createState() => _LoginState();
@@ -30,17 +29,14 @@ class _LoginState extends State<Splash> {
 
   @override
   Widget build(BuildContext context) {
-    // Timer(const Duration(seconds: 3), () {
-    //   Get.to(() => const Welcome());
-    // });
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.error,
       body: Center(
         child: Image.asset(
           'assets/1200px-U+2301.svg.png',
-          width: 100, // ajusta el ancho según tus necesidades
-          height: 100, // ajusta la altura según tus necesidades
-          fit: BoxFit.cover, // ajusta el modo de ajuste de la imagen
+          width: 100,
+          height: 100,
+          fit: BoxFit.cover, 
         ),
       ),
     );
@@ -48,9 +44,6 @@ class _LoginState extends State<Splash> {
 
   Future<void> _saveToken() async {
     int idUser = await userDatasourceImpl.getUserRemote(context);
-    // User user = await userDatasourceImpl.getUserLocal(idUser);
-    //Environment.sl.registerSingleton<User>(user);
-
     if (idUser != 0) {
       Get.to(() => const Home());
     }
@@ -58,7 +51,7 @@ class _LoginState extends State<Splash> {
 
   Future<void> verifyLoggedIn() async {
     token = await AuthStorage().getToken();
-    print('llega a verifyLoggedIn');
+    print('verifyLoggedIn');
     token != null ? _saveToken() : Get.to(() => const Login());
   }
 }

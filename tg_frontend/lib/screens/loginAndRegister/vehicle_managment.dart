@@ -230,7 +230,6 @@ class _VehicleManagmentState extends State<VehicleManagment> {
                                               _selectedType = value;
                                             });
                                           },
-                                          //dropdownColor: ColorManager.secondaryColor,
                                           items: (options['types']
                                                   as List<dynamic>)
                                               .map<DropdownMenuItem<int>>(

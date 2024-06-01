@@ -28,7 +28,6 @@ class _ListedTravelsState extends State<ListedTravels> {
   void initState() {
     _selectEndpoint();
     super.initState();
-    //_cargarViajes();
   }
 
   void _selectEndpoint() {
@@ -47,9 +46,6 @@ class _ListedTravelsState extends State<ListedTravels> {
     final value = await travelDatasourceImpl.getTravelsRemote(
         finalEndPoint: currentEndPoint, context: context);
     yield value;
-    // setState(() {
-
-    // });
   }
 
   @override
@@ -87,12 +83,10 @@ class _ListedTravelsState extends State<ListedTravels> {
           child: Container(
               padding:
                   const EdgeInsets.symmetric(horizontal: 14.0, vertical: 8.0),
-
-              //color: const Color.fromARGB(255, 255, 58, 58),
               width: MediaQuery.of(context).size.width *
-                  0.75, // 3 cuartos de la pantalla
+                  0.75, 
               height: MediaQuery.of(context).size.height *
-                  0.75, // 3 cuartos de la pantalla
+                  0.75,
               decoration: BoxDecoration(
                 color: widget.pastTravel
                     ? ColorManager.fourthColor.withOpacity(0.5)
@@ -140,7 +134,6 @@ class _ListedTravelsState extends State<ListedTravels> {
                               } else {
                                 return ListView.builder(
                                     itemCount: travelsList.length,
-                                    //physics:const AlwaysScrollableScrollPhysics(),
                                     itemBuilder: (context, index) {
                                       return Padding(
                                           padding: const EdgeInsets.only(

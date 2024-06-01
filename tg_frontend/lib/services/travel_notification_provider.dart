@@ -14,15 +14,11 @@ class TravelNotificationProvider extends ChangeNotifier {
   bool _isCurrentTravelNotification = false;
   late Travel _currentTravel;
   late int _idTravelNotification = -1;
-  // bool _isTravelCardNotification = false;
 
   bool get isTavelNotification => _isTravelNotification;
   bool get isCurrentTravelNotification => _isCurrentTravelNotification;
   Travel get currentTravel => _currentTravel;
   int get idTravelNotification => _idTravelNotification;
-
-  //bool get isTravelCardNotification => _isTravelCardNotification
- 
 
   void setCurrentTravelNotification(bool value) {
     _isCurrentTravelNotification = value;
@@ -34,16 +30,9 @@ class TravelNotificationProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setCurrentTravel(notificationBody) {
-    
-  }
+  void setCurrentTravel(notificationBody) {}
 
   void setIdTravelNotification(notificationAdditionalInfo) {
     _idTravelNotification = notificationAdditionalInfo;
   }
-
-  // void setTravelCardNotification(bool value) {
-  //   _isTravelCardNotification = value;
-  //   notifyListeners();
-  // }
 }

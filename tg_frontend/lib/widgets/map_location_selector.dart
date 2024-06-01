@@ -49,7 +49,6 @@ class _MapSelectionScreenState extends State<MapSelectionScreen> {
             TileLayer(
               urlTemplate:
                   'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}',
-            
               fallbackUrl:
                   "https://www.openstreetmap.org/#map=15/${myPosition.latitude}/${myPosition.longitude}.png",
               additionalOptions: const {

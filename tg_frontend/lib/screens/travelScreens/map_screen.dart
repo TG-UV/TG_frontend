@@ -83,13 +83,9 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // bool showNotificationCard = Provider.of<MapScreenProviderhttps://{s}.tile.openstreetmap.org/%7Bz%7D/%7Bx%7D/%7By%7D.png>(context).showNotificationCard;
-    // bool showNotificationCard =
-    //     Provider.of<TravelNotificationProvider>(context).isTavelNotification;
     bool showNotificationCard =
         TravelNotificationProvider().isTavelNotification;
 
-    print("build Map $showNotificationCard");
     return Consumer<TravelNotificationProvider>(
         builder: (context, notificationProvider, _) {
       return PopScope(
@@ -123,16 +119,12 @@ class _MapScreenState extends State<MapScreen> {
                             TileLayer(
                               urlTemplate:
                                   'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}',
-                              // fallbackUrl:
-                              //     "https://a.tile.openstreetmap.org/15/${myPosition.latitude}/${myPosition.longitude}.png",
-
                               fallbackUrl:
                                   "https://www.openstreetmap.org/#map=15/${universityPosition.latitude}/${universityPosition.longitude}.png",
-                              additionalOptions: const {
+                              additionalOptions:  {
                                 'accessToken': mapboxAccessToken,
                                 'id': 'mapbox/streets-v11',
                               },
-                              //tileProvider: CachedNetworkTileProvider()
                             ),
                             MarkerLayer(markers: [
                               Marker(
@@ -162,7 +154,7 @@ class _MapScreenState extends State<MapScreen> {
                             return FloatingActionButton(
                               onPressed: () {
                                 Scaffold.of(context)
-                                    .openDrawer(); // Abre el menú lateral
+                                    .openDrawer(); 
                               },
                               backgroundColor: Colors.transparent,
                               shape: const CircleBorder(),
